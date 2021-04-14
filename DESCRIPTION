@@ -1,0 +1,32 @@
+Package: pla
+Type: Package
+Title: Principle Loading Analysis
+Version: 0.1.0
+Authors@R: c(
+        person(
+            given = "Jan", 
+            family = "Bauer", 
+            email = "", 
+            role = c("aut", "ctb")
+        ),
+        person(
+            given = "Ron",
+            family = "Holzapfel",
+            email = "ronholzapfel@outlook.de",
+            role = c("aut", "cre")
+        )
+    )
+Description: This package provides the principle loading analysis, a method for reducing the number of features within a data set.
+License: MIT + file LICENSE
+Imports: methods, Rdpack
+RdMacros: Rdpack
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/Ronho/pla
+BugReports: https://github.com/Ronho/pla/issues
+RoxygenNote: 7.1.1.9001
+Collate: 
+    'block.R'
+    'pla-package.R'
+    'utils.R'
+    'pla.R'
