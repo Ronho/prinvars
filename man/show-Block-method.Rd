@@ -17,7 +17,7 @@ Block - Show
 Prints the blocks structure.
 }
 \examples{
-block <- new("Block", start = 1, end = 4, variables = c(2, 5),
+block <- new("Block", rows = c(1, 4), columns = c(2, 5),
 explained_variance = 0.03)
 print(block)
 }

@@ -6,63 +6,84 @@
 
 
 .create_blocks <- function(x) {
-  blocks = list()
-
+  blocks <- list()
+  violated <- c()
   for (idx in 1:nrow(x)) {
-    obj <- .get_structure(x[, idx])
+    columns <- .get_row_structure(x[idx, ])
+    block_idx <- .get_block_index(blocks, columns)
+    violated <- unique(c(violated, block_idx$violates))
 
-    if (obj$isValid == TRUE) {
-      block_found <- FALSE
-      if (length(blocks) > 0) {
-        for (block_index in 1:length(blocks)) {
-          block <- blocks[[block_index]]
-          if (block@start == obj$start && block@end == obj$end) {
-            blocks[[block_index]]@variables <- c(block@variables, idx)
-            block_found <- TRUE
-          }
-        }
-      }
+    if (block_idx$equals == -1) {
+      block <- new("Block", rows = c(idx), columns = columns)
+      blocks[[length(blocks)+1]] <- block
+    } else {
+      blocks[[block_idx$equals]]@rows <- c(blocks[[block_idx$equals]]@rows, idx)
+    }
+  }
 
-      if (!block_found) {
-        new_block <- new("Block", start = obj$start, end = obj$end, variables = c(idx))
-        blocks <- c(blocks, new_block)
+  # remove blocks that violate the n x n structure
+  uncontained_rows = c()
+  if (length(blocks) > 0) {
+    idx <- 1
+    for (i in 1:length(blocks)) {
+      block <- blocks[[idx]]
+      if ((length(block@rows) != length(block@columns)) || (length(intersect(block@columns, violated)) > 0)) {
+        uncontained_rows <- unique(c(uncontained_rows, block@rows))
+        blocks[[idx]] <- NULL
+      } else {
+        idx <- idx+1
       }
     }
+  }
+
+  # add a new 1x1 block for each row that is not contained within any block
+  for (row_nr in uncontained_rows) {
+    blocks[[length(blocks)+1]] <- new("Block", rows = c(row_nr), columns = c(row_nr))
   }
 
   return(blocks)
 }
 
-# checks if a vector has a continous sequence of 1s
-.get_structure = function(vector) {
-  change <- 0 # number of changes from 0 to 1
-  prev_val <- vector[1] # previous value
-  start <- -1 # start of the 1s
-  end <- -1 # end of the 1s
+# returns the index of the block containing the exact columns
+# returns -1 if no block was found
+# returns the column indexes of blocks that can be confirmed to violate the block structure based on the new columns
+# (e.g. one block contains columns 2 and 8 --> if this functions retrieves c(8,9), the required structure cannot be given since 9 is not part of c(2,8))
+.get_block_index <- function(blocks, columns) {
+  violates <- vector() # indexes of blocks that have a confirmed violated structure
+  equals <- -1 # index of block that has the same structure
 
-  for (i in seq_along(vector)) {
-    value <- vector[i]
+  if (length(blocks) > 0) {
+    for (idx in 1:length(blocks)) {
+      block <- blocks[[idx]]
 
-    if (value == 1 && start == -1) start <- i
-    else if (value == 0 && prev_val == 1 && end == -1) end <- i - 1
-    else if (i == length(vector) && end == -1) end <- i
-
-    if (value != prev_val) {
-      change <- change + 1
-      prev_val <- value
+      if (setequal(block@columns, columns)) {
+        equals <- idx
+      } else {
+        violates <- c(violates, intersect(block@columns, columns))
+      }
     }
   }
 
-  data <- list(
-    "start" = start,
-    "end" = end,
-    "isValid" = (change <= 2 && change > 0) # Invalid if 0s are between 1s or only 0s
-  )
-
-  return(data)
+  return <- list("equals" = equals, "violates" = violates)
 }
 
-.explained_variance = function(eigen_values, eigen_vectors, discard_cols, type = "approx") {
+# checks if a vector has a continous sequence of 1s
+.get_row_structure <- function(vector) {
+  columns <- vector()
+
+  if (length(vector) > 0) {
+    for (idx in 1:length(vector)) {
+      value <- vector[idx]
+      if (value == 0) {
+          columns <- c(columns, idx)
+      }
+    }
+  }
+
+  return(columns)
+}
+
+.explained_variance <- function(eigen_values, eigen_vectors, discard_cols, type = "approx") {
   switch(type,
          "approx" = { return(.explained_variance.approx(eigen_values, discard_cols)) },
          "exact" = { return(.explained_variance.exact(eigen_values, eigen_vectors, discard_cols)) }, {
@@ -70,21 +91,23 @@
          })
 }
 
-.explained_variance.exact = function(eigen_values, eigen_vectors, discard_cols) {
+.explained_variance.exact <- function(eigen_values, eigen_vectors, discard_cols) {
   sum <- 0
 
-  for (col in 1:ncol(eigen_vectors)) {
-    sum_vec <- 0
-    for (row in discard_cols) {
-      sum_vec <- sum_vec + eigen_vectors[row, col]
+  if (length(eigen_vectors) > 0) {
+    for (col in 1:ncol(eigen_vectors)) {
+      sum_vec <- 0
+      for (row in discard_cols) {
+        sum_vec <- sum_vec + eigen_vectors[row, col]
+      }
+      sum <- sum + (eigen_values[col] * sum_vec ^ 2)
     }
-    sum <- sum + (eigen_values[col] * sum_vec ^ 2)
   }
 
   return(sum / sum(eigen_values))
 }
 
-.explained_variance.approx = function(eigen_values, discard_cols) {
+.explained_variance.approx <- function(eigen_values, discard_cols) {
   sum <- 0
   for (col in discard_cols) {
     sum <- sum + eigen_values[col]

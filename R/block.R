@@ -4,18 +4,15 @@
 #' the generated blocks. A Block is a a continuous sequence of 1s
 #' within a vector.
 #'
-#' @slot start numeric, beginning index of the sequence; -1 indicates that no 1 is found.
-#' @slot end numeric, ending index of the sequence; -1 indicates that no 1 is found.
-#' @slot variables vector of numeric, indizes of the variables having the same
-#' start and end.
+#' @slot rows vector of numeric, indizes of the rows which belong to the block
+#' @slot columns vector of numeric, indizes of the columns which belong to the block
 #' @slot explained_varaiance numeric, explained variance of the blocks variables
 #' based on the whole data set.
 setClass(
   "Block",
   representation(
-    start = "numeric",
-    end = "numeric",
-    variables = "vector",
+    rows = "vector",
+    columns = "vector",
     explained_variance = "numeric"
   )
 )
@@ -27,7 +24,7 @@ setClass(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", start = 1, end = 4, variables = c(2, 5),
+#' block <- new("Block", rows = c(1, 4), columns = c(2, 5),
 #' explained_variance = 0.03)
 #' print(block)
 #' @export
@@ -46,7 +43,7 @@ setMethod(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", start = 1, end = 4, variables = c(2, 5),
+#' block <- new("Block", rows = c(1, 4), columns = c(2, 5),
 #' explained_variance = 0.03)
 #' str(block)
 #' @export
@@ -54,13 +51,15 @@ setMethod(
   f = "str",
   signature = "Block",
   definition = function(object) {
-    s1 = paste(unlist(object@variables), collapse = ", ")
-    s2 = round(object@explained_variance * 100, 2)
-    str = paste("(",
-                s1,
-                ")",
-                " explains ",
-                s2,
+    rows = paste(unlist(object@rows), collapse = ", ")
+    columns = paste(unlist(object@columns), collapse = ", ")
+    expvar = round(object@explained_variance * 100, 2)
+    str = paste("Rows(",
+                rows,
+                ")-Columns(",
+                columns,
+                ") explains ",
+                expvar,
                 "% of the overall explained variance",
                 sep = "")
     return(str)

@@ -12,12 +12,9 @@ within a vector.
 \section{Slots}{
 
 \describe{
-\item{\code{start}}{numeric, beginning index of the sequence; -1 indicates that no 1 is found.}
+\item{\code{rows}}{vector of numeric, indizes of the rows which belong to the block}
 
-\item{\code{end}}{numeric, ending index of the sequence; -1 indicates that no 1 is found.}
-
-\item{\code{variables}}{vector of numeric, indizes of the variables having the same
-start and end.}
+\item{\code{columns}}{vector of numeric, indizes of the columns which belong to the block}
 
 \item{\code{explained_varaiance}}{numeric, explained variance of the blocks variables
 based on the whole data set.}

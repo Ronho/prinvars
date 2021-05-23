@@ -61,7 +61,7 @@ pla <- function(x,
 
   # get explained variance for each block
   blocks <- lapply(blocks, function(block) {
-    cols <- block@variables
+    cols <- block@columns
     block@explained_variance <- .explained_variance(eigen$values,
                                                     eigen$vectors,
                                                     cols,
@@ -198,8 +198,8 @@ pla.keep_blocks <- function(x, blocks, block_indizes) {
 #' data <- pla.drop_blocks(data, obj$blocks, c(1))
 #' @export
 pla.drop_blocks <- function(x, blocks, block_indizes) {
-  for (idx in block_indizes) {
-    x <- x[,-blocks[[idx]]@variables, drop = FALSE]
-  }
+  #for (idx in block_indizes) {
+  #  x <- x[,-blocks[[idx]]@variables, drop = FALSE]
+  #}
   return(x)
 }
