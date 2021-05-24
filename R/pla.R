@@ -61,10 +61,9 @@ pla <- function(x,
 
   # get explained variance for each block
   blocks <- lapply(blocks, function(block) {
-    cols <- block@columns
     block@explained_variance <- .explained_variance(eigen$values,
                                                     eigen$vectors,
-                                                    cols,
+                                                    block@columns,
                                                     expvar)
     return(block)
   })
@@ -173,7 +172,6 @@ pla.keep_blocks <- function(x, blocks, block_indizes) {
   block_indizes <- 1:length(blocks)
   return(pla.drop_blocks(x, blocks, block_indizes))
 }
-
 #' @title Drop Blocks
 #'
 #' Used to remove each variable from the original data set which is part of
@@ -198,8 +196,11 @@ pla.keep_blocks <- function(x, blocks, block_indizes) {
 #' data <- pla.drop_blocks(data, obj$blocks, c(1))
 #' @export
 pla.drop_blocks <- function(x, blocks, block_indizes) {
-  #for (idx in block_indizes) {
-  #  x <- x[,-blocks[[idx]]@variables, drop = FALSE]
-  #}
+  indizes <- vector()
+  for (idx in block_indizes) {
+    indizes <- c(indizes, blocks[[idx]]@columns)
+  }
+
+  x <- x[,-indizes, drop = FALSE]
   return(x)
 }
