@@ -54,10 +54,10 @@ setMethod(
     rows = paste(unlist(object@rows), collapse = ", ")
     columns = paste(unlist(object@columns), collapse = ", ")
     expvar = round(object@explained_variance * 100, 2)
-    str = paste("Rows(",
-                rows,
-                ")-Columns(",
+    str = paste("Columns(",
                 columns,
+                ")-Rows(",
+                rows,
                 ") explains ",
                 expvar,
                 "% of the overall explained variance",
