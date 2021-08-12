@@ -1,3 +1,9 @@
+get_colnames <- function(x) {
+  colnames <- colnames(x)
+  colnames <- if (length(colnames) > 0) colnames(x) else 1:ncol(x)
+  return(colnames)
+}
+
 manipulate_matrix <- function(x, manipulator = "cov") {
   if (manipulator == "cor") return(cor(x, method = c("pearson")))
   if (manipulator == 'cov') return(cov(x, method = c("pearson")))
