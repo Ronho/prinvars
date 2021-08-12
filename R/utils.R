@@ -1,32 +1,51 @@
-transform <- function(eigen, scaled_ev, threshold, colnames, expvar) {
-  # scale eigen vectors (column wise) between -1 and 1
-  if (scaled_ev)
-    eigen$vectors = apply(
-      eigen$vectors,
-      MARGIN = 2,
-      FUN = function(x) {
-        x / max(abs(x))
+manipulate_matrix <- function(x, manipulator = "cov") {
+  if (manipulator == "cor") return(cor(x, method = c("pearson")))
+  if (manipulator == 'cov') return(cov(x, method = c("pearson")))
+  stop(paste("'", manipulator, "'", " is not a valid value for manipulator.", sep = ""))
+}
+
+apply_type <- function(eigen, scaled_ev, threshold, colnames, expvar, type) {
+  if (type == "columns") {
+    result <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+  } else if (type == "rows") {
+    eigen$vectors <- t(eigen$vectors)
+    result <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+  } else if (type == 'rnc') {
+    pla_cols <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+
+    eigen$vectors <- t(eigen$vectors)
+    pla_rows <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+    
+    if (check_pla_equality(pla_cols, pla_rows)) {
+      result <- pla_cols
+    } else {
+      stop("PLA for column and rows is not equal.")
+    }
+  } else {
+    stop(paste("'", type, "'", " is not a valid value for type. It can be either 'columns' (DEFAULT), 'rows' or 'rnc'", sep = ""))
+  }
+  return(result)
+}
+
+check_pla_equality <- function(a, b) {
+  is_equal <- TRUE
+  for (a_block in a$blocks) {
+    found <- FALSE
+    for (b_block in b$blocks) {
+      if ((a_block@explained_variance == b_block@explained_variance) && all(a_block@columns == b_block@columns)) {
+        found <- TRUE
       }
-    )
+    }
+    is_equal <- if (found == FALSE) found else is_equal
+  }
+  return(is_equal)
+}
 
-  # create threshold matrix: each element is assigned a 0 or 1 depending
-  # if it is underneath or above the threshold
-  if (threshold > 1 || threshold < 0)
-    warning("Threshold should be between 0 and 1.")
-  x <- ifelse(abs(eigen$vectors) > threshold, 1, 0)
-
-  blocks <- get_blocks(x, colnames=colnames)
-
-
-  # get explained variance for each block
-  blocks <- lapply(blocks, function(block) {
-    col_idxs <- match(block@columns, colnames)
-    block@explained_variance <- explained_variance(eigen$values,
-                                                    eigen$vectors,
-                                                    col_idxs,
-                                                    expvar)
-    return(block)
-  })
+transform <- function(eigen, scaled_ev, threshold, colnames, expvar) {
+  eigen$vectors <- if (scaled_ev) scale_eigen_vectors(eigen$vectors) else eigen$vectors
+  x <- get_threshold_matrix(eigen$vectors, threshold)
+  blocks <- get_blocks(x, colnames)
+  blocks <- calculate_explained_variance(blocks, eigen, colnames, expvar)
 
   result <- list(
     "eigen_vectors" = eigen$vectors,
@@ -37,10 +56,35 @@ transform <- function(eigen, scaled_ev, threshold, colnames, expvar) {
   return(result)
 }
 
-manipulate_matrix <- function(x, manipulator = "cov") {
-  if (manipulator == "cor") return(cor(x, method = c("pearson")))
-  if (manipulator == 'cov') return(cov(x, method = c("pearson")))
-  stop(paste("'", manipulator, "'", " is not a valid value for manipulator.", sep = ""))
+# scale eigen vectors (column wise) between -1 and 1
+scale_eigen_vectors <- function(eigen_vectors) {
+  scaled_eigen_vectors = apply(
+    eigen_vectors,
+    MARGIN = 2,
+    FUN = function(x) {
+      x / max(abs(x))
+    }
+  )
+  return(scaled_eigen_vectors)
+}
+
+get_threshold_matrix <- function(eigen_vectors, threshold) {
+  if (threshold > 1 || threshold < 0)
+    warning("Threshold should be between 0 and 1.")
+  x <- ifelse(abs(eigen_vectors) > threshold, 1, 0)
+  return(x)
+}
+
+calculate_explained_variance <- function(blocks, eigen, colnames, expvar) {
+  blocks <- lapply(blocks, function(block) {
+    col_idxs <- match(block@columns, colnames)
+    block@explained_variance <- explained_variance(eigen$values,
+                                                    eigen$vectors,
+                                                    col_idxs,
+                                                    expvar)
+    return(block)
+  })
+  return(blocks)
 }
 
 # get block structure of the matrix

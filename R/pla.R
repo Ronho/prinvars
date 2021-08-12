@@ -38,44 +38,11 @@ pla <- function(x,
                 expvar = "approx",
                 type = "columns", #or "rows" or "rnc"
                 ...) {
-  colnames <- if (length(colnames(x)) > 0) colnames(x) else 1:ncol(x)
-  test <- x # REMOVE       
+  colnames <- if (length(colnames(x)) > 0) colnames(x) else 1:ncol(x)      
   x <- as.matrix(x)
   x <- manipulate_matrix(x, manipulator = manipulator)
-  x <- test # REMOVE
-
   eigen <- eigen(x)
-
-  if (type == "columns") {
-    result <- transform(eigen, scaled_ev, threshold, colnames, expvar)
-  } else if (type == "rows") {
-    eigen$vectors <- t(eigen$vectors)
-    result <- transform(eigen, scaled_ev, threshold, colnames, expvar)
-  } else if (type == 'rnc') {
-    pla_cols <- transform(eigen, scaled_ev, threshold, colnames, expvar)
-
-    eigen$vectors <- t(eigen$vectors)
-    pla_rows <- transform(eigen, scaled_ev, threshold, colnames, expvar)
-
-    is_equal <- TRUE
-    for (col_block in pla_cols$blocks) {
-      found <- FALSE
-      for (row_block in pla_rows$blocks) {
-        if ((col_block@explained_variance == row_block@explained_variance) && all(col_block@columns == row_block@columns)) {
-          found <- TRUE
-        }
-      }
-      is_equal <- if (found == FALSE) found else is_equal
-    }
-    
-    if (is_equal) {
-      result <- pla_cols
-    } else {
-      stop("PLA for column and rows is not equal.") # NEEDS to be defined
-    }
-  } else {
-    stop(paste("'", type, "'", " is not a valid value for type. It can be either 'columns' (DEFAULT), 'rows' or 'rnc'", sep = ""))
-  }
+  result <- apply_type(eigen, scaled_ev, threshold, colnames, expvar, type)
 
   return(result)
 }
