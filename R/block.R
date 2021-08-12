@@ -11,7 +11,6 @@
 setClass(
   "Block",
   representation(
-    rows = "vector",
     columns = "vector",
     explained_variance = "numeric"
   )
@@ -51,14 +50,11 @@ setMethod(
   f = "str",
   signature = "Block",
   definition = function(object) {
-    rows = paste(unlist(object@rows), collapse = ", ")
     columns = paste(unlist(object@columns), collapse = ", ")
     expvar = round(object@explained_variance * 100, 2)
-    str = paste("Columns(",
+    str = paste("Features (",
                 columns,
-                ")-Rows(",
-                rows,
-                ") explains ",
+                ") explain ",
                 expvar,
                 "% of the overall explained variance",
                 sep = "")

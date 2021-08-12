@@ -34,48 +34,49 @@
 pla <- function(x,
                 manipulator = "cov",
                 scaled_ev = FALSE,
-                threshold = 0.3,
+                threshold = 0.33,
                 expvar = "approx",
+                type = "columns", #or "rows" or "rnc"
                 ...) {
+  colnames <- if (length(colnames(x)) > 0) colnames(x) else 1:ncol(x)
+  test <- x # REMOVE       
   x <- as.matrix(x)
-  x <- .manipulate_matrix(x, manipulator = manipulator)
+  x <- manipulate_matrix(x, manipulator = manipulator)
+  x <- test # REMOVE
+
   eigen <- eigen(x)
 
-  # scale eigen vectors (column wise) between -1 and 1
-  if (scaled_ev)
-    eigen$vectors = apply(
-      eigen$vectors,
-      MARGIN = 2,
-      FUN = function(x) {
-        x / max(abs(x))
+  if (type == "columns") {
+    result <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+  } else if (type == "rows") {
+    eigen$vectors <- t(eigen$vectors)
+    result <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+  } else if (type == 'rnc') {
+    pla_cols <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+
+    eigen$vectors <- t(eigen$vectors)
+    pla_rows <- transform(eigen, scaled_ev, threshold, colnames, expvar)
+
+    is_equal <- TRUE
+    for (col_block in pla_cols$blocks) {
+      found <- FALSE
+      for (row_block in pla_rows$blocks) {
+        if ((col_block@explained_variance == row_block@explained_variance) && all(col_block@columns == row_block@columns)) {
+          found <- TRUE
+        }
       }
-    )
+      is_equal <- if (found == FALSE) found else is_equal
+    }
+    
+    if (is_equal) {
+      result <- pla_cols
+    } else {
+      stop("PLA for column and rows is not equal.") # NEEDS to be defined
+    }
+  } else {
+    stop(paste("'", type, "'", " is not a valid value for type. It can be either 'columns' (DEFAULT), 'rows' or 'rnc'", sep = ""))
+  }
 
-  # create threshold matrix: each element is assigned a 0 or 1 depending
-  # if it is underneath or above the threshold
-  if (threshold > 1 || threshold < 0)
-    warning("Threshold should be between 0 and 1.")
-  x <- ifelse(abs(eigen$vectors) < threshold, 1, 0)
-
-  blocks <- .create_blocks(x)
-
-  # get explained variance for each block
-  blocks <- lapply(blocks, function(block) {
-    block@explained_variance <- .explained_variance(eigen$values,
-                                                    eigen$vectors,
-                                                    block@columns,
-                                                    expvar)
-    return(block)
-  })
-
-
-  result <- list(
-    "eigen_vectors" = eigen$vectors,
-    "threshold" = threshold,
-    "blocks" = blocks
-  )
-
-  class(result) <- "pla"
   return(result)
 }
 
@@ -111,6 +112,7 @@ pla <- function(x,
 pla.thresholds <- function(x, thresholds, ...) {
   results <- list()
   for (threshold in thresholds) {
+    print(threshold)
     results[[length(results) + 1]] <- pla(x, threshold = threshold, ...)
   }
   return(results)
@@ -167,10 +169,16 @@ print.pla <- function(x, ...) {
 #' obj <- pla(data)
 #' data <- pla.keep_blocks(data, obj$blocks, c(2, 3))
 #' @export
-pla.keep_blocks <- function(x, blocks, block_indizes) {
-  blocks <- blocks[-block_indizes]
-  block_indizes <- 1:length(blocks)
-  return(pla.drop_blocks(x, blocks, block_indizes))
+pla.keep_blocks <- function(x, blocks) {
+  colnames <- if (length(colnames(x)) > 0) colnames(x) else 1:ncol(x) # ALS FUNKTION AUSLAGERN
+  indizes <- vector()
+  for (block in blocks) {
+    indizes <- c(indizes, block@columns)
+  }
+  col_idxs <- match(indizes, colnames)
+
+  x <- x[,col_idxs, drop = FALSE]
+  return(x)
 }
 #' @title Drop Blocks
 #'
@@ -195,12 +203,14 @@ pla.keep_blocks <- function(x, blocks, block_indizes) {
 #' obj <- pla(data)
 #' data <- pla.drop_blocks(data, obj$blocks, c(1))
 #' @export
-pla.drop_blocks <- function(x, blocks, block_indizes) {
+pla.drop_blocks <- function(x, blocks) {
+  colnames <- if (length(colnames(x)) > 0) colnames(x) else 1:ncol(x) # ALS FUNKTION AUSLAGERN
   indizes <- vector()
-  for (idx in block_indizes) {
-    indizes <- c(indizes, blocks[[idx]]@columns)
+  for (block in blocks) {
+    indizes <- c(indizes, block@columns)
   }
+  col_idxs <- match(indizes, colnames)
 
-  x <- x[,-indizes, drop = FALSE]
+  x <- x[,-col_idxs, drop = FALSE]
   return(x)
 }
