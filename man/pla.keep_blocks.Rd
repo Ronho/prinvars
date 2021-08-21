@@ -4,19 +4,16 @@
 \alias{pla.keep_blocks}
 \title{Keep Blocks
 
-Used to remove each variable from the original data set which is part of
-any of the blocks that have not been excluded by the block_indizes.}
+Used to only keep each variable of the original data set which is part of
+any of the passed blocks.}
 \usage{
-pla.keep_blocks(x, blocks, block_indizes)
+pla.keep_blocks(x, blocks)
 }
 \arguments{
-\item{x}{data.frame matrix, the raw data; should
-be the same used to obtain the blocks.}
+\item{x}{data.frame matrix, the raw data; should be the same used to obtain the blocks.}
 
-\item{blocks}{list of blocks; obtained by the pla function.}
-
-\item{block_indizes}{vector of numeric; indizes of the blocks from the
-block list which variables should not be removed from the data set.}
+\item{blocks}{list of blocks; blocks that are obtained by the pla function and should
+be kept.}
 }
 \value{
 data.frame, data without the removed variables
@@ -24,8 +21,8 @@ data.frame, data without the removed variables
 \description{
 Keep Blocks
 
-Used to remove each variable from the original data set which is part of
-any of the blocks that have not been excluded by the block_indizes.
+Used to only keep each variable of the original data set which is part of
+any of the passed blocks.
 }
 \examples{
 data <- data.frame(
@@ -35,5 +32,6 @@ c = c(7:9),
 d = c(10:12)
 )
 obj <- pla(data)
-data <- pla.keep_blocks(data, obj$blocks, c(2, 3))
+data <- pla.keep_blocks(data, obj$blocks[1])
+
 }

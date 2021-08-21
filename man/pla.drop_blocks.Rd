@@ -5,18 +5,15 @@
 \title{Drop Blocks
 
 Used to remove each variable from the original data set which is part of
-any of the specified blocks.}
+any of the passed blocks.}
 \usage{
-pla.drop_blocks(x, blocks, block_indizes)
+pla.drop_blocks(x, blocks)
 }
 \arguments{
 \item{x}{data.frame matrix, the raw data; should
 be the same used to obtain the blocks.}
 
-\item{blocks}{list of blocks; obtained by the pla function.}
-
-\item{block_indizes}{vector of numeric, indizes of the blocks from the
-block list which variables should be removed from the data set.}
+\item{blocks}{list of blocks; blocks obtained by the pla function and should be dropped.}
 }
 \value{
 data.frame, data without the removed variables
@@ -25,7 +22,7 @@ data.frame, data without the removed variables
 Drop Blocks
 
 Used to remove each variable from the original data set which is part of
-any of the specified blocks.
+any of the passed blocks.
 }
 \examples{
 data <- data.frame(
@@ -35,5 +32,6 @@ c = c(7:9),
 d = c(10:12)
 )
 obj <- pla(data)
-data <- pla.drop_blocks(data, obj$blocks, c(1))
+data <- pla.drop_blocks(data, obj$blocks[1])
+
 }

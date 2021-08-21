@@ -4,14 +4,15 @@
 \alias{pla}
 \title{Principle Loading Analysis
 
-This function allows you to perform principle loading analysis on a data set.}
+This function performs principle loading analysis on a data set.}
 \usage{
 pla(
   x,
   manipulator = "cov",
   scaled_ev = FALSE,
-  threshold = 0.3,
+  threshold = 0.33,
   expvar = "approx",
+  type = "columns",
   ...
 )
 }
@@ -19,21 +20,26 @@ pla(
 \item{x}{data.frame matrix, the raw data.}
 
 \item{manipulator}{character string, indicating the function which is used on the
-data set; Options: "cov" for covariance, "cor" correlation; defaults to "cov".}
+data set; Options: "cov" for covariance, "cor" for correlation; defaults to "cov".}
 
 \item{scaled_ev}{boolean, indicating whether the eigen vectors should be
 scaled; defaults to FALSE.}
 
 \item{threshold}{numeric, determines "small" values inside
-the eigen vectors; defaults to 0.3.}
+the eigen vectors; defaults to 0.33.}
 
 \item{expvar}{character string, determines the method used for calculating the
 explained variance; Options: "approx" for an approximation, "exact" for the
 exact calculation; defaults to "approx".}
 
+\item{type}{character string, determines how eigen vectors are used; Options: "columns"
+uses eigen vectors as they are, "rows" uses rows of eigen vector matrix, "rnc" requires
+equality on columns and rows; defaults to "columns"}
+
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
+pla class list of the following attributes:
 \item{eigen_vectors}{matrix, eigen vector matrix obtained from \code{eigen}}
 \item{threshold}{numeric, threshold}
 \item{blocks}{list of blocks, blocks describing the explained variance}
@@ -43,7 +49,7 @@ See \url{https://arxiv.org/pdf/2007.05215.pdf},
 \description{
 Principle Loading Analysis
 
-This function allows you to perform principle loading analysis on a data set.
+This function performs principle loading analysis on a data set.
 }
 \examples{
 data <- data.frame(
@@ -52,4 +58,5 @@ b = c(4:6),
 c = c(7:9)
 )
 pla(data)
+
 }

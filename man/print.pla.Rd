@@ -4,7 +4,7 @@
 \alias{print.pla}
 \title{Print Function for pla S3
 
-Prints the explained variances of the blocks inside the object.}
+Prints the blocks and threshold inside the object.}
 \usage{
 \method{print}{pla}(x, ...)
 }
@@ -16,7 +16,7 @@ Prints the explained variances of the blocks inside the object.}
 \description{
 Print Function for pla S3
 
-Prints the explained variances of the blocks inside the object.
+Prints the blocks and threshold inside the object.
 }
 \examples{
 data <- data.frame(
@@ -26,4 +26,5 @@ c = c(7:9)
 )
 obj <- pla(data)
 print(obj)
+
 }

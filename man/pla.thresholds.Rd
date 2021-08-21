@@ -5,8 +5,8 @@
 \title{Principle Loading Analysis - Thresholds
 
 This function allows you to perform principle loading analysis on a data set
-using multiple different thresholds. This allows you to determine
-the best threshold on a given data set.}
+using multiple different thresholds. This allows you to determine the best 
+threshold on a given data set.}
 \usage{
 pla.thresholds(x, thresholds, ...)
 }
@@ -19,19 +19,17 @@ the eigen vectors.}
 \item{...}{further arguments passed to pla.}
 }
 \value{
-List of the following parameters which are provided as a list:
+List of the following parameters which are provided as a pla class list:
 \item{eigen_vectors}{matrix, eigen vector matrix obtained from \code{eigen}}
 \item{threshold}{numeric, threshold}
 \item{blocks}{list of blocks, blocks describing the explained variance}
-See \url{https://arxiv.org/pdf/2007.05215.pdf},
-\url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
 }
 \description{
 Principle Loading Analysis - Thresholds
 
 This function allows you to perform principle loading analysis on a data set
-using multiple different thresholds. This allows you to determine
-the best threshold on a given data set.
+using multiple different thresholds. This allows you to determine the best 
+threshold on a given data set.
 }
 \examples{
 data <- data.frame(
@@ -41,6 +39,7 @@ c = c(7:9)
 )
 thresholds <- c(0.1, 0.2, 0.3, 0.4, 0.5)
 pla.thresholds(data, thresholds = thresholds)
+
 }
 \seealso{
 [pla()] for further information about pla.
