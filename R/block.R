@@ -1,17 +1,15 @@
 #' Block
 #'
 #' Classed used within the package to keep the structure and information about
-#' the generated blocks. A Block is a a continuous sequence of 1s
-#' within a vector.
+#' the generated blocks.
 #'
-#' @slot rows vector of numeric, indizes of the rows which belong to the block
-#' @slot columns vector of numeric, indizes of the columns which belong to the block
+#' @slot indices vector of numeric, indices which belong to the block
 #' @slot explained_varaiance numeric, explained variance of the blocks variables
 #' based on the whole data set.
 setClass(
   "Block",
   representation(
-    columns = "vector",
+    indices = "vector",
     explained_variance = "numeric"
   )
 )
@@ -23,7 +21,7 @@ setClass(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", columns = c(2, 5), explained_variance = 0.03)
+#' block <- new("Block", indices = c(2, 5), explained_variance = 0.03)
 #' print(block)
 #' @export
 setMethod(
@@ -41,17 +39,17 @@ setMethod(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", columns = c(2, 5), explained_variance = 0.03)
+#' block <- new("Block", indices = c(2, 5), explained_variance = 0.03)
 #' str(block)
 #' @export
 setMethod(
   f = "str",
   signature = "Block",
   definition = function(object) {
-    columns = paste(unlist(object@columns), collapse = ", ")
+    indices = paste(unlist(object@indices), collapse = ", ")
     expvar = round(object@explained_variance * 100, 2)
     str = paste("Features (",
-                columns,
+                indices,
                 ") explain ",
                 expvar,
                 "% of the overall explained variance",

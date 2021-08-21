@@ -141,11 +141,11 @@ print.pla <- function(x, ...) {
 #' @export
 pla.keep_blocks <- function(x, blocks) {
   colnames <- get_colnames(x)
-  indizes <- vector()
+  indices <- vector()
   for (block in blocks) {
-    indizes <- c(indizes, block@columns)
+    indices <- c(indices, block@indices)
   }
-  col_idxs <- match(indizes, colnames)
+  col_idxs <- match(indices, colnames)
 
   x <- x[,col_idxs, drop = FALSE]
   return(x)
@@ -175,11 +175,11 @@ pla.keep_blocks <- function(x, blocks) {
 #' @export
 pla.drop_blocks <- function(x, blocks) {
   colnames <- get_colnames(x)
-  indizes <- vector()
+  indices <- vector()
   for (block in blocks) {
-    indizes <- c(indizes, block@columns)
+    indices <- c(indices, block@indices)
   }
-  col_idxs <- match(indizes, colnames)
+  col_idxs <- match(indices, colnames)
 
   x <- x[,-col_idxs, drop = FALSE]
   return(x)

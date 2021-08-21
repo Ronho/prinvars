@@ -38,7 +38,7 @@ check_pla_equality <- function(a, b) {
   for (a_block in a$blocks) {
     found <- FALSE
     for (b_block in b$blocks) {
-      if ((a_block@explained_variance == b_block@explained_variance) && all(a_block@columns == b_block@columns)) {
+      if ((a_block@explained_variance == b_block@explained_variance) && all(a_block@indices == b_block@indices)) {
         found <- TRUE
       }
     }
@@ -64,7 +64,7 @@ transform <- function(eigen, scaled_ev, threshold, colnames, expvar) {
 
 # scale eigen vectors (column wise) between -1 and 1
 scale_eigen_vectors <- function(eigen_vectors) {
-  scaled_eigen_vectors = apply(
+  scaled_eigen_vectors <- apply(
     eigen_vectors,
     MARGIN = 2,
     FUN = function(x) {
@@ -83,7 +83,7 @@ get_threshold_matrix <- function(eigen_vectors, threshold) {
 
 calculate_explained_variance <- function(blocks, eigen, colnames, expvar) {
   blocks <- lapply(blocks, function(block) {
-    col_idxs <- match(block@columns, colnames)
+    col_idxs <- match(block@indices, colnames)
     block@explained_variance <- explained_variance(eigen$values,
                                                     eigen$vectors,
                                                     col_idxs,
@@ -105,7 +105,7 @@ get_blocks <- function(x, colnames) {
   # iterate for each nxn combination
   while (n < m) {
     if (length(untaken_cols) >= 2*n) { #check if there are enough columns after finding a sequence that fits
-      dimension = m-n # number of 0s
+      dimension <- m-n # number of 0s
       eligible_cols <- which(zero_length >= dimension) # columns that have the required dimension
       eligible_cols <- intersect(eligible_cols, untaken_cols)
 
@@ -152,7 +152,7 @@ get_zeros <- function(x) {
 # dimension - number of 0s
 # current_combination - sequence of column indexes that match the required structure
 find_combination <- function(x, possible_data, required_length, dimension, current_combination) {
-  remaining_length = required_length - length(current_combination)
+  remaining_length <- required_length - length(current_combination)
   if (remaining_length < 1) {
     v <- sum_vectors(x, current_combination)
 
@@ -189,7 +189,7 @@ create_block <- function(cols, colnames) {
   if (length(colnames) > 0) {
     cols <- colnames[cols]
   }
-  return <- new("Block", columns = cols)
+  return <- new("Block", indices = cols)
 }
 
 explained_variance <- function(eigen_values, eigen_vectors, cols, type = "approx") {

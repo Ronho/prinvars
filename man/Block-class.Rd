@@ -6,15 +6,12 @@
 \title{Block}
 \description{
 Classed used within the package to keep the structure and information about
-the generated blocks. A Block is a a continuous sequence of 1s
-within a vector.
+the generated blocks.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{rows}}{vector of numeric, indizes of the rows which belong to the block}
-
-\item{\code{columns}}{vector of numeric, indizes of the columns which belong to the block}
+\item{\code{indices}}{vector of numeric, indices which belong to the block}
 
 \item{\code{explained_varaiance}}{numeric, explained variance of the blocks variables
 based on the whole data set.}
