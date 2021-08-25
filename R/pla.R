@@ -1,5 +1,6 @@
 #' @include block.R
 #' @include utils.R
+#' @include explained-variance.R
 
 #' @title Principle Loading Analysis
 #'
@@ -45,8 +46,10 @@ pla <- function(x,
                 type = "columns", #or "rows" or "rnc"
                 ...) {
   colnames <- get_colnames(x)
+  test <- x
   x <- as.matrix(x)
   x <- manipulate_matrix(x, manipulator = manipulator)
+  x <- test
   eigen <- eigen(x)
   result <- apply_type(eigen, scaled_ev, threshold, colnames, expvar, type)
   return(result)

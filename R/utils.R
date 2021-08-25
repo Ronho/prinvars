@@ -84,10 +84,10 @@ get_threshold_matrix <- function(eigen_vectors, threshold) {
 calculate_explained_variance <- function(blocks, eigen, colnames, expvar) {
   blocks <- lapply(blocks, function(block) {
     col_idxs <- match(block@indices, colnames)
-    block@explained_variance <- explained_variance(eigen$values,
-                                                    eigen$vectors,
-                                                    col_idxs,
-                                                    expvar)
+    block@explained_variance <- proportional_explained_variance(eigen$values,
+                                                                eigen$vectors,
+                                                                col_idxs,
+                                                                expvar)
     return(block)
   })
   return(blocks)
@@ -190,37 +190,4 @@ create_block <- function(cols, colnames) {
     cols <- colnames[cols]
   }
   return <- new("Block", indices = cols)
-}
-
-explained_variance <- function(eigen_values, eigen_vectors, cols, type = "approx") {
-  switch(type,
-         "approx" = { return(explained_variance.approx(eigen_values, cols)) },
-         "exact" = { return(explained_variance.exact(eigen_values, eigen_vectors, cols)) }, {
-           stop(paste("'", type, "'", " is not a valid value for explained variance.", sep = ""))
-         })
-}
-
-explained_variance.exact <- function(eigen_values, eigen_vectors, cols) {
-  sum <- 0
-
-  if (length(eigen_vectors) > 0) {
-    for (col in 1:ncol(eigen_vectors)) {
-      sum_vec <- 0
-      for (row in cols) {
-        sum_vec <- sum_vec + eigen_vectors[row, col]
-      }
-      sum <- sum + (eigen_values[col] * sum_vec ^ 2)
-    }
-  }
-
-  return(sum / sum(eigen_values))
-}
-
-explained_variance.approx <- function(eigen_values, cols) {
-  sum <- 0
-  for (col in cols) {
-    sum <- sum + eigen_values[col]
-  }
-
-  return(sum / sum(eigen_values))
 }
