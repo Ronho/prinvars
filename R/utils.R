@@ -6,7 +6,8 @@ get_feature_names <- function(x) {
 
 manipulate_matrix <- function(x, manipulator = "cov") {
   if (manipulator == "cor") return(cor(x, method = c("pearson")))
-  if (manipulator == 'cov') return(cov(x, method = c("pearson")))
+  if (manipulator == "cov") return(cov(x, method = c("pearson")))
+  if (manipulator == "none") return(x)
   stop(paste("'", manipulator, "'", " is not a valid value for manipulator.", sep = ""))
 }
 
