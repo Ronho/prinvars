@@ -16,7 +16,7 @@ test_that("manipulate_matrix", {
   expect_equal(manipulate_matrix(matrix), cov(matrix))
   expect_equal(manipulate_matrix(matrix, manipulator="cor"), cor(matrix))
   expect_equal(manipulate_matrix(matrix, manipulator="none"), matrix)
-  expect_error(manipulate_matrix(matrix, manipulator="t"))
+  expect_error(manipulate_matrix(matrix, manipulator=""))
 })
 
 test_that("create_block", {
