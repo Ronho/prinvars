@@ -1,13 +1,74 @@
-get_colnames <- function(x) {
-  colnames <- colnames(x)
-  colnames <- if (length(colnames) > 0) colnames(x) else 1:ncol(x)
-  return(colnames)
+get_feature_names <- function(x) {
+  feature_names <- colnames(x)
+  feature_names <- if (length(feature_names) > 0) colnames(x) else 1:ncol(x)
+  return(feature_names)
 }
 
 manipulate_matrix <- function(x, manipulator = "cov") {
   if (manipulator == "cor") return(cor(x, method = c("pearson")))
   if (manipulator == 'cov') return(cov(x, method = c("pearson")))
   stop(paste("'", manipulator, "'", " is not a valid value for manipulator.", sep = ""))
+}
+
+create_block <- function(feature_names, selected_features) {
+  if (length(feature_names) > 0) {
+    selected_features <- feature_names[selected_features]
+  }
+  return <- new("Block", features=selected_features)
+}
+
+# scale eigen vectors (column wise) between -1 and 1
+scale_eigen_vectors <- function(eigen_vectors) {
+  scaled_eigen_vectors <- apply(
+    eigen_vectors,
+    MARGIN = 2,
+    FUN = function(x) {
+      x / max(abs(x))
+    }
+  )
+  return(scaled_eigen_vectors)
+}
+
+get_threshold_matrix <- function(eigen_vectors, threshold) {
+  if (threshold > 1 || threshold < 0)
+    warning("Threshold should be between 0 and 1.")
+  x <- ifelse(abs(eigen_vectors) > threshold, 1, 0)
+  return(x)
+}
+
+# get number of zeros for each eigenvector
+get_zero_count <- function(eigen_vectors) {
+  zero_length <- apply(
+    eigen_vectors,
+    MARGIN = 2,
+    FUN = function(x) {
+      length(which(x == 0))
+    }
+  )
+  return <- zero_length
+}
+
+# sum vectors of matrix rowwise
+sum_vectors <- function(x, indices) {
+  if (length(indices) > 1) {
+    return <- colSums(x[indices, ])
+  } else (
+    return <- x[indices, ]
+  )
+}
+
+check_pla_equality <- function(a, b) {
+  is_equal <- TRUE
+  for (a_block in a$blocks) {
+    found <- FALSE
+    for (b_block in b$blocks) {
+      if ((a_block@explained_variance == b_block@explained_variance) && all(a_block@indices == b_block@indices)) {
+        found <- TRUE
+      }
+    }
+    is_equal <- if (found == FALSE) found else is_equal
+  }
+  return(is_equal)
 }
 
 apply_type <- function(eigen, scaled_ev, threshold, colnames, expvar, type) {
@@ -33,20 +94,6 @@ apply_type <- function(eigen, scaled_ev, threshold, colnames, expvar, type) {
   return(result)
 }
 
-check_pla_equality <- function(a, b) {
-  is_equal <- TRUE
-  for (a_block in a$blocks) {
-    found <- FALSE
-    for (b_block in b$blocks) {
-      if ((a_block@explained_variance == b_block@explained_variance) && all(a_block@indices == b_block@indices)) {
-        found <- TRUE
-      }
-    }
-    is_equal <- if (found == FALSE) found else is_equal
-  }
-  return(is_equal)
-}
-
 transform <- function(eigen, scaled_ev, threshold, colnames, expvar) {
   eigen$vectors <- if (scaled_ev) scale_eigen_vectors(eigen$vectors) else eigen$vectors
   x <- get_threshold_matrix(eigen$vectors, threshold)
@@ -60,25 +107,6 @@ transform <- function(eigen, scaled_ev, threshold, colnames, expvar) {
   )
   class(result) <- "pla"
   return(result)
-}
-
-# scale eigen vectors (column wise) between -1 and 1
-scale_eigen_vectors <- function(eigen_vectors) {
-  scaled_eigen_vectors <- apply(
-    eigen_vectors,
-    MARGIN = 2,
-    FUN = function(x) {
-      x / max(abs(x))
-    }
-  )
-  return(scaled_eigen_vectors)
-}
-
-get_threshold_matrix <- function(eigen_vectors, threshold) {
-  if (threshold > 1 || threshold < 0)
-    warning("Threshold should be between 0 and 1.")
-  x <- ifelse(abs(eigen_vectors) > threshold, 1, 0)
-  return(x)
 }
 
 calculate_explained_variance <- function(blocks, eigen, colnames, expvar) {
@@ -133,18 +161,6 @@ get_blocks <- function(x, colnames) {
   return <- blocks
 }
 
-# get number of zeros for each eigenvector
-# x - data, matrix
-get_zeros <- function(x) {
-  zero_length <- c()
-  for (idx in 1:ncol(x)) {
-    zero_positions <- which(x[, idx] == 0)
-    zero_length <- c(zero_length, length(zero_positions))
-  }
-
-  return <- zero_length
-}
-
 # find combination that matches the required_length
 # x - data, matrix
 # possible_data - columns that match the required structure
@@ -175,19 +191,4 @@ find_combination <- function(x, possible_data, required_length, dimension, curre
     }
     return(FALSE)
   }
-}
-
-sum_vectors <- function(x, current_combination) {
-  if (length(current_combination) > 1) {
-    return <- rowSums(x[, current_combination])
-  } else (
-    return <- x[, current_combination]
-  )
-}
-
-create_block <- function(cols, colnames) {
-  if (length(colnames) > 0) {
-    cols <- colnames[cols]
-  }
-  return <- new("Block", indices = cols)
 }
