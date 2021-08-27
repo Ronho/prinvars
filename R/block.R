@@ -3,15 +3,16 @@
 #' Classed used within the package to keep the structure and information about
 #' the generated blocks.
 #'
-#' @slot indices vector of numeric, indices which belong to the block
+#' @slot features vector of numeric, indices which belong to the block
 #' @slot explained_varaiance numeric, explained variance of the blocks variables
 #' based on the whole data set.
 setClass(
   "Block",
   representation(
-    indices = "vector",
+    features = "vector",
     explained_variance = "numeric"
-  )
+  ),
+  prototype(explained_variance = 0)
 )
 
 #' @title Block - Show
@@ -46,10 +47,10 @@ setMethod(
   f = "str",
   signature = "Block",
   definition = function(object) {
-    indices = paste(unlist(object@indices), collapse = ", ")
+    features = paste(unlist(object@features), collapse = ", ")
     expvar = round(object@explained_variance * 100, 2)
     str = paste("Features (",
-                indices,
+                features,
                 ") explain ",
                 expvar,
                 "% of the overall explained variance",

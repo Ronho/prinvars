@@ -6,7 +6,8 @@ test_that("proportional_explained_variance", {
   expect_equal(proportional_explained_variance(eigen_values, eigen_vectors, variables, type="exact"), 73.8)
   expect_equal(proportional_explained_variance(eigen_values, eigen_vectors, variables, type="approx"), 0.8)
   expect_equal(proportional_explained_variance(eigen_values, eigen_vectors, variables), 0.8)
-  expect_error(expect_equal(proportional_explained_variance(eigen_values, eigen_vectors, variables, type="test")))})
+  expect_error(expect_equal(proportional_explained_variance(eigen_values, eigen_vectors, variables, type="test")))
+})
 
 test_that("explained_variance.exact", {
   eigen_vectors <- matrix(c(1:9), nrow=3, ncol=3)
@@ -17,7 +18,7 @@ test_that("explained_variance.exact", {
   expect_equal(explained_variance.exact(eigen_values, c(), variables), 0)
 })
 
-test_that("vector_not_empty returns boolean", {
+test_that("vector_not_empty", {
   expect_equal(vector_not_empty(c(1, 2, 3)), TRUE)
   expect_equal(vector_not_empty(3), TRUE)
   expect_equal(vector_not_empty(c()), FALSE)
