@@ -11,38 +11,63 @@ pla(
   manipulator = "cov",
   scaled_ev = FALSE,
   threshold = 0.33,
+  threshold_mode = "cutoff",
   expvar = "approx",
-  type = "columns",
+  check = "rnc",
   ...
 )
 }
 \arguments{
 \item{x}{data.frame matrix, the raw data.}
 
-\item{manipulator}{character string, indicating the function which is used on the
-data set; Options: "cov" for covariance, "cor" for correlation; defaults to "cov".}
+\item{manipulator}{character string, indicating the function which is used on
+the data set; Options: "cov" for covariance, "cor" for correlation, "none" if
+the matrix is already transformed; defaults to "cov".}
 
 \item{scaled_ev}{boolean, indicating whether the eigen vectors should be
 scaled; defaults to FALSE.}
 
-\item{threshold}{numeric, determines "small" values inside
-the eigen vectors; defaults to 0.33.}
+\item{threshold}{numeric, used to determine "small" values inside the eigen
+vectors; defaults to 0.33.}
 
-\item{expvar}{character string, determines the method used for calculating the
-explained variance; Options: "approx" for an approximation, "exact" for the
-exact calculation; defaults to "approx".}
+\item{threshold_mode}{character string, indicating how the threshold is
+determined and used; Options: "cutoff" the threshold value is used as an
+maximum for all elements, "percentage" the cutoff value is determined by the
+maximum element of each vector multiplied with the threshold value;
+defaults to "cutoff".}
 
-\item{type}{character string, determines how eigen vectors are used; Options: "columns"
-uses eigen vectors as they are, "rows" uses rows of eigen vector matrix, "rnc" requires
-equality on columns and rows; defaults to "columns"}
+\item{expvar}{character string, determines the method used for calculating
+the explained variance; Options: "approx" for an approximation, "exact" for
+the exact calculation; defaults to "approx".}
+
+\item{check}{character string, determines how eigen vectors are used;
+Options: "rows" checks if the rows fullfill the required structure, "rnc"
+checks if rows and columns fullfill the required structure; defaults to
+"rnc".}
 
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
 pla class list of the following attributes:
-\item{eigen_vectors}{matrix, eigen vector matrix obtained from \code{eigen}}
-\item{threshold}{numeric, threshold}
-\item{blocks}{list of blocks, blocks describing the explained variance}
+\item{x}{
+  matrix, transformed matrix
+}
+\item{eigen_vectors}{
+  matrix, eigen vector matrix obtained from \code{eigen} and scaled if
+  scaled_ev is TRUE
+}
+\item{threshold}{
+  numeric, equals input of threshold
+}
+\item{threshold_mode}{
+  numeric, equals input of threshold_mode
+}
+\item{blocks}{
+  list of blocks, blocks describing the explained variance
+}
+\item{manipulator}{
+  character string, equals input of manipulator
+}
 See \url{https://arxiv.org/pdf/2007.05215.pdf},
 \url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
 }

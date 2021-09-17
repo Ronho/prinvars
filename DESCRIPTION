@@ -27,9 +27,13 @@ BugReports: https://github.com/Ronho/pla/issues
 RoxygenNote: 7.1.1.9001
 Collate: 
     'block.R'
-    'pla-package.R'
-    'utils.R'
     'explained-variance.R'
+    'get-blocks.R'
+    'manipulate.R'
+    'pla-package.R'
+    'thresholding.R'
+    'scale.R'
+    'utils.R'
     'pla.R'
 Suggests: 
     testthat (>= 3.0.0)

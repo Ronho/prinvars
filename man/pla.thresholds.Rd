@@ -13,16 +13,32 @@ pla.thresholds(x, thresholds, ...)
 \arguments{
 \item{x}{data.frame matrix, the raw data.}
 
-\item{thresholds}{vector of numeric, determines "small" values inside
-the eigen vectors.}
+\item{thresholds}{vector of numeric, elements are used to determine "small"
+values inside the eigen vectors.}
 
 \item{...}{further arguments passed to pla.}
 }
 \value{
 List of the following parameters which are provided as a pla class list:
-\item{eigen_vectors}{matrix, eigen vector matrix obtained from \code{eigen}}
-\item{threshold}{numeric, threshold}
-\item{blocks}{list of blocks, blocks describing the explained variance}
+\item{x}{
+  matrix, transformed matrix
+}
+\item{eigen_vectors}{
+  matrix, eigen vector matrix obtained from \code{eigen} and scaled if
+  scaled_ev is TRUE
+}
+\item{threshold}{
+  numeric, equals input of threshold
+}
+\item{threshold_mode}{
+  numeric, equals input of threshold_mode
+}
+\item{blocks}{
+  list of blocks, blocks describing the explained variance
+}
+\item{manipulator}{
+  character string, equals input of manipulator
+}
 }
 \description{
 Principle Loading Analysis - Thresholds

@@ -11,7 +11,7 @@ the generated blocks.
 \section{Slots}{
 
 \describe{
-\item{\code{indices}}{vector of numeric, indices which belong to the block}
+\item{\code{features}}{vector of numeric, indices which belong to the block}
 
 \item{\code{explained_varaiance}}{numeric, explained variance of the blocks variables
 based on the whole data set.}

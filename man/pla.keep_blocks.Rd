@@ -4,25 +4,33 @@
 \alias{pla.keep_blocks}
 \title{Keep Blocks
 
-Used to only keep each variable of the original data set which is part of
-any of the passed blocks.}
+Used to only keep each variable of the original data set which is part of any
+of the blocks according to the passed indices.}
 \usage{
-pla.keep_blocks(x, blocks)
+pla.keep_blocks(object, block_indices, ...)
 }
 \arguments{
-\item{x}{data.frame matrix, the raw data; should be the same used to obtain the blocks.}
+\item{object}{data.frame matrix, the raw data; should be the same used to
+obtain the blocks.}
 
-\item{blocks}{list of blocks; blocks that are obtained by the pla function and should
-be kept.}
+\item{block_indices}{list of numeric; indices of blocks that should be kept.}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
-data.frame, data without the removed variables
+list of the following attributes:
+\item{x}{
+  matrix, transformed matrix with removed attributes
+}
+\item{conditional_matrix}{
+  matrix, conditional matrix
+}
 }
 \description{
 Keep Blocks
 
-Used to only keep each variable of the original data set which is part of
-any of the passed blocks.
+Used to only keep each variable of the original data set which is part of any
+of the blocks according to the passed indices.
 }
 \examples{
 data <- data.frame(
@@ -32,6 +40,6 @@ c = c(7:9),
 d = c(10:12)
 )
 obj <- pla(data)
-data <- pla.keep_blocks(data, obj$blocks[1])
+data <- pla.keep_blocks(obj, c(1))
 
 }
