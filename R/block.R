@@ -22,7 +22,7 @@ setClass(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", indices = c(2, 5), explained_variance = 0.03)
+#' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 #' print(block)
 #' @export
 setMethod(
@@ -40,7 +40,7 @@ setMethod(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", indices = c(2, 5), explained_variance = 0.03)
+#' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 #' str(block)
 #' @export
 setMethod(
