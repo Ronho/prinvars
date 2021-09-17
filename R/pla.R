@@ -77,21 +77,38 @@ pla <- function(x,
   feature_names <- get_feature_names(x=x)
   x <- select_manipulator(x=x, manipulator=manipulator)
   eigen <- eigen(as.matrix(x))
-  eigen$vectors <- select_eigen_vector_scaling(eigen_vectors=eigen$vectors, scale=scaled_ev)
-  threshold_matrix <- select_thresholding(eigen_vectors=eigen$vectors, threshold=threshold, mode=threshold_mode)
+  eigen$vectors <- select_eigen_vector_scaling(
+    eigen_vectors=eigen$vectors,
+    scale=scaled_ev
+  )
+  threshold_matrix <- select_thresholding(
+    eigen_vectors=eigen$vectors,
+    threshold=threshold,
+    mode=threshold_mode
+  )
 
-  blocks <- get_blocks(threshold_matrix=threshold_matrix, feature_names=feature_names, check=check)
-  blocks <- calculate_explained_variance(blocks=blocks, eigen=eigen, feature_names=feature_names, expvar=expvar)
+  blocks <- get_blocks(
+    threshold_matrix=threshold_matrix,
+    feature_names=feature_names,
+    check=check
+  )
+  blocks <- calculate_explained_variance(
+    blocks=blocks,
+    eigen=eigen,
+    feature_names=feature_names,
+    expvar=expvar
+  )
 
   result <- list(
-    x = x,
-    eigen_vectors = eigen$vectors,
-    threshold = threshold,
-    threshold_mode = threshold_mode,
-    blocks = blocks,
-    manipulator = manipulator
+    x=x,
+    eigen_vectors=eigen$vectors,
+    threshold=threshold,
+    threshold_mode=threshold_mode,
+    blocks=blocks,
+    manipulator=manipulator
   )
   class(result) <- "pla"
+
   return(result)
 }
 
@@ -142,7 +159,7 @@ pla <- function(x,
 pla.thresholds <- function(x, thresholds, ...) {
   results <- list()
   for (threshold in thresholds) {
-    results[[length(results) + 1]] <- pla(x, threshold = threshold, ...)
+    results[[length(results) + 1]] <- pla(x=x, threshold=threshold, ...)
   }
 
   return(results)
@@ -169,11 +186,13 @@ print.pla <- function(x, ...) {
   chkDots(...)
   i = 1
 
-  cat("Explained Variances for each block with threshold",
-      x$threshold,
-      "and mode",
-      x$threshold_mode,
-      "\n")
+  cat(
+    "Explained Variances for each block with threshold",
+    x$threshold,
+    "and mode",
+    x$threshold_mode,
+    "\n"
+  )
 
   for (block in x$blocks) {
     cat("Block ", i, ": ", str(block), "\n", sep = "")
@@ -224,8 +243,8 @@ pla.keep_blocks <- function(object, block_indices, ...) {
   x <- object$x[,col_idxs, drop = FALSE]
 
   result <- list(
-    x = x,
-    conditional_matrix = conditional_matrix
+    x=x,
+    conditional_matrix=conditional_matrix
   )
 
   return(result)
@@ -273,8 +292,8 @@ pla.drop_blocks <- function(object, block_indices, ...) {
   x <- object$x[,-col_idxs, drop = FALSE]
 
   result <- list(
-    x = x,
-    conditional_matrix = conditional_matrix
+    x=x,
+    conditional_matrix=conditional_matrix
   )
 
   return(result)

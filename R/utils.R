@@ -31,7 +31,7 @@ check_pla_equality <- function(a, b) {
   for (a_block in a$blocks) {
     found <- FALSE
     for (b_block in b$blocks) {
-      if ((a_block@explained_variance == b_block@explained_variance) && all(a_block@indices == b_block@indices)) {
+      if (equal_block_elements(a=a_block, b=b_block)) {
         found <- TRUE
       }
     }
@@ -41,10 +41,29 @@ check_pla_equality <- function(a, b) {
   return(is_equal)
 }
 
+equal_block_elements <- function(a, b) {
+  equal_explained_variance <- equal_explained_variance(
+    a=a@explained_variance,
+    b=b@explained_variance
+  )
+  equal_features <- equal_features(a=a@features, b=b@features)
+
+  return(equal_explained_variance && equal_i)
+}
+
+equal_features <- function(a, b) {
+  return(all(a == b))
+}
+
+equal_explained_variance <- function(a, b) {
+  return(a==b)
+}
+
 get_indices <- function(object, block_indices) {
-  colnames <- get_feature_names(object$x)
+  colnames <- get_feature_names(x=object$x)
   indices <- vector()
   blocks <- object$blocks[[block_indices]]
+
   if (length(blocks) > 1) {
     for (block in blocks) {
       indices <- c(indices, block@features)
@@ -52,6 +71,7 @@ get_indices <- function(object, block_indices) {
   } else {
     indices <- c(indices, blocks@features)
   }
+  
   col_idxs <- match(indices, colnames)
 
   return(col_idxs)

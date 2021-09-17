@@ -10,7 +10,7 @@ select_manipulator <- function(x, manipulator) {
 }
 
 validate_matrix_structure <- function(x) {
-  if (!is_quadratic_matrix(x)) {
+  if (!is_quadratic_matrix(x=x)) {
     warning("The given matrix is not quadratic.")
   }
 
@@ -24,7 +24,10 @@ is_quadratic_matrix <- function(x) {
 wrong_manipulator <- function(manipulator) {
   stop(
     paste(
-      "'", manipulator, "'", " is not a valid value for manipulator.",
+      "'",
+      manipulator,
+      "'",
+      " is not a valid value for manipulator.",
       sep=""
     )
   )

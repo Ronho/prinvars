@@ -1,8 +1,12 @@
 select_thresholding <- function(eigen_vectors, threshold, mode) {
   valid_threshold(threshold=threshold)
-  eigen_vectors = switch(mode,
+  eigen_vectors = switch(
+    mode,
     "cutoff"=cutoff(x=eigen_vectors, threshold=threshold),
-    "percentage"=percentage_per_eigen_vector(eigen_vectors=eigen_vectors, threshold=threshold),
+    "percentage"=percentage_per_eigen_vector(
+      eigen_vectors=eigen_vectors,
+      threshold=threshold
+    ),
     err_wrong_mode(mode=mode)
   )
 
@@ -38,7 +42,10 @@ percentage_per_eigen_vector <- function(eigen_vectors, threshold) {
 err_wrong_mode <- function(mode) {
   stop(
     paste(
-      "'", mode, "'", " is not a valid value for threshold_mode.",
+      "'",
+      mode,
+      "'",
+      " is not a valid value for threshold_mode.",
       sep=""
     )
   )
