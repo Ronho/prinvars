@@ -68,11 +68,13 @@ find_combination <- function(threshold_matrix, eligible_features, ones, zeros, c
     return(list(result))
   } else {
     combinations <- list()
-    enough_features <- are_enough_eligible_features(
-      eligible_features=eligible_features,
-      remaining_length=remaining_length
-    )
-    while (enough_features) {
+
+    while (
+      are_enough_eligible_features(
+        eligible_features=eligible_features,
+        required_length=remaining_length
+      )
+    ) {
       current_combination <- c(current_combination, eligible_features[[1]])
       eligible_features <- eligible_features[-1]
 

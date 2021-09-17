@@ -48,7 +48,7 @@ equal_block_elements <- function(a, b) {
   )
   equal_features <- equal_features(a=a@features, b=b@features)
 
-  return(equal_explained_variance && equal_i)
+  return(equal_explained_variance && equal_features)
 }
 
 equal_features <- function(a, b) {
@@ -71,7 +71,7 @@ get_indices <- function(object, block_indices) {
   } else {
     indices <- c(indices, blocks@features)
   }
-  
+
   col_idxs <- match(indices, colnames)
 
   return(col_idxs)
