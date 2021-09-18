@@ -168,7 +168,6 @@ err_wrong_check <- function(check) {
   )
 }
 
-# tested
 check_column_combination <- function(
   threshold_matrix,
   row_combination,
@@ -184,7 +183,6 @@ check_column_combination <- function(
   }
 }
 
-# tested
 warn_wrong_column_wise_combination <- function(current_combination) {
   combination <- paste(unlist(current_combination), collapse=", ")
   warning(
@@ -199,13 +197,11 @@ warn_wrong_column_wise_combination <- function(current_combination) {
   )
 }
 
-# tested
 are_exact_zeros <- function(vector, zeros) {
     return(length(which(vector == 0)) == zeros)
 }
 
 # sum vectors of matrix row-wise
-# tested
 sum_vectors <- function(x, indices) {
   if (length(indices) > 1) {
     result <- colSums(x[indices, ])

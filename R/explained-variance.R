@@ -1,10 +1,10 @@
-calculate_explained_variance <- function(blocks, eigen, feature_names, expvar) {
+calculate_explained_variance <- function(blocks, eigen, feature_names, type) {
   blocks <- lapply(blocks, function(block) {
     feature_idxs <- match(block@features, feature_names)
     block@explained_variance <- proportional_explained_variance(
       eigen=eigen,
       feature_idxs=feature_idxs,
-      type=expvar
+      type=type
     )
 
     return(block)
@@ -28,13 +28,21 @@ proportional_explained_variance <- function(eigen, feature_idxs, type) {
           feature_idxs=feature_idxs
       )},
       {
-        error <- paste("'", type, "'", " is not a valid value for explained variance.", sep = "")
-        stop(error)
+        err_wrong_type(type)
       }
     )
     proportional_explained_variance <- explained_variance/sum(eigen$values)
 
     return(proportional_explained_variance)
+}
+
+err_wrong_type <- function(type) {
+  stop(
+    paste(
+      "'", type, "'", " is not a valid value for explained variance.",
+      sep=""
+    )
+  )
 }
 
 explained_variance.exact <- function(eigen, feature_idxs) {

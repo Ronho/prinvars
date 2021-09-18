@@ -96,7 +96,7 @@ pla <- function(x,
     blocks=blocks,
     eigen=eigen,
     feature_names=feature_names,
-    expvar=expvar
+    type=expvar
   )
 
   result <- list(
