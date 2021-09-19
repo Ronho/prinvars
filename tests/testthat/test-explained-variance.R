@@ -5,7 +5,15 @@ eigen <- list(
 feature_idxs <- c(1, 2)
 
 test_that("calculate_explained_variance", {
-  
+  block <- new("Block", features=feature_idxs)
+  blocks <- calculate_explained_variance(
+    blocks=list(block),
+    eigen=eigen,
+    feature_names=c(1:3),
+    type="approx"
+  )
+
+  expect_equal(blocks[[1]]@explained_variance, 0.8)
 })
 
 test_that("err_wrong_type", {
