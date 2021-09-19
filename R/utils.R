@@ -52,7 +52,7 @@ equal_block_elements <- function(a, b) {
 }
 
 equal_features <- function(a, b) {
-  return(all(a == b))
+  return(setequal(a, b))
 }
 
 equal_explained_variance <- function(a, b) {
