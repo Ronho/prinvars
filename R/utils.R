@@ -26,39 +26,6 @@ get_zero_count <- function(eigen_vectors) {
   return(zero_length)
 }
 
-check_pla_equality <- function(a, b) {
-  is_equal <- TRUE
-  for (a_block in a$blocks) {
-    found <- FALSE
-    for (b_block in b$blocks) {
-      if (equal_block_elements(a=a_block, b=b_block)) {
-        found <- TRUE
-      }
-    }
-    is_equal <- if (found == FALSE) found else is_equal
-  }
-
-  return(is_equal)
-}
-
-equal_block_elements <- function(a, b) {
-  equal_explained_variance <- equal_explained_variance(
-    a=a@explained_variance,
-    b=b@explained_variance
-  )
-  equal_features <- equal_features(a=a@features, b=b@features)
-
-  return(equal_explained_variance && equal_features)
-}
-
-equal_features <- function(a, b) {
-  return(setequal(a, b))
-}
-
-equal_explained_variance <- function(a, b) {
-  return(a==b)
-}
-
 get_indices <- function(object, block_indices) {
   colnames <- get_feature_names(x=object$x)
   indices <- vector()
