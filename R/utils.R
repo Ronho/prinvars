@@ -27,9 +27,10 @@ get_zero_count <- function(eigen_vectors) {
 }
 
 get_indices <- function(object, block_indices) {
+  check_indices(indices=block_indices, max_length=length(object$blocks))
   colnames <- get_feature_names(x=object$x)
   indices <- vector()
-  blocks <- object$blocks[[block_indices]]
+  blocks <- object$blocks[block_indices]
 
   if (length(blocks) > 1) {
     for (block in blocks) {
@@ -42,6 +43,23 @@ get_indices <- function(object, block_indices) {
   col_idxs <- match(indices, colnames)
 
   return(col_idxs)
+}
+
+check_indices <- function(indices, max_length) {
+  if (length(indices) == 0) {
+    err_must_provide_indices()
+  }
+  if (max(indices) > max_length) {
+    err_index_out_of_bounds()
+  }
+}
+
+err_must_provide_indices <- function() {
+  stop(paste("block_indices must have a value.", sep=""))
+}
+
+err_index_out_of_bounds <- function() {
+  stop(paste("block_indices out of bounds.", sep=""))
 }
 
 conditional_matrix <- function(x, indices, drop=TRUE) {
