@@ -1,27 +1,42 @@
-test_that("check_pla_equality", {
-
-})
-
-test_that("equal_block_elements", {
-    
-})
-
-test_that("equal_features", {
-    
-})
-
-test_that("equal_explained_variance", {
-    
-})
-
 test_that("get_indices", {
-    
+  x <- matrix(c(1:16), nrow=4, ncol=4)
+  blocks <- list(
+    new("Block", features=c(1, 4)),
+    new("Block", features=c(2)),
+    new("Block", features=c(3))
+  )
+  object <- list(
+    x=x,
+    blocks=blocks
+  )
+  class(object) <- "pla"
+
+  expect_error(get_indices(object=object, block_indices=c(4)))
+  expect_error(get_indices(object=object, block_indices=c()))
+  expect_equal(get_indices(object=object, block_indices=c(1, 3)), c(1, 4, 3))
+})
+
+test_that("check_indices", {
+  expect_error(check_indices(indices=c(), max_length=0))
+  expect_error(check_indices(indices=NULL, max_length=1))
+  expect_error(check_indices(indices=c(2), max_length=1))
+  expect_silent(check_indices(indices=c(1), max_length=1))
+})
+
+test_that("err_must_provide_indices", {
+  expect_error(err_must_provide_indices())
+})
+
+test_that("err_index_out_of_bounds", {
+  expect_error(err_index_out_of_bounds())
 })
 
 test_that("conditional_matrix", {
-    
+  data <- matrix(c(1:9), nrow=3, ncol=3)
+  expected_result <- matrix(c(13, 18, 22, 30), nrow=2, ncol=2)
+  
+  expect_equal(conditional_matrix(x=data, indices=c(1)), expected_result)
 })
-
 
 test_that("get_feature_names", {
   data <- list()
