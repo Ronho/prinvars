@@ -52,8 +52,15 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
 # eligible_features - columns that match the required structure
 # ones - number of 1s
 # zeros - number of 0s
-# current_combination - sequence of column indexes that match the required structure
-find_combination <- function(threshold_matrix, eligible_features, ones, zeros, current_combination, check) {
+# current_combination - sequence
+# of column indexes that match the required structure
+find_combination <- function(
+  threshold_matrix,
+  eligible_features,
+  ones,
+  zeros,
+  current_combination,
+  check) {
   remaining_length <- ones - length(current_combination)
 
   if (remaining_length < 1) {
