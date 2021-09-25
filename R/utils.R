@@ -32,12 +32,8 @@ get_indices <- function(object, block_indices) {
   indices <- vector()
   blocks <- object$blocks[block_indices]
 
-  if (length(blocks) > 1) {
-    for (block in blocks) {
-      indices <- c(indices, block@features)
-    }
-  } else {
-    indices <- c(indices, blocks@features)
+  for (block in blocks) {
+    indices <- c(indices, block@features)
   }
 
   col_idxs <- match(indices, colnames)
