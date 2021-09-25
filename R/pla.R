@@ -4,16 +4,16 @@
 #' @include get-blocks.R
 #' @include scale.R
 #' @include thresholding.R
-#' @include manipulate.R
+#' @include cov.R
 
 #' @title Principle Loading Analysis
 #'
 #' This function performs principle loading analysis on a data set.
 #'
 #' @param x data.frame matrix, the raw data.
-#' @param manipulator character string, indicating the function which is used on
-#' the data set; Options: "cov" for covariance, "cor" for correlation, "none" if
-#' the matrix is already transformed; defaults to "cov".
+#' @param cov boolean, indicating the function which is used on
+#' the data set; Options: TRUE for covariance, FALSE for correlation; defaults
+#' to TRUE.
 #' @param scaled_ev boolean, indicating whether the eigen vectors should be
 #' scaled; defaults to FALSE.
 #' @param threshold numeric, used to determine "small" values inside the eigen
@@ -50,8 +50,8 @@
 #' \item{blocks}{
 #'   list of blocks, blocks describing the explained variance
 #' }
-#' \item{manipulator}{
-#'   character string, equals input of manipulator
+#' \item{cov}{
+#'   booleans, equals input of cov
 #' }
 #' See \url{https://arxiv.org/pdf/2007.05215.pdf},
 #' \url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
@@ -66,7 +66,7 @@
 #' 
 #' @export
 pla <- function(x,
-                manipulator = "cov",
+                cov = TRUE,
                 scaled_ev = FALSE,
                 threshold = 0.33,
                 threshold_mode = "cutoff",
@@ -75,8 +75,8 @@ pla <- function(x,
                 ...) {
   chkDots(...)
   feature_names <- get_feature_names(x=x)
-  x <- select_manipulator(x=x, manipulator=manipulator)
-  eigen <- eigen(as.matrix(x))
+  c <- select_cov(x=x, cov=cov)
+  eigen <- eigen(as.matrix(c))
   eigen$vectors <- select_eigen_vector_scaling(
     eigen_vectors=eigen$vectors,
     scale=scaled_ev
@@ -101,11 +101,12 @@ pla <- function(x,
 
   result <- list(
     x=x,
-    eigen_vectors=eigen$vectors,
+    c=c,
+    loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
     blocks=blocks,
-    manipulator=manipulator
+    cov=cov
   )
   class(result) <- "pla"
 
@@ -129,7 +130,7 @@ pla <- function(x,
 #' \item{x}{
 #'   matrix, transformed matrix
 #' }
-#' \item{eigen_vectors}{
+#' \item{loadings}{
 #'   matrix, eigen vector matrix obtained from \code{eigen} and scaled if
 #'   scaled_ev is TRUE
 #' }
@@ -209,7 +210,7 @@ print.pla <- function(x, ...) {
 #'
 #' @param object data.frame matrix, the raw data; should be the same used to
 #' obtain the blocks.
-#' @param block_indices list of numeric; indices of blocks that should be kept.
+#' @param blocks list of numeric; indices of blocks that should be kept.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -232,19 +233,19 @@ print.pla <- function(x, ...) {
 #' data <- pla.keep_blocks(obj, c(1))
 #' 
 #' @export
-pla.keep_blocks <- function(object, block_indices, ...) {
+pla.keep_blocks <- function(object, blocks, ...) {
   chkDots(...)
-  col_idxs <- get_indices(object=object, block_indices=block_indices)
-  conditional_matrix <- conditional_matrix(
-    x=object$x,
+  col_idxs <- get_indices(object=object, block_indices=blocks)
+  cc_matrix <- conditional_matrix(
+    x=object$c,
     indices=col_idxs,
-    drop=FALSE
+    drop=TRUE
   )
   x <- object$x[,col_idxs, drop = FALSE]
 
   result <- list(
     x=x,
-    conditional_matrix=conditional_matrix
+    cc_matrix=cc_matrix
   )
 
   return(result)
@@ -257,7 +258,7 @@ pla.keep_blocks <- function(object, block_indices, ...) {
 #'
 #' @param object data.frame matrix, the raw data; should be the same used to
 #' obtain the blocks.
-#' @param block_indices list of numeric; indices of blocks that should be
+#' @param blocks list of numeric; indices of blocks that should be
 #' dropped.
 #' @param ... further arguments passed to or from other methods.
 #'
@@ -281,13 +282,13 @@ pla.keep_blocks <- function(object, block_indices, ...) {
 #' data <- pla.drop_blocks(obj, c(1))
 #' 
 #' @export
-pla.drop_blocks <- function(object, block_indices, ...) {
+pla.drop_blocks <- function(object, blocks, ...) {
   chkDots(...)
-  col_idxs <- get_indices(object=object, block_indices=block_indices)
+  col_idxs <- get_indices(object=object, block_indices=blocks)
   conditional_matrix <- conditional_matrix(
-    x=object$x,
+    x=object$c,
     indices=col_idxs,
-    drop=TRUE
+    drop=FALSE
   )
   x <- object$x[,-col_idxs, drop = FALSE]
 

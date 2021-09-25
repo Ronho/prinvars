@@ -29,7 +29,7 @@ Collate:
     'block.R'
     'explained-variance.R'
     'get-blocks.R'
-    'manipulate.R'
+    'cov.R'
     'pla-package.R'
     'thresholding.R'
     'scale.R'
