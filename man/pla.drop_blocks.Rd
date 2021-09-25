@@ -7,13 +7,13 @@
 Used to remove each variable from the original data set which is part of any
 of the blocks according to the passed indices.}
 \usage{
-pla.drop_blocks(object, block_indices, ...)
+pla.drop_blocks(object, blocks, ...)
 }
 \arguments{
 \item{object}{data.frame matrix, the raw data; should be the same used to
 obtain the blocks.}
 
-\item{block_indices}{list of numeric; indices of blocks that should be
+\item{blocks}{list of numeric; indices of blocks that should be
 dropped.}
 
 \item{...}{further arguments passed to or from other methods.}

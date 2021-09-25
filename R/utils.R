@@ -80,3 +80,87 @@ conditional_matrix <- function(x, indices, drop=TRUE) {
 
   return(sigma_22.1)
 }
+
+select_threshold <- function(
+  x,
+  c,
+  cov,
+  eigen,
+  thresholds,
+  threshold_mode,
+  feature_names,
+  check,
+  expvar) {
+  if (length(thresholds) > 1) {
+    result <- list()
+
+    for (threshold in thresholds) {
+      result[[length(result) + 1]] <- pla_helper(
+        x=x,
+        c=c,
+        cov=cov,
+        eigen=eigen,
+        threshold=threshold,
+        threshold_mode=threshold_mode,
+        feature_names=feature_names,
+        check=check,
+        expvar=expvar
+      )
+    }
+  } else {
+    result <- pla_helper(
+      x=x,
+      c=c,
+      cov=cov,
+      eigen=eigen,
+      threshold=thresholds,
+      threshold_mode=threshold_mode,
+      feature_names=feature_names,
+      check=check,
+      expvar=expvar
+    )
+  }
+
+  return(result)
+}
+
+pla_helper <- function(
+  x,
+  c,
+  cov,
+  eigen,
+  threshold,
+  threshold_mode,
+  feature_names,
+  check,
+  expvar) {
+  threshold_matrix <- select_thresholding(
+    eigen_vectors=eigen$vectors,
+    threshold=threshold,
+    mode=threshold_mode
+  )
+  blocks <- get_blocks(
+    threshold_matrix=threshold_matrix,
+    feature_names=feature_names,
+    check=check
+  )
+  blocks <- calculate_explained_variance(
+    blocks=blocks,
+    eigen=eigen,
+    feature_names=feature_names,
+    type=expvar
+  )
+
+  result <- list(
+    x=x,
+    c=c,
+    loadings=eigen$vectors,
+    threshold=threshold,
+    threshold_mode=threshold_mode,
+    blocks=blocks,
+    cov=cov
+  )
+  class(result) <- "pla"
+
+  return(result)
+}

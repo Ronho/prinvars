@@ -16,8 +16,9 @@
 #' to TRUE.
 #' @param scaled_ev boolean, indicating whether the eigen vectors should be
 #' scaled; defaults to FALSE.
-#' @param threshold numeric, used to determine "small" values inside the eigen
-#' vectors; defaults to 0.33.
+#' @param thresholds numeric or list of numeric, used to determine "small"
+#' values inside the eigenvectors; if multiple values are given, a list of pla
+#' results will be returned; defaults to 0.33.
 #' @param threshold_mode character string, indicating how the threshold is
 #' determined and used; Options: "cutoff" the threshold value is used as an
 #' maximum for all elements, "percentage" the cutoff value is determined by the
@@ -41,8 +42,8 @@
 #'   matrix, eigen vector matrix obtained from \code{eigen} and scaled if
 #'   scaled_ev is TRUE
 #' }
-#' \item{threshold}{
-#'   numeric, equals input of threshold
+#' \item{thresholds}{
+#'   numeric or list of numeric, equals input of thresholds
 #' }
 #' \item{threshold_mode}{
 #'   numeric, equals input of threshold_mode
@@ -68,7 +69,7 @@
 pla <- function(x,
                 cov = TRUE,
                 scaled_ev = FALSE,
-                threshold = 0.33,
+                thresholds = 0.33,
                 threshold_mode = "cutoff",
                 expvar = "approx",
                 check = "rnc",
@@ -81,89 +82,20 @@ pla <- function(x,
     eigen_vectors=eigen$vectors,
     scale=scaled_ev
   )
-  threshold_matrix <- select_thresholding(
-    eigen_vectors=eigen$vectors,
-    threshold=threshold,
-    mode=threshold_mode
-  )
 
-  blocks <- get_blocks(
-    threshold_matrix=threshold_matrix,
-    feature_names=feature_names,
-    check=check
-  )
-  blocks <- calculate_explained_variance(
-    blocks=blocks,
-    eigen=eigen,
-    feature_names=feature_names,
-    type=expvar
-  )
-
-  result <- list(
+  result <- select_threshold(
     x=x,
     c=c,
-    loadings=eigen$vectors,
-    threshold=threshold,
+    cov=cov,
+    eigen=eigen,
+    thresholds=thresholds,
     threshold_mode=threshold_mode,
-    blocks=blocks,
-    cov=cov
+    feature_names=feature_names,
+    check=check,
+    expvar=expvar
   )
-  class(result) <- "pla"
 
   return(result)
-}
-
-#' @title Principle Loading Analysis - Thresholds
-#'
-#' This function allows you to perform principle loading analysis on a data set
-#' using multiple different thresholds. This allows you to determine the best 
-#' threshold on a given data set.
-#' @seealso [pla()] for further information about pla.
-#'
-#' @param x data.frame matrix, the raw data.
-#' @param thresholds vector of numeric, elements are used to determine "small"
-#' values inside the eigen vectors.
-#' @param ... further arguments passed to pla.
-#'
-#' @return
-#' List of the following parameters which are provided as a pla class list:
-#' \item{x}{
-#'   matrix, transformed matrix
-#' }
-#' \item{loadings}{
-#'   matrix, eigen vector matrix obtained from \code{eigen} and scaled if
-#'   scaled_ev is TRUE
-#' }
-#' \item{threshold}{
-#'   numeric, equals input of threshold
-#' }
-#' \item{threshold_mode}{
-#'   numeric, equals input of threshold_mode
-#' }
-#' \item{blocks}{
-#'   list of blocks, blocks describing the explained variance
-#' }
-#' \item{manipulator}{
-#'   character string, equals input of manipulator
-#' }
-#'
-#' @examples
-#' data <- data.frame(
-#' a = c(1:3),
-#' b = c(4:6),
-#' c = c(7:9)
-#' )
-#' thresholds <- c(0.1, 0.2, 0.3, 0.4, 0.5)
-#' pla.thresholds(data, thresholds = thresholds)
-#' 
-#' @export
-pla.thresholds <- function(x, thresholds, ...) {
-  results <- list()
-  for (threshold in thresholds) {
-    results[[length(results) + 1]] <- pla(x=x, threshold=threshold, ...)
-  }
-
-  return(results)
 }
 
 #' @title Print Function for pla S3

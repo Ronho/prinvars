@@ -27,9 +27,9 @@ BugReports: https://github.com/Ronho/pla/issues
 RoxygenNote: 7.1.1.9001
 Collate: 
     'block.R'
+    'cov.R'
     'explained-variance.R'
     'get-blocks.R'
-    'cov.R'
     'pla-package.R'
     'thresholding.R'
     'scale.R'

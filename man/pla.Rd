@@ -8,9 +8,9 @@ This function performs principle loading analysis on a data set.}
 \usage{
 pla(
   x,
-  manipulator = "cov",
+  cov = TRUE,
   scaled_ev = FALSE,
-  threshold = 0.33,
+  thresholds = 0.33,
   threshold_mode = "cutoff",
   expvar = "approx",
   check = "rnc",
@@ -20,15 +20,16 @@ pla(
 \arguments{
 \item{x}{data.frame matrix, the raw data.}
 
-\item{manipulator}{character string, indicating the function which is used on
-the data set; Options: "cov" for covariance, "cor" for correlation, "none" if
-the matrix is already transformed; defaults to "cov".}
+\item{cov}{boolean, indicating the function which is used on
+the data set; Options: TRUE for covariance, FALSE for correlation; defaults
+to TRUE.}
 
 \item{scaled_ev}{boolean, indicating whether the eigen vectors should be
 scaled; defaults to FALSE.}
 
-\item{threshold}{numeric, used to determine "small" values inside the eigen
-vectors; defaults to 0.33.}
+\item{thresholds}{numeric or list of numeric, used to determine "small"
+values inside the eigenvectors; if multiple values are given, a list of pla
+results will be returned; defaults to 0.33.}
 
 \item{threshold_mode}{character string, indicating how the threshold is
 determined and used; Options: "cutoff" the threshold value is used as an
@@ -56,8 +57,8 @@ pla class list of the following attributes:
   matrix, eigen vector matrix obtained from \code{eigen} and scaled if
   scaled_ev is TRUE
 }
-\item{threshold}{
-  numeric, equals input of threshold
+\item{thresholds}{
+  numeric or list of numeric, equals input of thresholds
 }
 \item{threshold_mode}{
   numeric, equals input of threshold_mode
@@ -65,8 +66,8 @@ pla class list of the following attributes:
 \item{blocks}{
   list of blocks, blocks describing the explained variance
 }
-\item{manipulator}{
-  character string, equals input of manipulator
+\item{cov}{
+  booleans, equals input of cov
 }
 See \url{https://arxiv.org/pdf/2007.05215.pdf},
 \url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
