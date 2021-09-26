@@ -157,7 +157,7 @@ is_valid_combination <- function(
 
 check_cols <- function(check) {
   result <- switch(
-    check,
+    tolower(check),
     "rnc"=TRUE,
     "rows"=FALSE,
     err_wrong_check(check=check)

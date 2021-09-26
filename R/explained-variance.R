@@ -16,7 +16,7 @@ calculate_explained_variance <- function(blocks, eigen, feature_names, type) {
 proportional_explained_variance <- function(eigen, feature_idxs, type) {
     explained_variance <- 0
     switch(
-      type,
+      tolower(type),
       "approx" = {
         explained_variance <- explained_variance.approx(
           eigen_values=eigen$values,

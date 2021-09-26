@@ -1,7 +1,7 @@
 select_thresholding <- function(eigen_vectors, threshold, mode) {
   valid_threshold(threshold=threshold)
   eigen_vectors = switch(
-    mode,
+    tolower(mode),
     "cutoff"=cutoff(x=eigen_vectors, threshold=threshold),
     "percentage"=percentage_per_eigen_vector(
       eigen_vectors=eigen_vectors,
