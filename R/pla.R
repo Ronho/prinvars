@@ -4,7 +4,7 @@
 #' @include get-blocks.R
 #' @include scale.R
 #' @include thresholding.R
-#' @include cov.R
+#' @include cor.R
 
 #' @title Principle Loading Analysis
 #'
@@ -105,7 +105,7 @@ pla <- function(x,
 #'
 #' Prints the blocks and threshold inside the object.
 #'
-#' @param x pla object.
+#' @param x a pla object.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @examples
@@ -143,18 +143,21 @@ print.pla <- function(x, ...) {
 #' Used to only keep each variable of the original data set which is part of any
 #' of the blocks according to the passed indices.
 #'
-#' @param object data.frame matrix, the raw data; should be the same used to
-#' obtain the blocks.
-#' @param blocks list of numeric; indices of blocks that should be kept.
+#' @param object a pla object.
+#' @param blocks a list of numeric values indicating the indices of the blocks
+#' that should be kept.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
 #' list of the following attributes:
 #' \item{x}{
-#'   matrix, transformed matrix with removed attributes
+#'   a numeric matrix or data frame which equals the input data for the pla
+#'   object without any feature that is not part of the blocks that should be
+#'   kept.
 #' }
-#' \item{conditional_matrix}{
-#'   matrix, conditional matrix
+#' \item{cc_matrix}{
+#'   a numeric matrix or data frame which contains either the conditional
+#'   covariance or correlation matrix.
 #' }
 #'
 #' @examples
@@ -191,19 +194,21 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #' Used to remove each variable from the original data set which is part of any
 #' of the blocks according to the passed indices.
 #'
-#' @param object data.frame matrix, the raw data; should be the same used to
-#' obtain the blocks.
-#' @param blocks list of numeric; indices of blocks that should be
-#' dropped.
+#' @param object a pla object.
+#' @param blocks a list of numeric values indicating the indices of the blocks
+#' that should be removed.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
 #' list of the following attributes:
 #' \item{x}{
-#'   matrix, transformed matrix with removed attributes
+#'   a numeric matrix or data frame which equals the input data for the pla
+#'   object without any feature that is not part of the blocks that should be
+#'   removed.
 #' }
-#' \item{conditional_matrix}{
-#'   matrix, conditional matrix
+#' \item{cc_matrix}{
+#'   a numeric matrix or data frame which contains either the conditional
+#'   covariance or correlation matrix.
 #' }
 #'
 #' @examples

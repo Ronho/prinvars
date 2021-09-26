@@ -10,21 +10,23 @@ of the blocks according to the passed indices.}
 pla.drop_blocks(object, blocks, ...)
 }
 \arguments{
-\item{object}{data.frame matrix, the raw data; should be the same used to
-obtain the blocks.}
+\item{object}{a pla object.}
 
-\item{blocks}{list of numeric; indices of blocks that should be
-dropped.}
+\item{blocks}{a list of numeric values indicating the indices of the blocks
+that should be removed.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
 list of the following attributes:
 \item{x}{
-  matrix, transformed matrix with removed attributes
+  a numeric matrix or data frame which equals the input data for the pla
+  object without any feature that is not part of the blocks that should be
+  removed.
 }
-\item{conditional_matrix}{
-  matrix, conditional matrix
+\item{cc_matrix}{
+  a numeric matrix or data frame which contains either the conditional
+  covariance or correlation matrix.
 }
 }
 \description{

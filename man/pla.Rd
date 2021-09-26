@@ -8,7 +8,7 @@ This function performs principle loading analysis on a data set.}
 \usage{
 pla(
   x,
-  cov = TRUE,
+  cor = TRUE,
   scaled_ev = FALSE,
   thresholds = 0.33,
   threshold_mode = "cutoff",
@@ -18,56 +18,60 @@ pla(
 )
 }
 \arguments{
-\item{x}{data.frame matrix, the raw data.}
+\item{x}{a numeric matrix or data frame which provides the data for the
+principal loading analysis.}
 
-\item{cov}{boolean, indicating the function which is used on
-the data set; Options: TRUE for covariance, FALSE for correlation; defaults
-to TRUE.}
+\item{cor}{a logical value indicating whether the calculation should use the
+correlation or the covariance matrix. The default is set to "TRUE" indicating
+the use of the correlation matrix.}
 
-\item{scaled_ev}{boolean, indicating whether the eigen vectors should be
-scaled; defaults to FALSE.}
+\item{scaled_ev}{a logical value indicating whether the eigenvectors should
+be scaled. The default is set to "FALSE".}
 
-\item{thresholds}{numeric or list of numeric, used to determine "small"
-values inside the eigenvectors; if multiple values are given, a list of pla
-results will be returned; defaults to 0.33.}
+\item{thresholds}{a numeric or list of numeric used to determine "small"
+values inside the eigenvectors. If multiple values are given, a list of pla
+results will be returned. The default is set to 0.33.}
 
-\item{threshold_mode}{character string, indicating how the threshold is
-determined and used; Options: "cutoff" the threshold value is used as an
-maximum for all elements, "percentage" the cutoff value is determined by the
-maximum element of each vector multiplied with the threshold value;
-defaults to "cutoff".}
+\item{threshold_mode}{a character string indicating how the threshold is
+determined and used. "cutoff" indicates that the threshold value is used as
+a general maximum for all elements. "percentage" indicates that the cutoff
+value is determined by the maximum element of each vector multiplied with the
+threshold value. The default is set to "cutoff".}
 
-\item{expvar}{character string, determines the method used for calculating
-the explained variance; Options: "approx" for an approximation, "exact" for
-the exact calculation; defaults to "approx".}
+\item{expvar}{a character string indicating the method used for calculating
+the explained variance."approx" indicates the use of an approximation.
+"exact" indicates the exact calculation. The default is set to "approx".}
 
-\item{check}{character string, determines how eigen vectors are used;
-Options: "rows" checks if the rows fullfill the required structure, "rnc"
-checks if rows and columns fullfill the required structure; defaults to
-"rnc".}
+\item{check}{a character string indicating if only rows or rows and columns
+are used."rows" checks if the rows fullfill the required structure. "rnc"
+checks if rows and columns fullfill the required structure. The default is
+set to "rnc".}
 
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
-pla class list of the following attributes:
+single or list of pla class containing the following attributes:
 \item{x}{
-  matrix, transformed matrix
+  a numeric matrix or data frame which equals the input of 'x'.
 }
-\item{eigen_vectors}{
-  matrix, eigen vector matrix obtained from \code{eigen} and scaled if
-  scaled_ev is TRUE
+\item{c}{
+  a numeric matrix or data frame which is the covariance or correlation
+  matrix based on the input of 'cov'.
 }
-\item{thresholds}{
-  numeric or list of numeric, equals input of thresholds
+\item{loadings}{
+  a matrix of variable loadings (i.e., a matrix whose columns contain the
+  eigenvectors).
+}
+\item{threshold}{
+  a numeric value which equals the input of thresholds at the corresponding
+  position.
 }
 \item{threshold_mode}{
-  numeric, equals input of threshold_mode
+  a character string which equals the input of threshold_mode.
 }
 \item{blocks}{
-  list of blocks, blocks describing the explained variance
-}
-\item{cov}{
-  booleans, equals input of cov
+  a list of blocks which are identified through the principle loading
+  analysis.
 }
 See \url{https://arxiv.org/pdf/2007.05215.pdf},
 \url{https://arxiv.org/pdf/2102.09912.pdf} for more information.

@@ -9,7 +9,7 @@ Prints the blocks and threshold inside the object.}
 \method{print}{pla}(x, ...)
 }
 \arguments{
-\item{x}{pla object.}
+\item{x}{a pla object.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
