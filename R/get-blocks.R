@@ -8,7 +8,7 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   blocks <- list()
 
   # iterate for each nxn combination
-  while (ones <= number_features) {
+  while (ones <= number_features && length(untaken_features) > 0) {
     if (are_enough_features(untaken_features=untaken_features, ones=ones)) {
       zeros <- number_features-ones
       eligible_features <- get_eligible_features(
