@@ -84,7 +84,6 @@ conditional_matrix <- function(x, indices, drop=TRUE) {
 select_threshold <- function(
   x,
   c,
-  cov,
   eigen,
   thresholds,
   threshold_mode,
@@ -98,7 +97,6 @@ select_threshold <- function(
       result[[length(result) + 1]] <- pla_helper(
         x=x,
         c=c,
-        cov=cov,
         eigen=eigen,
         threshold=threshold,
         threshold_mode=threshold_mode,
@@ -111,7 +109,6 @@ select_threshold <- function(
     result <- pla_helper(
       x=x,
       c=c,
-      cov=cov,
       eigen=eigen,
       threshold=thresholds,
       threshold_mode=threshold_mode,
@@ -127,7 +124,6 @@ select_threshold <- function(
 pla_helper <- function(
   x,
   c,
-  cov,
   eigen,
   threshold,
   threshold_mode,
@@ -157,8 +153,7 @@ pla_helper <- function(
     loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
-    blocks=blocks,
-    cov=cov
+    blocks=blocks
   )
   class(result) <- "pla"
 
