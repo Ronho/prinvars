@@ -127,6 +127,7 @@ are_enough_eligible_features <- function(eligible_features, required_length) {
 get_eligible_features <- function(zero_counts, zeros, untaken_features) {
     eligible <- which(zero_counts >= zeros)
     eligible <- intersect(eligible, untaken_features)
+    eligible <- as.vector(eligible, mode="integer")
     return(eligible)
 }
 

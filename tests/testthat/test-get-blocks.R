@@ -65,7 +65,7 @@ test_that("get_eligible_features", {
       zeros=2,
       untaken_features=c()
     ),
-    c()
+    vector("integer")
   )
 })
 
