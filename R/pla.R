@@ -71,7 +71,7 @@
 #' 
 #' @export
 pla <- function(x,
-                cor = TRUE,
+                cor = FALSE,
                 scaled_ev = FALSE,
                 thresholds = 0.33,
                 threshold_mode = "cutoff",
