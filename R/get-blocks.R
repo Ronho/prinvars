@@ -1,5 +1,3 @@
-# get block structure of the matrix
-# x - transformed data, matrix
 get_blocks <- function(threshold_matrix, feature_names, check) {
   ones <- 1
   number_features <- nrow(threshold_matrix)
@@ -7,7 +5,6 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   untaken_features <- 1:number_features
   blocks <- list()
 
-  # iterate for each nxn combination
   while (ones <= number_features && length(untaken_features) > 0) {
     if (are_enough_features(untaken_features=untaken_features, ones=ones)) {
       zeros <- number_features-ones
@@ -47,13 +44,6 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   return(blocks)
 }
 
-# find combination that matches the ones
-# x - data, matrix
-# eligible_features - columns that match the required structure
-# ones - number of 1s
-# zeros - number of 0s
-# current_combination - sequence
-# of column indexes that match the required structure
 find_combination <- function(
   threshold_matrix,
   eligible_features,
@@ -112,7 +102,6 @@ find_combination <- function(
   }
 }
 
-# check if there are enough features after finding a sequence that fits
 are_enough_features <- function(untaken_features, ones) {
     return (length(untaken_features) >= 2*ones)
 }
@@ -209,10 +198,9 @@ are_exact_zeros <- function(vector, zeros) {
     return(length(which(vector == 0)) == zeros)
 }
 
-# sum vectors of matrix row-wise
 sum_vectors <- function(x, indices) {
   if (length(indices) > 1) {
-    result <- colSums(x[indices, ])
+    result <- colSums(x[indices, ]) ## sum row-wise
   } else (
     result <- x[indices, ]
   )

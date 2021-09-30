@@ -6,7 +6,7 @@ select_eigen_vector_scaling <- function(eigen_vectors, scale=TRUE) {
   return(eigen_vectors)
 }
 
-# scale eigen vectors (column wise) between -1 and 1
+# scale eigenvectors column-wise between -1 and 1
 scale_eigen_vectors <- function(eigen_vectors) {
   scaled_eigen_vectors <- apply(
     eigen_vectors,
