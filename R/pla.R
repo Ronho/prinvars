@@ -122,15 +122,7 @@ print.pla <- function(x, ...) {
   chkDots(...)
   i = 1
 
-  cat(
-    "Explained Variances for each block with threshold",
-    x$threshold,
-    "and mode",
-    x$threshold_mode,
-    "\n"
-  )
-
-  cat("\nLoadings:\n")
+  cat("Loadings:\n")
   print(
     str_loadings(
       loadings=x$loadings,
@@ -141,8 +133,16 @@ print.pla <- function(x, ...) {
     quote=FALSE,
     ...
   )
+
+
+  cat(
+    "\nExplained Variances for each block with threshold",
+    x$threshold,
+    "and mode",
+    x$threshold_mode,
+    ":\n"
+  )
   
-  cat("\n")
   for (block in x$blocks) {
     cat("Block ", i, ": ", str(block), "\n", sep = "")
     i = i + 1
