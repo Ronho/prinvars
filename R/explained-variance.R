@@ -33,7 +33,7 @@ proportional_explained_variance <- function(
           x=threshold_matrix,
           indices=feature_idxs
         )
-        feature_idxs <- which(row_combination == 1)
+        feature_idxs <- which(row_combination > 0)
         explained_variance <- explained_variance.approx(
           eigen_values=eigen$values,
           feature_idxs=feature_idxs
