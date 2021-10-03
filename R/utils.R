@@ -169,7 +169,7 @@ str_loadings <- function(loadings, threshold, threshold_mode, feature_names) {
     threshold=threshold,
     mode=threshold_mode
   )
-  strrep <- setNames(format(round(loadings, digits=3L)), NULL)
+  strrep <- format(round(loadings, digits=3L))
   nc <- nchar(strrep[1L], type="c")
   strrep[abs(threshold_matrix) == 0] <- strrep(" ", nc)
 
