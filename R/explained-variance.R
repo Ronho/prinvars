@@ -1,10 +1,17 @@
-calculate_explained_variance <- function(blocks, eigen, feature_names, type) {
+calculate_explained_variance <- function(
+  blocks,
+  eigen,
+  feature_names,
+  type,
+  threshold_matrix) {
   blocks <- lapply(blocks, function(block) {
     feature_idxs <- match(block@features, feature_names)
+
     block@explained_variance <- proportional_explained_variance(
       eigen=eigen,
       feature_idxs=feature_idxs,
-      type=type
+      type=type,
+      threshold_matrix=threshold_matrix
     )
 
     return(block)
@@ -13,11 +20,20 @@ calculate_explained_variance <- function(blocks, eigen, feature_names, type) {
   return(blocks)
 }
 
-proportional_explained_variance <- function(eigen, feature_idxs, type) {
+proportional_explained_variance <- function(
+  eigen,
+  feature_idxs,
+  type,
+  threshold_matrix) {
     explained_variance <- 0
     switch(
       tolower(type),
       "approx" = {
+        row_combination <- sum_vectors(
+          x=threshold_matrix,
+          indices=feature_idxs
+        )
+        feature_idxs <- which(row_combination == 1)
         explained_variance <- explained_variance.approx(
           eigen_values=eigen$values,
           feature_idxs=feature_idxs

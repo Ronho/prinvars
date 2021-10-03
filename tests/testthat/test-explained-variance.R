@@ -3,6 +3,7 @@ eigen <- list(
   values=c(0.5, 0.3, 0.2)
 )
 feature_idxs <- c(1, 2)
+threshold_matrix <- matrix(c(1,0,0,0,1,0,0,0,1), nrow=3, ncol=3)
 
 test_that("calculate_explained_variance", {
   block <- new("Block", features=feature_idxs)
@@ -10,7 +11,8 @@ test_that("calculate_explained_variance", {
     blocks=list(block),
     eigen=eigen,
     feature_names=c(1:3),
-    type="approx"
+    type="approx",
+    threshold_matrix=threshold_matrix
   )
 
   expect_equal(blocks[[1]]@explained_variance, 0.8)
@@ -33,7 +35,8 @@ test_that("proportional_explained_variance", {
       proportional_explained_variance(
         eigen=eigen,
         feature_idxs=feature_idxs,
-        type="approx"
+        type="approx",
+        threshold_matrix=threshold_matrix
       ),
       0.8
   )

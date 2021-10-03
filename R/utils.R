@@ -144,7 +144,8 @@ pla_helper <- function(
     blocks=blocks,
     eigen=eigen,
     feature_names=feature_names,
-    type=expvar
+    type=expvar,
+    threshold_matrix=threshold_matrix
   )
 
   result <- list(
