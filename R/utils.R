@@ -159,3 +159,18 @@ pla_helper <- function(
 
   return(result)
 }
+
+str_loadings <- function(loadings, threshold, threshold_mode, feature_names) {
+  loadings <- unclass(loadings)
+  rownames(loadings) <- feature_names
+  threshold_matrix <- select_thresholding(
+    eigen_vectors=loadings,
+    threshold=threshold,
+    mode=threshold_mode
+  )
+  strrep <- setNames(format(round(loadings, digits=3L)), NULL)
+  nc <- nchar(strrep[1L], type="c")
+  strrep[abs(threshold_matrix) == 0] <- strrep(" ", nc)
+
+  return(strrep)
+}

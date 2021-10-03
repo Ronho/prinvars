@@ -103,7 +103,7 @@ pla <- function(x,
 
 #' @title Print Function for pla S3
 #'
-#' Prints the blocks and threshold inside the object.
+#' Prints the blocks, threshold, threshold_mode and the loadings.
 #'
 #' @param x a pla object.
 #' @param ... further arguments passed to or from other methods.
@@ -130,6 +130,19 @@ print.pla <- function(x, ...) {
     "\n"
   )
 
+  cat("\nLoadings:\n")
+  print(
+    str_loadings(
+      loadings=x$loadings,
+      threshold=x$threshold,
+      threshold_mode=x$threshold_mode,
+      feature_names=get_feature_names(x$x)
+    ),
+    quote=FALSE,
+    ...
+  )
+  
+  cat("\n")
   for (block in x$blocks) {
     cat("Block ", i, ": ", str(block), "\n", sep = "")
     i = i + 1

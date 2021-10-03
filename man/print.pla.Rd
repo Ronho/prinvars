@@ -4,7 +4,7 @@
 \alias{print.pla}
 \title{Print Function for pla S3
 
-Prints the blocks and threshold inside the object.}
+Prints the blocks, threshold, threshold_mode and the loadings.}
 \usage{
 \method{print}{pla}(x, ...)
 }
@@ -16,7 +16,7 @@ Prints the blocks and threshold inside the object.}
 \description{
 Print Function for pla S3
 
-Prints the blocks and threshold inside the object.
+Prints the blocks, threshold, threshold_mode and the loadings.
 }
 \examples{
 data <- data.frame(
