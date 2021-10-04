@@ -29,8 +29,8 @@ test_that("select_thresholding", {
 
 test_that("valid_threshold", {
   expect_silent(valid_threshold(threshold=threshold))
-  expect_warning(valid_threshold(threshold=1.1))
-  expect_warning(valid_threshold(threshold=-0.1))
+  expect_error(valid_threshold(threshold=1.1))
+  expect_error(valid_threshold(threshold=-0.1))
 })
 
 test_that("cutoff", {

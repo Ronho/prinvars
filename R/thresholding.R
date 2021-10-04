@@ -15,7 +15,7 @@ select_thresholding <- function(eigen_vectors, threshold, mode) {
 
 valid_threshold <- function(threshold) {
   if (threshold > 1 || threshold < 0) {
-    warning("Threshold should be between 0 and 1.")
+    stop("Threshold must be between 0 and 1.")
   }
 }
 
