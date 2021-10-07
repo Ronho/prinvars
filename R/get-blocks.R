@@ -137,14 +137,3 @@ err_wrong_check <- function(check) {
     )
   )
 }
-
-# CHANGE POSITITION TO EXPLAINED_VARIANCE
-sum_vectors <- function(x, indices) {
-  if (length(indices) > 1) {
-    result <- colSums(x[indices, ]) ## sum row-wise
-  } else (
-    result <- x[indices, ]
-  )
-
-  return(result)
-}

@@ -65,21 +65,6 @@ test_that("err_wrong_check", {
   expect_error(err_wrong_check(check="Test"))
 })
 
-
-test_that("sum_vectors", {
-  matrix <- matrix(c(
-    1, 0, 0,
-    0, 0, 1,
-    1, 1, 1
-  ), nrow=3, ncol=3)
-
-  expect_equal(sum_vectors(x=matrix, indices=c(1,3)), c(1, 1, 2))
-  expect_equal(sum_vectors(x=matrix, indices=c(3)), c(0, 1, 1))
-  expect_equal(sum_vectors(x=c(), indices=c(4)), NULL)
-  expect_error(sum_vectors(x=matrix, indices=c(4)))
-  expect_error(sum_vectors(x=matrix(c()), indices=c(4)))
-})
-
 test_that("is_valid_combination", {
   threshold_matrix <- matrix(c(
     1, 1, 0, 0,

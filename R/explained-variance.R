@@ -93,3 +93,13 @@ explained_variance.approx <- function(eigen_values, feature_idxs) {
   
   return(explained_variance)
 }
+
+sum_vectors <- function(x, indices) {
+  if (length(indices) > 1) {
+    result <- colSums(x[indices, ]) ## sum row-wise
+  } else (
+    result <- x[indices, ]
+  )
+
+  return(result)
+}
