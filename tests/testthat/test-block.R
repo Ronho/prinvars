@@ -1,7 +1,7 @@
 test_that("Block", {
   features <- c(2, 3)
   blocks <- list()
-  blocks[[1]] <- new("Block", features=features)
+  blocks[[1]] <- new("Block", features=features, is_valid=FALSE)
   blocks[[2]] <- new("Block", features=features, explained_variance=0.2)
 
   expect_s4_class(blocks[[1]], "Block")
@@ -10,6 +10,8 @@ test_that("Block", {
   expect_equal(blocks[[2]]@features, features)
   expect_equal(blocks[[1]]@explained_variance, 0)
   expect_equal(blocks[[2]]@explained_variance, 0.2)
+  expect_equal(blocks[[1]]@is_valid, FALSE)
+  expect_equal(blocks[[2]]@is_valid, TRUE)
 })
 
 test_that("Block - str", {

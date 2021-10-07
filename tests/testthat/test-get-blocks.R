@@ -7,16 +7,13 @@ test_that("get_blocks", {
   ), nrow=3, ncol=3)
 
   expected_result <- list()
-  expected_result[[1]] <- new("Block", features=c(1))
-  expected_result[[2]] <- new("Block", features=c(3))
-  expected_result[[3]] <- new("Block", features=c(2))
+  expected_result[[1]] <- new("Block", features=c(1), is_valid=FALSE)
+  expected_result[[2]] <- new("Block", features=c(3), is_valid=TRUE)
+  expected_result[[3]] <- new("Block", features=c(2), is_valid=FALSE)
   
   expect_equal(
-    get_blocks(threshold_matrix=matrix, feature_names=c(1:10), check="rows"),
+    get_blocks(threshold_matrix=matrix, feature_names=c(1:nrow(matrix)), check="rows"),
     expected_result
-  )
-  expect_warning(
-    get_blocks(threshold_matrix=matrix, feature_names=c(1:10), check="rnc")
   )
 })
 
@@ -32,21 +29,10 @@ test_that("find_combination", {
       threshold_matrix=matrix,
       eligible_features=c(1:3),
       ones=1,
-      zeros=2,
       current_combination=c(),
       check="rows"
     ),
-    list(c(1), c(3))
-  )
-  expect_warning(
-    find_combination(
-      threshold_matrix=matrix,
-      eligible_features=c(1:3),
-      ones=1,
-      zeros=2,
-      current_combination=c(),
-      check="rnc"
-    )
+    list(combination=c(1), is_valid=FALSE)
   )
 })
 
@@ -163,36 +149,22 @@ test_that("is_valid_combination", {
   check <- "rnc"
   zeros <- 2
 
-  expect_true(
+  expect_equal(
     is_valid_combination(
         threshold_matrix=threshold_matrix,
         current_combination=c(1, 2),
-        zeros=zeros,
-        check=check
-    )
+        check=check,
+        ones=2
+    ),
+    c(TRUE, TRUE)
   )
-  expect_warning(
-    is_valid_combination(
-      threshold_matrix=threshold_matrix, 
-      current_combination=c(3, 4),
-      zeros=zeros,
-      check=check
-    )
-  )
-  expect_false(
+  expect_equal(
     is_valid_combination(
       threshold_matrix=threshold_matrix,
       current_combination=c(1),
-      zeros=zeros,
-      check=check
-    )
-  )
-  expect_silent(
-    is_valid_combination(
-        threshold_matrix=threshold_matrix,
-        current_combination=c(1, 2),
-        zeros=zeros,
-        check=check
-    )
+      check=check,
+      ones=1
+    ),
+    c(TRUE, FALSE)
   )
 })

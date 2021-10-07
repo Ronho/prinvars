@@ -5,12 +5,12 @@ get_feature_names <- function(x) {
   return(feature_names)
 }
 
-create_block <- function(feature_names, selected_features) {
+create_block <- function(feature_names, selected_features, is_valid) {
   if (length(feature_names) > 0) {
     selected_features <- feature_names[selected_features]
   }
 
-  return(new("Block", features=selected_features))
+  return(new("Block", features=selected_features, is_valid=is_valid))
 }
 
 # get number of zeros for each eigenvector

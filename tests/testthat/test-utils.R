@@ -57,19 +57,23 @@ test_that("create_block", {
   blocks <- list()
   blocks[[1]] <- create_block(
     feature_names=c("a", "b", "c", "d", "e"),
-    selected_features=selected_features
+    selected_features=selected_features,
+    is_valid=FALSE
   )
   blocks[[2]] <- create_block(
     feature_names=c(1:5),
-    selected_features=selected_features
+    selected_features=selected_features,
+    is_valid=TRUE
   )
 
   expect_s4_class(blocks[[1]], "Block")
   expect_s4_class(blocks[[2]], "Block")
   expect_equal(blocks[[1]]@features, c("b", "c"))
   expect_equal(blocks[[1]]@explained_variance, 0)
+  expect_equal(blocks[[1]]@is_valid, FALSE)
   expect_equal(blocks[[2]]@features, c(2, 3))
   expect_equal(blocks[[2]]@explained_variance, 0)
+  expect_equal(blocks[[2]]@is_valid, TRUE)
 })
 
 test_that("get_zero_count", {

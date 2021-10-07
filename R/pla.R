@@ -131,7 +131,11 @@ print.pla <- function(x, ...) {
   
   i = 1
   for (block in x$blocks) {
-    cat("Block ", i, ": ", str(block), "\n", sep = "")
+    if (block@is_valid) {
+      cat("Block ", i, ": ", str(block), "\n", sep = "")
+    } else {
+      cat(str(block), "\n")
+    }
     i = i + 1
   }
 

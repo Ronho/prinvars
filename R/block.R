@@ -3,16 +3,18 @@
 #' Classed used within the package to keep the structure and information about
 #' the generated blocks.
 #'
-#' @slot features vector of numeric, indices which belong to the block
-#' @slot explained_varaiance numeric, explained variance of the blocks variables
-#' based on the whole data set.
+#' @slot features a vector of numeric which contains the indices of the block.
+#' @slot explained_varaiance a numeric which contains the variance explained of
+#' the blocks variables based on the whole data set.
+#' @slot is_valid a logival which indicates if the block structure is valid.
 setClass(
   "Block",
   representation(
     features = "vector",
-    explained_variance = "numeric"
+    explained_variance = "numeric",
+    is_valid = "logical"
   ),
-  prototype(explained_variance = 0)
+  prototype(explained_variance = 0, is_valid=TRUE)
 )
 
 #' @title Block - Show
@@ -49,12 +51,24 @@ setMethod(
   definition = function(object) {
     features = paste(unlist(object@features), collapse = ", ")
     expvar = round(object@explained_variance * 100, 2)
-    str = paste("Features (",
-                features,
-                ") explain ",
-                expvar,
-                "% of the overall explained variance",
-                sep = "")
+    if (object@is_valid) {
+      str = paste(
+        "Features (",
+        features,
+        ") explain ",
+        expvar,
+        "% of the overall explained variance",
+        sep = ""
+      )
+    } else {
+      str = paste(
+        "Features (",
+        features,
+        ") remain without a block structure row-wise.",
+        sep = ""
+      )
+    }
+
     return(str)
   }
 )
