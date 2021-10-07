@@ -88,19 +88,6 @@ find_combination <- function(
   }
 }
 
-# DEL
-are_enough_features <- function(untaken_features, ones) {
-    return (length(untaken_features) >= 2*ones)
-}
-
-# DEL
-are_enough_eligible_features <- function(eligible_features, required_length) {
-    return(
-      !is.null(eligible_features) &
-      length(eligible_features) >= required_length
-    )
-}
-
 get_eligible_features <- function(zero_counts, zeros, untaken_features) {
     eligible <- which(zero_counts >= zeros)
     eligible <- intersect(eligible, untaken_features)
@@ -149,42 +136,6 @@ err_wrong_check <- function(check) {
       sep=""
     )
   )
-}
-
-# DEL
-check_column_combination <- function(
-  threshold_matrix,
-  row_combination,
-  zeros,
-  current_combination) {
-  column_combination <- sum_vectors(
-    x=t(threshold_matrix),
-    indices=which(row_combination >= 1)
-  )
-
-  if (!are_exact_zeros(vector=column_combination, zeros=zeros)) {
-    warn_wrong_column_wise_combination(current_combination=current_combination)
-  }
-}
-
-# DEL
-warn_wrong_column_wise_combination <- function(current_combination) {
-  combination <- paste(unlist(current_combination), collapse=", ")
-  warning(
-    paste(
-      "(",
-      combination,
-      ")",
-      " is not a valid combination considering columns.
-      However, it is valid row-wise.",
-      sep=""
-    )
-  )
-}
-
-# DEL
-are_exact_zeros <- function(vector, zeros) {
-    return(length(which(vector == 0)) == zeros)
 }
 
 # CHANGE POSITITION TO EXPLAINED_VARIANCE
