@@ -24,8 +24,14 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
       if (!is.atomic(combination)) {
         is_valid <- combination$is_valid
         combination <- combination$combination
-        blocks[[length(blocks)+1]] <- create_block(feature_names=feature_names, selected_features=combination, is_valid=is_valid)
-        eligible_features <- eligible_features[!eligible_features %in% combination]
+        blocks[[length(blocks)+1]] <- create_block(
+          feature_names=feature_names,
+          selected_features=combination,
+          is_valid=is_valid
+        )
+        eligible_features <- eligible_features[
+          !eligible_features %in% combination
+        ]
         untaken_features <- untaken_features[!untaken_features %in% combination]
       } else {
         eligible_features <- eligible_features[-1]
@@ -36,7 +42,11 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   }
 
   if(length(untaken_features) > 0) {
-    blocks[[length(blocks)+1]] <- create_block(feature_names=feature_names, selected_features=untaken_features, is_valid=FALSE)
+    blocks[[length(blocks)+1]] <- create_block(
+      feature_names=feature_names,
+      selected_features=untaken_features,
+      is_valid=FALSE
+    )
   }
 
   return(blocks)
@@ -51,7 +61,12 @@ find_combination <- function(
   num_remaining_features <- ones - length(current_combination)
 
   if (num_remaining_features == 0) {
-    is_valid <- is_valid_combination(threshold_matrix=threshold_matrix, current_combination=current_combination, ones=ones, check=check)
+    is_valid <- is_valid_combination(
+      threshold_matrix=threshold_matrix,
+      current_combination=current_combination,
+      ones=ones,
+      check=check
+    )
 
     if (check_cols(check=check)) {
       is_valid <- is_valid[1] & is_valid[2]
@@ -68,7 +83,10 @@ find_combination <- function(
 
     return(FALSE)
   } else {
-    while(length(eligible_features) > 0 && length(eligible_features) >= num_remaining_features) {
+    while(
+      length(eligible_features) > 0 && 
+      length(eligible_features) >= num_remaining_features
+    ) {
       current_combination <- c(current_combination, eligible_features[1])
       eligible_features <- eligible_features[-1]
 
