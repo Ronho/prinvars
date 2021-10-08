@@ -18,7 +18,8 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
         eligible_features=eligible_features,
         ones=ones,
         current_combination=c(),
-        check=check
+        check=check,
+        taken_features=setdiff(c(1:num_features), untaken_features)
       )
 
       if (!is.atomic(combination)) {
@@ -57,7 +58,8 @@ find_combination <- function(
   eligible_features,
   ones,
   current_combination,
-  check) {
+  check,
+  taken_features) {
   num_remaining_features <- ones - length(current_combination)
 
   if (num_remaining_features == 0) {
@@ -65,7 +67,8 @@ find_combination <- function(
       threshold_matrix=threshold_matrix,
       current_combination=current_combination,
       ones=ones,
-      check=check
+      check=check,
+      taken_features=taken_features
     )
 
     if (check_cols(check=check)) {
@@ -84,7 +87,7 @@ find_combination <- function(
     return(FALSE)
   } else {
     while(
-      length(eligible_features) > 0 && 
+      length(eligible_features) > 0 &&
       length(eligible_features) >= num_remaining_features
     ) {
       current_combination <- c(current_combination, eligible_features[1])
@@ -95,7 +98,8 @@ find_combination <- function(
         eligible_features=eligible_features,
         ones=ones,
         current_combination=current_combination,
-        check=check
+        check=check,
+        taken_features=taken_features
       )
 
       if (!is.atomic(result)) {
@@ -117,7 +121,8 @@ is_valid_combination <- function(
   threshold_matrix,
   current_combination,
   ones,
-  check) {
+  check,
+  taken_features) {
   # check if rows are valid
   rows <- threshold_matrix[current_combination, ]
   if (length(current_combination) > 1) {
@@ -127,11 +132,22 @@ is_valid_combination <- function(
   row_valid <- length(ev_influenced) == ones
 
   # check if columns are valid
-  cols <- t(threshold_matrix)[ev_influenced, ]
-  if (length(ev_influenced) > 1) {
-    cols <- colSums(cols)
+  col_valid <- TRUE
+  if(check_cols(check=check)) {
+    cols <- t(threshold_matrix)[ev_influenced, ]
+    if (length(ev_influenced) > 1) {
+      cols <- colSums(cols)
+    }
+    col_valid <- length(which(cols >= 1)) == ones
+  } else {
+    if (length(taken_features) > 0) {
+      cols <- t(threshold_matrix)[ev_influenced, taken_features]
+      if (length(ev_influenced) > 1 && length(taken_features) > 1) {
+        cols <- colSums(cols)
+      }
+      col_valid <- length(which(cols >= 1)) <= ones
+    }
   }
-  col_valid <- length(which(cols >= 1)) == ones
 
   return(c(row_valid, col_valid))
 }

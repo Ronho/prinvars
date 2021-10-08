@@ -7,7 +7,7 @@ test_that("get_blocks", {
   ), nrow=3, ncol=3)
 
   expected_result <- list()
-  expected_result[[1]] <- new("Block", features=c(1), is_valid=FALSE)
+  expected_result[[1]] <- new("Block", features=c(1), is_valid=TRUE)
   expected_result[[2]] <- new("Block", features=c(3), is_valid=TRUE)
   expected_result[[3]] <- new("Block", features=c(2), is_valid=FALSE)
   
@@ -30,9 +30,10 @@ test_that("find_combination", {
       eligible_features=c(1:3),
       ones=1,
       current_combination=c(),
-      check="rows"
+      check="rows",
+      taken_features=c()
     ),
-    list(combination=c(1), is_valid=FALSE)
+    list(combination=c(1), is_valid=TRUE)
   )
 })
 
