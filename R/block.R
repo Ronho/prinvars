@@ -1,6 +1,6 @@
 #' Block
 #'
-#' Classed used within the package to keep the structure and information about
+#' Class used within the package to keep the structure and information about
 #' the generated blocks.
 #'
 #' @slot features a vector of numeric which contains the indices of the block.

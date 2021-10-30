@@ -5,15 +5,17 @@
 \alias{Block-class}
 \title{Block}
 \description{
-Classed used within the package to keep the structure and information about
+Class used within the package to keep the structure and information about
 the generated blocks.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{features}}{vector of numeric, indices which belong to the block}
+\item{\code{features}}{a vector of numeric which contains the indices of the block.}
 
-\item{\code{explained_varaiance}}{numeric, explained variance of the blocks variables
-based on the whole data set.}
+\item{\code{explained_varaiance}}{a numeric which contains the variance explained of
+the blocks variables based on the whole data set.}
+
+\item{\code{is_valid}}{a logival which indicates if the block structure is valid.}
 }}
 
