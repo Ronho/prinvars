@@ -104,6 +104,8 @@ find_combination <- function(
 
       if (!is.atomic(result)) {
         return(result)
+      } else {
+        current_combination <- head(current_combination, -1)
       }
     }
     return(FALSE)
