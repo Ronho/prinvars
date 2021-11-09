@@ -16,6 +16,6 @@ the generated blocks.
 \item{\code{explained_varaiance}}{a numeric which contains the variance explained of
 the blocks variables based on the whole data set.}
 
-\item{\code{is_valid}}{a logival which indicates if the block structure is valid.}
+\item{\code{is_valid}}{a logical which indicates if the block structure is valid.}
 }}
 

@@ -17,7 +17,7 @@ Authors@R: c(
         )
     )
 Description: This package provides principle loading analysis, a method for reducing the number of features within a data set.
-License: MIT
+License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
 Encoding: UTF-8
