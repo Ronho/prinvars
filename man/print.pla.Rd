@@ -4,19 +4,19 @@
 \alias{print.pla}
 \title{Print Function for pla S3
 
-Prints the explained variances of the blocks inside the object.}
+Prints the blocks, threshold, threshold_mode and the loadings.}
 \usage{
 \method{print}{pla}(x, ...)
 }
 \arguments{
-\item{x}{pla object.}
+\item{x}{a pla object.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Print Function for pla S3
 
-Prints the explained variances of the blocks inside the object.
+Prints the blocks, threshold, threshold_mode and the loadings.
 }
 \examples{
 data <- data.frame(
@@ -26,4 +26,5 @@ c = c(7:9)
 )
 obj <- pla(data)
 print(obj)
+
 }

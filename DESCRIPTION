@@ -16,7 +16,7 @@ Authors@R: c(
             role = c("aut", "cre")
         )
     )
-Description: This package provides the principle loading analysis, a method for reducing the number of features within a data set.
+Description: This package provides principle loading analysis, a method for reducing the number of features within a data set.
 License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
@@ -27,6 +27,14 @@ BugReports: https://github.com/Ronho/pla/issues
 RoxygenNote: 7.1.1.9001
 Collate: 
     'block.R'
+    'cor.R'
+    'explained-variance.R'
+    'get-blocks.R'
     'pla-package.R'
+    'thresholding.R'
+    'scale.R'
     'utils.R'
     'pla.R'
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

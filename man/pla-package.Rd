@@ -8,7 +8,7 @@
 
 This package is an implementation of the principle loading analysis.}
 \description{
-This package provides the principle loading analysis, a method for reducing the number of features within a data set.
+This package provides principle loading analysis, a method for reducing the number of features within a data set.
 }
 \references{
 \insertRef{Bauer.19.02.2021}{pla}

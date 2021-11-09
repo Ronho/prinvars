@@ -17,7 +17,6 @@ Block - str
 Generic function to create a string out of the blocks structure.
 }
 \examples{
-block <- new("Block", rows = c(1, 4), columns = c(2, 5),
-explained_variance = 0.03)
+block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 str(block)
 }

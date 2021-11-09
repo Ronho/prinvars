@@ -1,20 +1,20 @@
 #' Block
 #'
-#' Classed used within the package to keep the structure and information about
-#' the generated blocks. A Block is a a continuous sequence of 1s
-#' within a vector.
+#' Class used within the package to keep the structure and information about
+#' the generated blocks.
 #'
-#' @slot rows vector of numeric, indizes of the rows which belong to the block
-#' @slot columns vector of numeric, indizes of the columns which belong to the block
-#' @slot explained_varaiance numeric, explained variance of the blocks variables
-#' based on the whole data set.
+#' @slot features a vector of numeric which contains the indices of the block.
+#' @slot explained_varaiance a numeric which contains the variance explained of
+#' the blocks variables based on the whole data set.
+#' @slot is_valid a logical which indicates if the block structure is valid.
 setClass(
   "Block",
   representation(
-    rows = "vector",
-    columns = "vector",
-    explained_variance = "numeric"
-  )
+    features = "vector",
+    explained_variance = "numeric",
+    is_valid = "logical"
+  ),
+  prototype(explained_variance = 0, is_valid=TRUE)
 )
 
 #' @title Block - Show
@@ -24,8 +24,7 @@ setClass(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", rows = c(1, 4), columns = c(2, 5),
-#' explained_variance = 0.03)
+#' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 #' print(block)
 #' @export
 setMethod(
@@ -43,25 +42,33 @@ setMethod(
 #' @param object block.
 #'
 #' @examples
-#' block <- new("Block", rows = c(1, 4), columns = c(2, 5),
-#' explained_variance = 0.03)
+#' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 #' str(block)
 #' @export
 setMethod(
   f = "str",
   signature = "Block",
   definition = function(object) {
-    rows = paste(unlist(object@rows), collapse = ", ")
-    columns = paste(unlist(object@columns), collapse = ", ")
+    features = paste(unlist(object@features), collapse = ", ")
     expvar = round(object@explained_variance * 100, 2)
-    str = paste("Columns(",
-                columns,
-                ")-Rows(",
-                rows,
-                ") explains ",
-                expvar,
-                "% of the overall explained variance",
-                sep = "")
+    if (object@is_valid) {
+      str = paste(
+        "Features (",
+        features,
+        ") explain ",
+        expvar,
+        "% of the overall explained variance",
+        sep = ""
+      )
+    } else {
+      str = paste(
+        "Features (",
+        features,
+        ") remain without a block structure row-wise.",
+        sep = ""
+      )
+    }
+
     return(str)
   }
 )

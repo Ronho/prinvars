@@ -4,28 +4,36 @@
 \alias{pla.keep_blocks}
 \title{Keep Blocks
 
-Used to remove each variable from the original data set which is part of
-any of the blocks that have not been excluded by the block_indizes.}
+Used to only keep each variable of the original data set which is part of any
+of the blocks according to the passed indices.}
 \usage{
-pla.keep_blocks(x, blocks, block_indizes)
+pla.keep_blocks(object, blocks, ...)
 }
 \arguments{
-\item{x}{data.frame matrix, the raw data; should
-be the same used to obtain the blocks.}
+\item{object}{a pla object.}
 
-\item{blocks}{list of blocks; obtained by the pla function.}
+\item{blocks}{a list of numeric values indicating the indices of the blocks
+that should be kept.}
 
-\item{block_indizes}{vector of numeric; indizes of the blocks from the
-block list which variables should not be removed from the data set.}
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
-data.frame, data without the removed variables
+list of the following attributes:
+\item{x}{
+  a numeric matrix or data frame which equals the input data for the pla
+  object without any feature that is not part of the blocks that should be
+  kept.
+}
+\item{cc_matrix}{
+  a numeric matrix or data frame which contains either the conditional
+  covariance or correlation matrix.
+}
 }
 \description{
 Keep Blocks
 
-Used to remove each variable from the original data set which is part of
-any of the blocks that have not been excluded by the block_indizes.
+Used to only keep each variable of the original data set which is part of any
+of the blocks according to the passed indices.
 }
 \examples{
 data <- data.frame(
@@ -35,5 +43,6 @@ c = c(7:9),
 d = c(10:12)
 )
 obj <- pla(data)
-data <- pla.keep_blocks(data, obj$blocks, c(2, 3))
+data <- pla.keep_blocks(obj, c(1))
+
 }
