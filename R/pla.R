@@ -6,9 +6,9 @@
 #' @include thresholding.R
 #' @include cor.R
 
-#' @title Principle Loading Analysis
+#' @title Principal Loading Analysis
 #'
-#' This function performs principle loading analysis on a data set.
+#' This function performs principal loading analysis on a data set.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
@@ -55,7 +55,7 @@
 #'   a character string which equals the input of threshold_mode.
 #' }
 #' \item{blocks}{
-#'   a list of blocks which are identified through the principle loading
+#'   a list of blocks which are identified through the principal loading
 #'   analysis.
 #' }
 #' See \url{https://arxiv.org/pdf/2007.05215.pdf},

@@ -2,9 +2,9 @@
 % Please edit documentation in R/pla.R
 \name{pla}
 \alias{pla}
-\title{Principle Loading Analysis
+\title{Principal Loading Analysis
 
-This function performs principle loading analysis on a data set.}
+This function performs principal loading analysis on a data set.}
 \usage{
 pla(
   x,
@@ -70,16 +70,16 @@ single or list of pla class containing the following attributes:
   a character string which equals the input of threshold_mode.
 }
 \item{blocks}{
-  a list of blocks which are identified through the principle loading
+  a list of blocks which are identified through the principal loading
   analysis.
 }
 See \url{https://arxiv.org/pdf/2007.05215.pdf},
 \url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
 }
 \description{
-Principle Loading Analysis
+Principal Loading Analysis
 
-This function performs principle loading analysis on a data set.
+This function performs principal loading analysis on a data set.
 }
 \examples{
 data <- data.frame(

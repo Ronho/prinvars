@@ -1,6 +1,6 @@
-#' @title Principle Loading Analysis Package
+#' @title Principal Loading Analysis Package
 #'
-#' This package is an implementation of the principle loading analysis.
+#' This package is an implementation of the principal loading analysis.
 #'
 #' @references
 #' \insertRef{Bauer.19.02.2021}{pla}
