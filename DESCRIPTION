@@ -1,6 +1,6 @@
 Package: pla
 Type: Package
-Title: Principle Loading Analysis
+Title: Principal Loading Analysis
 Version: 0.1.0
 Authors@R: c(
         person(
@@ -16,7 +16,7 @@ Authors@R: c(
             role = c("aut", "cre")
         )
     )
-Description: This package provides principle loading analysis, a method for reducing the number of features within a data set.
+Description: This package provides principal loading analysis, a method for reducing the number of features within a data set.
 License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
