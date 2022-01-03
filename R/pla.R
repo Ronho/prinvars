@@ -21,7 +21,7 @@
 #' of pla results will be returned.
 #' @param threshold_mode a character string indicating how the threshold is
 #' determined and used. \code{cutoff} indicates that the threshold value is used as
-#' a general maximum for all elements. \codepercentage} indicates that the cutoff
+#' a general maximum for all elements. \code{percentage} indicates that the cutoff
 #' value is determined by the maximum element of each vector multiplied with the
 #' threshold value. The default is set to \code{cutoff}.
 #' @param expvar a character string indicating the method used for calculating
