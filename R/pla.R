@@ -13,53 +13,49 @@
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
 #' @param cor a logical value indicating whether the calculation should use the
-#' correlation or the covariance matrix. The default is set to "TRUE" indicating
-#' the use of the correlation matrix.
+#' correlation or the covariance matrix.
 #' @param scaled_ev a logical value indicating whether the eigenvectors should
-#' be scaled. The default is set to "FALSE".
-#' @param thresholds a numeric or list of numeric used to determine "small"
-#' values inside the eigenvectors. If multiple values are given, a list of pla
-#' results will be returned. The default is set to 0.33.
+#' be scaled.
+#' @param thresholds a numeric value or list of numeric values used to determine
+#' "small" values inside the eigenvectors. If multiple values are given, a list
+#' of pla results will be returned.
 #' @param threshold_mode a character string indicating how the threshold is
-#' determined and used. "cutoff" indicates that the threshold value is used as
-#' a general maximum for all elements. "percentage" indicates that the cutoff
+#' determined and used. \item{cutoff} indicates that the threshold value is used as
+#' a general maximum for all elements. \item{percentage} indicates that the cutoff
 #' value is determined by the maximum element of each vector multiplied with the
-#' threshold value. The default is set to "cutoff".
+#' threshold value. The default is set to \item{cutoff}.
 #' @param expvar a character string indicating the method used for calculating
-#' the explained variance."approx" indicates the use of an approximation.
-#' "exact" indicates the exact calculation. The default is set to "approx".
-#' @param check a character string indicating if only rows or rows and columns
-#' are used."rows" checks if the rows fullfill the required structure. "rnc"
-#' checks if rows and columns fullfill the required structure. The default is
-#' set to "rnc".
+#' the explained variance. \item{approx} uses the explained variances of each
+#' eigenvectors i.e. their eigenvalues. \item{exact} uses the variance of each variable.
+#' @param check a character string indicating if only rows, or if rows as well as columns
+#' are used to detect the underlying block structure. \item{rows} checks if the rows fullfill
+#' the required structure. \item{rnc} checks if rows and columns fullfill the required structure.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
 #' single or list of pla class containing the following attributes:
 #' \item{x}{
-#'   a numeric matrix or data frame which equals the input of 'x'.
+#'   a numeric matrix or data frame which equals the input of \item{x}.
 #' }
 #' \item{c}{
 #'   a numeric matrix or data frame which is the covariance or correlation
-#'   matrix based on the input of 'cov'.
+#'   matrix based on the input of \item{cov}.
 #' }
 #' \item{loadings}{
-#'   a matrix of variable loadings (i.e., a matrix whose columns contain the
-#'   eigenvectors).
+#'   a matrix of variable loadings (i.e. a matrix containing the
+#'   eigenvectors of the dispersion matrix).
 #' }
 #' \item{threshold}{
-#'   a numeric value which equals the input of thresholds at the corresponding
-#'   position.
+#'   a numeric value which equals the input of \item{thresholds}.
 #' }
 #' \item{threshold_mode}{
-#'   a character string which equals the input of threshold_mode.
+#'   a character string which equals the input of \item{threshold_mode}.
 #' }
 #' \item{blocks}{
-#'   a list of blocks which are identified through the principal loading
-#'   analysis.
+#'   a list of blocks which are identified by principal loading analysis.
 #' }
-#' See \url{https://arxiv.org/pdf/2007.05215.pdf},
-#' \url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
+#' See \url{https://www.sciencedirect.com/science/article/pii/S0047259X21000324} and
+#' \url{https://dl.acm.org/doi/10.1145/3475827.3475832} for more information.
 #' 
 #' @examples
 #' data <- data.frame(
@@ -73,7 +69,7 @@
 pla <- function(x,
                 cor = FALSE,
                 scaled_ev = FALSE,
-                thresholds = 0.33,
+                thresholds = 0.3,
                 threshold_mode = "cutoff",
                 expvar = "approx",
                 check = "rnc",
