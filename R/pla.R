@@ -8,7 +8,8 @@
 
 #' @title Principal Loading Analysis
 #'
-#' @description This function performs a principal loading analysis on the given data matrix.
+#' @description This function performs a principal loading analysis on the given
+#' data matrix and returns the results as an object of class \code{pla}.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
@@ -58,12 +59,27 @@
 #' \url{https://dl.acm.org/doi/10.1145/3475827.3475832} for more information.
 #' 
 #' @examples
-#' data <- data.frame(
-#' a = c(1:3),
-#' b = c(4:6),
-#' c = c(7:9)
-#' )
-#' pla(data)
+#' require(AER)
+#' data("OECDGrowth")
+#'
+#' ## the scales in OECDGrowth differ hence using the
+#' ## correlation matrix is highly recommended
+#'
+#' pla(OECDGrowth,thresholds = 0.5) ## not recommended
+#' pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#'
+#' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
+#' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+#' ## (randd), explains only 5.76% of the overall variance.
+#' ## Hence discarding this block seems appropriate.
+#'
+#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+#'
+#' ## Sometimes, considering the blocks we keep rather than
+#' ## the blocks we want to discard might be more convenient.
+#'
+#' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 #' 
 #' @export
 pla <- function(x,
