@@ -30,11 +30,11 @@ Collate:
     'cor.R'
     'explained-variance.R'
     'get-blocks.R'
-    'pla-package.R'
     'thresholding.R'
     'scale.R'
     'utils.R'
     'pla.R'
+    'pv-package.R'
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

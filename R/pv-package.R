@@ -3,8 +3,8 @@
 #' This package provides methods for dimensionality reduction.
 #'
 #' @references
-#' \insertRef{Bauer.19.02.2021}{pla}
-#' \insertRef{Bauer.10.07.2020}{pla}
+#' \insertRef{Bauer.19.02.2021}{pv}
+#' \insertRef{Bauer.10.07.2020}{pv}
 #' @aliases pv-package
 #' @keywords internal
 "_PACKAGE"
