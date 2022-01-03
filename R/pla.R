@@ -115,19 +115,17 @@ pla <- function(x,
 
 #' @title Print Function for pla S3
 #'
-#' Prints the blocks, threshold, threshold_mode and the loadings.
+#' @description Prints the blocks, threshold, threshold_mode and the loadings.
 #'
-#' @param x a pla object.
+#' @param \code{x} a pla object.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @examples
-#' data <- data.frame(
-#' a = c(1:3),
-#' b = c(4:6),
-#' c = c(7:9)
-#' )
-#' obj <- pla(data)
-#' print(obj)
+#' require(AER)
+#' data("OECDGrowth")
+#'
+#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#' print(pla_obj)
 #' 
 #' @export
 print.pla <- function(x, ...) {
@@ -168,10 +166,10 @@ print.pla <- function(x, ...) {
 
 #' @title Keep Blocks
 #'
-#' Used to only keep each variable of the original data set which is part of any
-#' of the blocks according to the passed indices.
+#' @description Used pass the indices of the blocks we want to keep (i.e. we want
+#' not to be discarded).
 #'
-#' @param object a pla object.
+#' @param object a \code{pla} object.
 #' @param blocks a list of numeric values indicating the indices of the blocks
 #' that should be kept.
 #' @param ... further arguments passed to or from other methods.
@@ -179,24 +177,28 @@ print.pla <- function(x, ...) {
 #' @return
 #' list of the following attributes:
 #' \item{x}{
-#'   a numeric matrix or data frame which equals the input data for the pla
-#'   object without any feature that is not part of the blocks that should be
-#'   kept.
+#'   a numeric matrix or data frame containing the reduced set of original
+#'   variables.
 #' }
 #' \item{cc_matrix}{
-#'   a numeric matrix or data frame which contains either the conditional
-#'   covariance or correlation matrix.
+#'   a numeric matrix or data frame which contains the conditional dispersion
+#'   matrix. Depending on the pla procedure, this is either the conditional
+#'   covariance matrix or the conditional correlation matrix.
 #' }
 #'
 #' @examples
-#' data <- data.frame(
-#' a = c(1:3),
-#' b = c(4:6),
-#' c = c(7:9),
-#' d = c(10:12)
-#' )
-#' obj <- pla(data)
-#' data <- pla.keep_blocks(obj, c(1))
+#' require(AER)
+#' data("OECDGrowth")
+#'
+#' pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#'
+#' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
+#' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+#' ## (randd), explains only 5.76% of the overall variance.
+#' ## Hence discarding this block seems appropriate. Therefore,
+#' ## we keep block 2 and block 3
+#'
+#' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 #' 
 #' @export
 pla.keep_blocks <- function(object, blocks, ...) {
@@ -219,8 +221,7 @@ pla.keep_blocks <- function(object, blocks, ...) {
 
 #' @title Drop Blocks
 #'
-#' Used to remove each variable from the original data set which is part of any
-#' of the blocks according to the passed indices.
+#' @description Used to pass the indices of the blocks we want to discard.
 #'
 #' @param object a pla object.
 #' @param blocks a list of numeric values indicating the indices of the blocks
@@ -230,24 +231,28 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #' @return
 #' list of the following attributes:
 #' \item{x}{
-#'   a numeric matrix or data frame which equals the input data for the pla
-#'   object without any feature that is not part of the blocks that should be
-#'   removed.
+#'   a numeric matrix or data frame containing the reduced set of original
+#'   variables.
 #' }
 #' \item{cc_matrix}{
-#'   a numeric matrix or data frame which contains either the conditional
-#'   covariance or correlation matrix.
+#'   a numeric matrix or data frame which contains the conditional dispersion
+#'   matrix. Depending on the pla procedure, this is either the conditional
+#'   covariance matrix or the conditional correlation matrix.
 #' }
 #'
 #' @examples
-#' data <- data.frame(
-#' a = c(1:3),
-#' b = c(4:6),
-#' c = c(7:9),
-#' d = c(10:12)
-#' )
-#' obj <- pla(data)
-#' data <- pla.drop_blocks(obj, c(1))
+#' require(AER)
+#' data("OECDGrowth")
+#'
+#' pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#'
+#' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
+#' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+#' ## (randd), explains only 5.76% of the overall variance.
+#' ## Hence discarding this block seems appropriate.
+#'
+#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
 #' 
 #' @export
 pla.drop_blocks <- function(object, blocks, ...) {
