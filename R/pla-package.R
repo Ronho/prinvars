@@ -1,11 +1,11 @@
-#' @title Principal Loading Analysis Package
+#' @title Principal Variables Package
 #'
-#' This package is an implementation of the principal loading analysis.
+#' This package provides methods for dimensionality reduction.
 #'
 #' @references
 #' \insertRef{Bauer.19.02.2021}{pla}
 #' \insertRef{Bauer.10.07.2020}{pla}
-#' @aliases pla-package
+#' @aliases pv-package
 #' @keywords internal
 "_PACKAGE"
 
