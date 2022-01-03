@@ -1,4 +1,4 @@
-# Principle Variables
+# Principal Variables
 R Package for dimensionality reduction methods such as Principal Loading Analysis. 
 
 <!-- badges: start -->
