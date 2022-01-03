@@ -8,7 +8,7 @@
 
 #' @title Principal Loading Analysis
 #'
-#' description This function performs a principal loading analysis on the given data matrix.
+#' @description This function performs a principal loading analysis on the given data matrix.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
@@ -20,36 +20,36 @@
 #' "small" values inside the eigenvectors. If multiple values are given, a list
 #' of pla results will be returned.
 #' @param threshold_mode a character string indicating how the threshold is
-#' determined and used. \item{cutoff} indicates that the threshold value is used as
-#' a general maximum for all elements. \item{percentage} indicates that the cutoff
+#' determined and used. \code{cutoff} indicates that the threshold value is used as
+#' a general maximum for all elements. \codepercentage} indicates that the cutoff
 #' value is determined by the maximum element of each vector multiplied with the
-#' threshold value. The default is set to \item{cutoff}.
+#' threshold value. The default is set to \code{cutoff}.
 #' @param expvar a character string indicating the method used for calculating
-#' the explained variance. \item{approx} uses the explained variances of each
-#' eigenvectors i.e. their eigenvalues. \item{exact} uses the variance of each variable.
+#' the explained variance. \code{approx} uses the explained variances of each
+#' eigenvectors i.e. their eigenvalues. \code{exact} uses the variance of each variable.
 #' @param check a character string indicating if only rows, or if rows as well as columns
-#' are used to detect the underlying block structure. \item{rows} checks if the rows fullfill
-#' the required structure. \item{rnc} checks if rows and columns fullfill the required structure.
+#' are used to detect the underlying block structure. \code{rows} checks if the rows fullfill
+#' the required structure. \code{rnc} checks if rows and columns fullfill the required structure.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
 #' single or list of pla class containing the following attributes:
 #' \item{x}{
-#'   a numeric matrix or data frame which equals the input of \item{x}.
+#'   a numeric matrix or data frame which equals the input of \code{x}.
 #' }
 #' \item{c}{
 #'   a numeric matrix or data frame which is the covariance or correlation
-#'   matrix based on the input of \item{cov}.
+#'   matrix based on the input of \code{cov}.
 #' }
 #' \item{loadings}{
 #'   a matrix of variable loadings (i.e. a matrix containing the
 #'   eigenvectors of the dispersion matrix).
 #' }
 #' \item{threshold}{
-#'   a numeric value which equals the input of \item{thresholds}.
+#'   a numeric value which equals the input of \code{thresholds}.
 #' }
 #' \item{threshold_mode}{
-#'   a character string which equals the input of \item{threshold_mode}.
+#'   a character string which equals the input of \code{threshold_mode}.
 #' }
 #' \item{blocks}{
 #'   a list of blocks which are identified by principal loading analysis.
