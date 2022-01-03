@@ -69,7 +69,7 @@
 pla <- function(x,
                 cor = FALSE,
                 scaled_ev = FALSE,
-                thresholds = 0.3,
+                thresholds = 0.33,
                 threshold_mode = "cutoff",
                 expvar = "approx",
                 check = "rnc",
