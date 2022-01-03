@@ -8,7 +8,7 @@
 
 #' @title Principal Loading Analysis
 #'
-#' This function performs principal loading analysis on a data set.
+#' This function performs a principal loading analysis on the given data matrix.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
