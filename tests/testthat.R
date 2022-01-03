@@ -1,4 +1,4 @@
 library(testthat)
-library(pla)
+library(pv)
 
-test_check("pla")
+test_check("pv")
