@@ -22,8 +22,8 @@ Imports: methods, Rdpack
 RdMacros: Rdpack
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/Ronho/pla
-BugReports: https://github.com/Ronho/pla/issues
+URL: https://github.com/Ronho/prinvars
+BugReports: https://github.com/Ronho/prinvars/issues
 RoxygenNote: 7.1.1.9001
 Collate: 
     'block.R'

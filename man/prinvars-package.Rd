@@ -17,8 +17,8 @@ This package provides methods for reducing the number of features within a data 
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/Ronho/pla}
-  \item Report bugs at \url{https://github.com/Ronho/pla/issues}
+  \item \url{https://github.com/Ronho/prinvars}
+  \item Report bugs at \url{https://github.com/Ronho/prinvars/issues}
 }
 
 }
