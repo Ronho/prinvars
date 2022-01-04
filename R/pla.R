@@ -21,16 +21,15 @@
 #' "small" values inside the eigenvectors. If multiple values are given, a list
 #' of pla results will be returned.
 #' @param threshold_mode a character string indicating how the threshold is
-#' determined and used. \code{cutoff} indicates that the threshold value is used as
-#' a general maximum for all elements. \code{percentage} indicates that the cutoff
-#' value is determined by the maximum element of each vector multiplied with the
-#' threshold value. The default is set to \code{cutoff}.
+#' determined and used. \code{cutoff} indicates the usage of a threshold value.
+#' \code{percentage} indicates that the cutoff value is determined by the maximum
+#' element of each vector multiplied with the threshold value.
 #' @param expvar a character string indicating the method used for calculating
-#' the explained variance. \code{approx} uses the explained variances of each
-#' eigenvectors i.e. their eigenvalues. \code{exact} uses the variance of each variable.
-#' @param check a character string indicating if only rows, or if rows as well as columns
-#' are used to detect the underlying block structure. \code{rows} checks if the rows fullfill
-#' the required structure. \code{rnc} checks if rows and columns fullfill the required structure.
+#' the explained variance. \code{approx} uses the explained variance of each
+#' eigenvector i.e. its eigenvalue. \code{exact} uses the variance of each variable.
+#' @param check a character string indicating if only rows or rows as well as columns
+#' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
+#' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -72,7 +71,7 @@
 #' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
 #' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
 #' ## (randd), explains only 5.76% of the overall variance.
-#' ## Hence discarding this block seems appropriate.
+#' ## Hence, discarding this block seems appropriate.
 #'
 #' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 #' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
@@ -170,8 +169,8 @@ print.pla <- function(x, ...) {
 
 #' @title Keep Blocks
 #'
-#' @description Used pass the indices of the blocks we want to keep (i.e. we want
-#' not to be discarded).
+#' @description Used to pass the indices of the blocks we want to keep 
+#' (i.e. which we do no want to be discarded).
 #'
 #' @param object a \code{pla} object.
 #' @param blocks a list of numeric values indicating the indices of the blocks
@@ -200,7 +199,7 @@ print.pla <- function(x, ...) {
 #' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
 #' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
 #' ## (randd), explains only 5.76% of the overall variance.
-#' ## Hence discarding this block seems appropriate. Therefore,
+#' ## Hence, discarding this block seems appropriate. Therefore,
 #' ## we keep block 2 and block 3
 #'
 #' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
@@ -256,7 +255,7 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
 #' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
 #' ## (randd), explains only 5.76% of the overall variance.
-#' ## Hence discarding this block seems appropriate.
+#' ## Hence, discarding this block seems appropriate.
 #'
 #' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 #' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
