@@ -31,6 +31,7 @@ Used pass the indices of the blocks we want to keep (i.e. we want
 not to be discarded).
 }
 \examples{
+\dontrun{
 require(AER)
 data("OECDGrowth")
 
@@ -43,5 +44,6 @@ pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 ## we keep block 2 and block 3
 
 pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+}
 
 }

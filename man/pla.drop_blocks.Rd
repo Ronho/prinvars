@@ -30,6 +30,7 @@ list of the following attributes:
 Used to pass the indices of the blocks we want to discard.
 }
 \examples{
+\dontrun{
 require(AER)
 data("OECDGrowth")
 
@@ -42,5 +43,6 @@ pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 
 pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+}
 
 }

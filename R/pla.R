@@ -59,6 +59,7 @@
 #' \url{https://dl.acm.org/doi/10.1145/3475827.3475832} for more information.
 #' 
 #' @examples
+#' \dontrun{
 #' require(AER)
 #' data("OECDGrowth")
 #'
@@ -80,6 +81,7 @@
 #' ## the blocks we want to discard might be more convenient.
 #'
 #' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+#' }
 #' 
 #' @export
 pla <- function(x,
@@ -117,15 +119,17 @@ pla <- function(x,
 #'
 #' @description Prints the blocks, threshold, threshold_mode and the loadings.
 #'
-#' @param \code{x} a pla object.
+#' @param x a pla object.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @examples
+#' \dontrun{
 #' require(AER)
 #' data("OECDGrowth")
 #'
 #' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 #' print(pla_obj)
+#' }
 #' 
 #' @export
 print.pla <- function(x, ...) {
@@ -187,6 +191,7 @@ print.pla <- function(x, ...) {
 #' }
 #'
 #' @examples
+#' \dontrun{
 #' require(AER)
 #' data("OECDGrowth")
 #'
@@ -199,6 +204,7 @@ print.pla <- function(x, ...) {
 #' ## we keep block 2 and block 3
 #'
 #' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+#' }
 #' 
 #' @export
 pla.keep_blocks <- function(object, blocks, ...) {
@@ -241,6 +247,7 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #' }
 #'
 #' @examples
+#' \dontrun{
 #' require(AER)
 #' data("OECDGrowth")
 #'
@@ -253,6 +260,7 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #'
 #' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 #' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+#' }
 #' 
 #' @export
 pla.drop_blocks <- function(object, blocks, ...) {

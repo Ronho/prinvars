@@ -75,6 +75,7 @@ This function performs a principal loading analysis on the given
 data matrix and returns the results as an object of class \code{pla}.
 }
 \examples{
+\dontrun{
 require(AER)
 data("OECDGrowth")
 
@@ -96,5 +97,6 @@ pla.drop_blocks(pla_obj, c(1)) ## drop block 1
 ## the blocks we want to discard might be more convenient.
 
 pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+}
 
 }

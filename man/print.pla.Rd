@@ -7,18 +7,20 @@
 \method{print}{pla}(x, ...)
 }
 \arguments{
-\item{...}{further arguments passed to or from other methods.}
+\item{x}{a pla object.}
 
-\item{\code{x}}{a pla object.}
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Prints the blocks, threshold, threshold_mode and the loadings.
 }
 \examples{
+\dontrun{
 require(AER)
 data("OECDGrowth")
 
 pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 print(pla_obj)
+}
 
 }
