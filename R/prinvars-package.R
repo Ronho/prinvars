@@ -12,6 +12,7 @@
 ## Import used global functions
 #' @importFrom methods new
 #' @importFrom stats cov cor
+#' @importFrom Rdpack reprompt
 
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
