@@ -11,7 +11,7 @@ R Package for dimensionality reduction methods such as Principal Loading Analysi
 # Install pla from CRAN (WIP)
 install.packages("devtools")
 
-# Or the development version from GitHub:
+# Or the version from GitHub:
 # install.packages("devtools")
-devtools::install_github("Ronho/pla")
+devtools::install_github("Ronho/prinvars")
 ```
