@@ -1,4 +1,4 @@
-Package: pv
+Package: prinvars
 Type: Package
 Title: Principal Variables
 Version: 0.1.0
@@ -34,7 +34,7 @@ Collate:
     'scale.R'
     'utils.R'
     'pla.R'
-    'pv-package.R'
+    'prinvars-package.R'
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

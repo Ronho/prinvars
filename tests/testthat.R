@@ -1,4 +1,4 @@
 library(testthat)
-library(pv)
+library(prinvars)
 
-test_check("pv")
+test_check("prinvars")
