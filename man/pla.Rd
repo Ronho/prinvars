@@ -30,18 +30,17 @@ be scaled.}
 of pla results will be returned.}
 
 \item{threshold_mode}{a character string indicating how the threshold is
-determined and used. \code{cutoff} indicates that the threshold value is used as
-a general maximum for all elements. \code{percentage} indicates that the cutoff
-value is determined by the maximum element of each vector multiplied with the
-threshold value. The default is set to \code{cutoff}.}
+determined and used. \code{cutoff} indicates the usage of a threshold value.
+\code{percentage} indicates that the cutoff value is determined by the maximum
+element of each vector multiplied with the threshold value.}
 
 \item{expvar}{a character string indicating the method used for calculating
-the explained variance. \code{approx} uses the explained variances of each
-eigenvectors i.e. their eigenvalues. \code{exact} uses the variance of each variable.}
+the explained variance. \code{approx} uses the explained variance of each
+eigenvector i.e. its eigenvalue. \code{exact} uses the variance of each variable.}
 
-\item{check}{a character string indicating if only rows, or if rows as well as columns
-are used to detect the underlying block structure. \code{rows} checks if the rows fullfill
-the required structure. \code{rnc} checks if rows and columns fullfill the required structure.}
+\item{check}{a character string indicating if only rows or rows as well as columns
+are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
+the required structure. \code{rnc} checks if rows and columns fulfill the required structure.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
@@ -88,7 +87,7 @@ pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 ## we obtain three blocks: (randd), (gdp85,gdp60) and 
 ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
 ## (randd), explains only 5.76\% of the overall variance.
-## Hence discarding this block seems appropriate.
+## Hence, discarding this block seems appropriate.
 
 pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 pla.drop_blocks(pla_obj, c(1)) ## drop block 1

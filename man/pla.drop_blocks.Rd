@@ -39,7 +39,7 @@ pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 ## we obtain three blocks: (randd), (gdp85,gdp60) and 
 ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
 ## (randd), explains only 5.76\% of the overall variance.
-## Hence discarding this block seems appropriate.
+## Hence, discarding this block seems appropriate.
 
 pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 pla.drop_blocks(pla_obj, c(1)) ## drop block 1
