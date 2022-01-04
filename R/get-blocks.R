@@ -105,7 +105,7 @@ find_combination <- function(
       if (!is.atomic(result)) {
         return(result)
       } else {
-        current_combination <- head(current_combination, -1)
+        current_combination <- current_combination[1:(length(current_combination)-1)]
       }
     }
     return(FALSE)

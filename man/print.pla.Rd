@@ -2,9 +2,7 @@
 % Please edit documentation in R/pla.R
 \name{print.pla}
 \alias{print.pla}
-\title{Print Function for pla S3
-
-Prints the blocks, threshold, threshold_mode and the loadings.}
+\title{Print Function for pla S3}
 \usage{
 \method{print}{pla}(x, ...)
 }
@@ -14,17 +12,15 @@ Prints the blocks, threshold, threshold_mode and the loadings.}
 \item{...}{further arguments passed to or from other methods.}
 }
 \description{
-Print Function for pla S3
-
 Prints the blocks, threshold, threshold_mode and the loadings.
 }
 \examples{
-data <- data.frame(
-a = c(1:3),
-b = c(4:6),
-c = c(7:9)
-)
-obj <- pla(data)
-print(obj)
+\dontrun{
+require(AER)
+data("OECDGrowth")
+
+pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+print(pla_obj)
+}
 
 }

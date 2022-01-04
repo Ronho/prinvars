@@ -2,15 +2,12 @@
 % Please edit documentation in R/pla.R
 \name{pla.keep_blocks}
 \alias{pla.keep_blocks}
-\title{Keep Blocks
-
-Used to only keep each variable of the original data set which is part of any
-of the blocks according to the passed indices.}
+\title{Keep Blocks}
 \usage{
 pla.keep_blocks(object, blocks, ...)
 }
 \arguments{
-\item{object}{a pla object.}
+\item{object}{a \code{pla} object.}
 
 \item{blocks}{a list of numeric values indicating the indices of the blocks
 that should be kept.}
@@ -20,29 +17,33 @@ that should be kept.}
 \value{
 list of the following attributes:
 \item{x}{
-  a numeric matrix or data frame which equals the input data for the pla
-  object without any feature that is not part of the blocks that should be
-  kept.
+  a numeric matrix or data frame containing the reduced set of original
+  variables.
 }
 \item{cc_matrix}{
-  a numeric matrix or data frame which contains either the conditional
-  covariance or correlation matrix.
+  a numeric matrix or data frame which contains the conditional dispersion
+  matrix. Depending on the pla procedure, this is either the conditional
+  covariance matrix or the conditional correlation matrix.
 }
 }
 \description{
-Keep Blocks
-
-Used to only keep each variable of the original data set which is part of any
-of the blocks according to the passed indices.
+Used to pass the indices of the blocks we want to keep 
+(i.e. which we do no want to be discarded).
 }
 \examples{
-data <- data.frame(
-a = c(1:3),
-b = c(4:6),
-c = c(7:9),
-d = c(10:12)
-)
-obj <- pla(data)
-data <- pla.keep_blocks(obj, c(1))
+\dontrun{
+require(AER)
+data("OECDGrowth")
+
+pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+
+## we obtain three blocks: (randd), (gdp85,gdp60) and 
+## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+## (randd), explains only 5.76\% of the overall variance.
+## Hence, discarding this block seems appropriate. Therefore,
+## we keep block 2 and block 3
+
+pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+}
 
 }

@@ -2,10 +2,7 @@
 % Please edit documentation in R/pla.R
 \name{pla.drop_blocks}
 \alias{pla.drop_blocks}
-\title{Drop Blocks
-
-Used to remove each variable from the original data set which is part of any
-of the blocks according to the passed indices.}
+\title{Drop Blocks}
 \usage{
 pla.drop_blocks(object, blocks, ...)
 }
@@ -20,29 +17,32 @@ that should be removed.}
 \value{
 list of the following attributes:
 \item{x}{
-  a numeric matrix or data frame which equals the input data for the pla
-  object without any feature that is not part of the blocks that should be
-  removed.
+  a numeric matrix or data frame containing the reduced set of original
+  variables.
 }
 \item{cc_matrix}{
-  a numeric matrix or data frame which contains either the conditional
-  covariance or correlation matrix.
+  a numeric matrix or data frame which contains the conditional dispersion
+  matrix. Depending on the pla procedure, this is either the conditional
+  covariance matrix or the conditional correlation matrix.
 }
 }
 \description{
-Drop Blocks
-
-Used to remove each variable from the original data set which is part of any
-of the blocks according to the passed indices.
+Used to pass the indices of the blocks we want to discard.
 }
 \examples{
-data <- data.frame(
-a = c(1:3),
-b = c(4:6),
-c = c(7:9),
-d = c(10:12)
-)
-obj <- pla(data)
-data <- pla.drop_blocks(obj, c(1))
+\dontrun{
+require(AER)
+data("OECDGrowth")
+
+pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+
+## we obtain three blocks: (randd), (gdp85,gdp60) and 
+## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+## (randd), explains only 5.76\% of the overall variance.
+## Hence, discarding this block seems appropriate.
+
+pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+}
 
 }

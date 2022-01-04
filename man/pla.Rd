@@ -2,9 +2,7 @@
 % Please edit documentation in R/pla.R
 \name{pla}
 \alias{pla}
-\title{Principal Loading Analysis
-
-This function performs principal loading analysis on a data set.}
+\title{Principal Loading Analysis}
 \usage{
 pla(
   x,
@@ -22,71 +20,82 @@ pla(
 principal loading analysis.}
 
 \item{cor}{a logical value indicating whether the calculation should use the
-correlation or the covariance matrix. The default is set to "TRUE" indicating
-the use of the correlation matrix.}
+correlation or the covariance matrix.}
 
 \item{scaled_ev}{a logical value indicating whether the eigenvectors should
-be scaled. The default is set to "FALSE".}
+be scaled.}
 
-\item{thresholds}{a numeric or list of numeric used to determine "small"
-values inside the eigenvectors. If multiple values are given, a list of pla
-results will be returned. The default is set to 0.33.}
+\item{thresholds}{a numeric value or list of numeric values used to determine
+"small" values inside the eigenvectors. If multiple values are given, a list
+of pla results will be returned.}
 
 \item{threshold_mode}{a character string indicating how the threshold is
-determined and used. "cutoff" indicates that the threshold value is used as
-a general maximum for all elements. "percentage" indicates that the cutoff
-value is determined by the maximum element of each vector multiplied with the
-threshold value. The default is set to "cutoff".}
+determined and used. \code{cutoff} indicates the usage of a threshold value.
+\code{percentage} indicates that the cutoff value is determined by the maximum
+element of each vector multiplied with the threshold value.}
 
 \item{expvar}{a character string indicating the method used for calculating
-the explained variance."approx" indicates the use of an approximation.
-"exact" indicates the exact calculation. The default is set to "approx".}
+the explained variance. \code{approx} uses the explained variance of each
+eigenvector i.e. its eigenvalue. \code{exact} uses the variance of each variable.}
 
-\item{check}{a character string indicating if only rows or rows and columns
-are used."rows" checks if the rows fullfill the required structure. "rnc"
-checks if rows and columns fullfill the required structure. The default is
-set to "rnc".}
+\item{check}{a character string indicating if only rows or rows as well as columns
+are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
+the required structure. \code{rnc} checks if rows and columns fulfill the required structure.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
 single or list of pla class containing the following attributes:
 \item{x}{
-  a numeric matrix or data frame which equals the input of 'x'.
+  a numeric matrix or data frame which equals the input of \code{x}.
 }
 \item{c}{
   a numeric matrix or data frame which is the covariance or correlation
-  matrix based on the input of 'cov'.
+  matrix based on the input of \code{cov}.
 }
 \item{loadings}{
-  a matrix of variable loadings (i.e., a matrix whose columns contain the
-  eigenvectors).
+  a matrix of variable loadings (i.e. a matrix containing the
+  eigenvectors of the dispersion matrix).
 }
 \item{threshold}{
-  a numeric value which equals the input of thresholds at the corresponding
-  position.
+  a numeric value which equals the input of \code{thresholds}.
 }
 \item{threshold_mode}{
-  a character string which equals the input of threshold_mode.
+  a character string which equals the input of \code{threshold_mode}.
 }
 \item{blocks}{
-  a list of blocks which are identified through the principal loading
-  analysis.
+  a list of blocks which are identified by principal loading analysis.
 }
-See \url{https://arxiv.org/pdf/2007.05215.pdf},
-\url{https://arxiv.org/pdf/2102.09912.pdf} for more information.
+See \url{https://www.sciencedirect.com/science/article/pii/S0047259X21000324} and
+\url{https://dl.acm.org/doi/10.1145/3475827.3475832} for more information.
 }
 \description{
-Principal Loading Analysis
-
-This function performs principal loading analysis on a data set.
+This function performs a principal loading analysis on the given
+data matrix and returns the results as an object of class \code{pla}.
 }
 \examples{
-data <- data.frame(
-a = c(1:3),
-b = c(4:6),
-c = c(7:9)
-)
-pla(data)
+\dontrun{
+require(AER)
+data("OECDGrowth")
+
+## the scales in OECDGrowth differ hence using the
+## correlation matrix is highly recommended
+
+pla(OECDGrowth,thresholds = 0.5) ## not recommended
+pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+
+## we obtain three blocks: (randd), (gdp85,gdp60) and 
+## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+## (randd), explains only 5.76\% of the overall variance.
+## Hence, discarding this block seems appropriate.
+
+pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+
+## Sometimes, considering the blocks we keep rather than
+## the blocks we want to discard might be more convenient.
+
+pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+}
 
 }

@@ -1,6 +1,6 @@
-Package: pla
+Package: prinvars
 Type: Package
-Title: Principal Loading Analysis
+Title: Principal Variables
 Version: 0.1.0
 Authors@R: c(
         person(
@@ -16,25 +16,25 @@ Authors@R: c(
             role = c("aut", "cre")
         )
     )
-Description: This package provides principal loading analysis, a method for reducing the number of features within a data set.
+Description: This package provides methods for reducing the number of features within a data set.
 License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/Ronho/pla
-BugReports: https://github.com/Ronho/pla/issues
+URL: https://github.com/Ronho/prinvars
+BugReports: https://github.com/Ronho/prinvars/issues
 RoxygenNote: 7.1.1.9001
 Collate: 
     'block.R'
     'cor.R'
     'explained-variance.R'
     'get-blocks.R'
-    'pla-package.R'
     'thresholding.R'
     'scale.R'
     'utils.R'
     'pla.R'
+    'prinvars-package.R'
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
