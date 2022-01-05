@@ -7,6 +7,7 @@
 #' @slot explained_varaiance a numeric which contains the variance explained of
 #' the blocks variables based on the whole data set.
 #' @slot is_valid a logical which indicates if the block structure is valid.
+#' @export 
 setClass(
   "Block",
   representation(
@@ -26,7 +27,6 @@ setClass(
 #' @examples
 #' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 #' print(block)
-#' @export
 setMethod(
   f = "show",
   signature = "Block",
@@ -44,7 +44,6 @@ setMethod(
 #' @examples
 #' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
 #' str(block)
-#' @export
 setMethod(
   f = "str",
   signature = "Block",
