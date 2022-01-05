@@ -66,8 +66,7 @@ single or list of pla class containing the following attributes:
 \item{blocks}{
   a list of blocks which are identified by principal loading analysis.
 }
-See \url{https://www.sciencedirect.com/science/article/pii/S0047259X21000324} and
-\url{https://dl.acm.org/doi/10.1145/3475827.3475832} for more information.
+See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} for more information.
 }
 \description{
 This function performs a principal loading analysis on the given

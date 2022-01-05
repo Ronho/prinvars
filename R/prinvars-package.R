@@ -3,8 +3,8 @@
 #' This package provides methods for dimensionality reduction.
 #'
 #' @references
-#' \insertRef{Bauer.19.02.2021}{prinvars}
-#' \insertRef{Bauer.10.07.2020}{prinvars}
+#' \insertRef{Bauer.06242021}{prinvars}
+#' \insertRef{Bauer.2021}{prinvars}
 #' @aliases prinvars-package
 #' @keywords internal
 "_PACKAGE"

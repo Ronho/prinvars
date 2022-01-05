@@ -16,7 +16,7 @@ Authors@R: c(
             role = c("aut", "cre")
         )
     )
-Description: This package provides methods for reducing the number of features within a data set.
+Description: Provides methods for reducing the number of features within a data set.
 License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
@@ -24,7 +24,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/Ronho/prinvars
 BugReports: https://github.com/Ronho/prinvars/issues
-RoxygenNote: 7.1.1.9001
+RoxygenNote: 7.1.2
 Collate: 
     'block.R'
     'cor.R'
