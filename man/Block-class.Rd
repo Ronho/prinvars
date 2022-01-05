@@ -13,7 +13,7 @@ the generated blocks.
 \describe{
 \item{\code{features}}{a vector of numeric which contains the indices of the block.}
 
-\item{\code{explained_varaiance}}{a numeric which contains the variance explained of
+\item{\code{explained_variance}}{a numeric which contains the variance explained of
 the blocks variables based on the whole data set.}
 
 \item{\code{is_valid}}{a logical which indicates if the block structure is valid.}

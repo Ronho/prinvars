@@ -4,7 +4,7 @@
 #' the generated blocks.
 #'
 #' @slot features a vector of numeric which contains the indices of the block.
-#' @slot explained_varaiance a numeric which contains the variance explained of
+#' @slot explained_variance a numeric which contains the variance explained of
 #' the blocks variables based on the whole data set.
 #' @slot is_valid a logical which indicates if the block structure is valid.
 #' @export 
