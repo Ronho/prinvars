@@ -11,8 +11,8 @@ This package provides methods for dimensionality reduction.}
 This package provides methods for reducing the number of features within a data set.
 }
 \references{
-\insertRef{Bauer.19.02.2021}{prinvars}
-\insertRef{Bauer.10.07.2020}{prinvars}
+\insertRef{Bauer.06242021}{prinvars}
+\insertRef{Bauer.2021}{prinvars}
 }
 \seealso{
 Useful links:
