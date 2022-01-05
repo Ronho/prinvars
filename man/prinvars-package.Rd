@@ -8,7 +8,7 @@
 
 This package provides methods for dimensionality reduction.}
 \description{
-This package provides methods for reducing the number of features within a data set.
+Provides methods for reducing the number of features within a data set.
 }
 \references{
 \insertRef{Bauer.06242021}{prinvars}

@@ -16,7 +16,7 @@ Authors@R: c(
             role = c("aut", "cre")
         )
     )
-Description: This package provides methods for reducing the number of features within a data set.
+Description: Provides methods for reducing the number of features within a data set.
 License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
