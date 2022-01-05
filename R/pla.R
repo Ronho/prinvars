@@ -167,29 +167,6 @@ print.pla <- function(x, ...) {
   invisible(x)
 }
 
-#' @title Show Function for pla S3
-#'
-#' @description Shows the blocks, threshold, threshold_mode and the loadings.
-#'
-#' @param x a pla object.
-#' @param ... further arguments passed to or from other methods.
-#'
-#' @examples
-#' \dontrun{
-#' require(AER)
-#' data("OECDGrowth")
-#'
-#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
-#' show(pla_obj)
-#' }
-#' 
-#' @export
-pla.show <- function(x, ...) {
-  chkDots(...)
-  print(x)
-  invisible(NULL)
-}
-
 #' @title Keep Blocks
 #'
 #' @description Used to pass the indices of the blocks we want to keep 
