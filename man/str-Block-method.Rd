@@ -11,6 +11,9 @@ Generic function to create a string out of the blocks structure.}
 \arguments{
 \item{object}{block.}
 }
+\value{
+A string representing the Block.
+}
 \description{
 Block - str
 

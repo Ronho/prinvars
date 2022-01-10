@@ -23,6 +23,9 @@ setClass(
 #' Prints the blocks structure.
 #'
 #' @param object block.
+#' 
+#' @return
+#' No return value.
 #'
 #' @examples
 #' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
@@ -40,6 +43,9 @@ setMethod(
 #' Generic function to create a string out of the blocks structure.
 #'
 #' @param object block.
+#' 
+#' @return 
+#' A string representing the Block.
 #'
 #' @examples
 #' block <- new("Block", features = c(2, 5), explained_variance = 0.03)

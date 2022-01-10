@@ -11,6 +11,9 @@ Prints the blocks structure.}
 \arguments{
 \item{object}{block.}
 }
+\value{
+No return value.
+}
 \description{
 Block - Show
 

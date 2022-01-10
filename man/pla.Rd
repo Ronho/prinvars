@@ -73,7 +73,7 @@ This function performs a principal loading analysis on the given
 data matrix and returns the results as an object of class \code{pla}.
 }
 \examples{
-\dontrun{
+if(requireNamespace("AER")){
 require(AER)
 data("OECDGrowth")
 

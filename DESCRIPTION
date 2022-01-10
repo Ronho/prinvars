@@ -16,7 +16,7 @@ Authors@R: c(
             role = c("aut", "cre")
         )
     )
-Description: Provides methods for reducing the number of features within a data set.
+Description: Provides methods for reducing the number of features within a data set. See Bauer JO (2021) <doi:10.1145/3475827.3475832> and Bauer JO, Drabant B (2021) <doi:10.1016/j.jmva.2021.104754> for more information on principal loading analysis.
 License: MIT + file LICENSE
 Imports: methods, Rdpack
 RdMacros: Rdpack
@@ -36,5 +36,6 @@ Collate:
     'pla.R'
     'prinvars-package.R'
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    AER
 Config/testthat/edition: 3

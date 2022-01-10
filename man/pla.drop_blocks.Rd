@@ -30,7 +30,7 @@ list of the following attributes:
 Used to pass the indices of the blocks we want to discard.
 }
 \examples{
-\dontrun{
+if(requireNamespace("AER")){
 require(AER)
 data("OECDGrowth")
 
