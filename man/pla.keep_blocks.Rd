@@ -31,7 +31,7 @@ Used to pass the indices of the blocks we want to keep
 (i.e. which we do no want to be discarded).
 }
 \examples{
-\dontrun{
+if(requireNamespace("AER")){
 require(AER)
 data("OECDGrowth")
 
@@ -43,6 +43,7 @@ pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 ## Hence, discarding this block seems appropriate. Therefore,
 ## we keep block 2 and block 3
 
+pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 }
 

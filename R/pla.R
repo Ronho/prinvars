@@ -57,7 +57,7 @@
 #' See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} for more information.
 #' 
 #' @examples
-#' \dontrun{
+#' if(requireNamespace("AER")){
 #' require(AER)
 #' data("OECDGrowth")
 #'
@@ -119,9 +119,12 @@ pla <- function(x,
 #'
 #' @param x a pla object.
 #' @param ... further arguments passed to or from other methods.
+#' 
+#' @return
+#' A pla object which equals the input of \code{x}.
 #'
 #' @examples
-#' \dontrun{
+#' if(requireNamespace("AER")){
 #' require(AER)
 #' data("OECDGrowth")
 #'
@@ -189,7 +192,7 @@ print.pla <- function(x, ...) {
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' if(requireNamespace("AER")){
 #' require(AER)
 #' data("OECDGrowth")
 #'
@@ -200,7 +203,8 @@ print.pla <- function(x, ...) {
 #' ## (randd), explains only 5.76% of the overall variance.
 #' ## Hence, discarding this block seems appropriate. Therefore,
 #' ## we keep block 2 and block 3
-#'
+#' 
+#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
 #' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 #' }
 #' 
@@ -245,7 +249,7 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' if(requireNamespace("AER")){
 #' require(AER)
 #' data("OECDGrowth")
 #'

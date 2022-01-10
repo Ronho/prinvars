@@ -11,11 +11,14 @@
 
 \item{...}{further arguments passed to or from other methods.}
 }
+\value{
+A pla object which equals the input of \code{x}.
+}
 \description{
 Prints the blocks, threshold, threshold_mode and the loadings.
 }
 \examples{
-\dontrun{
+if(requireNamespace("AER")){
 require(AER)
 data("OECDGrowth")
 
