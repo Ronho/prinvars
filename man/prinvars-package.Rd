@@ -27,7 +27,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Jan Bauer [contributor]
+  \item Jan O. Bauer [contributor]
 }
 
 }

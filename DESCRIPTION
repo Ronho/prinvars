@@ -1,10 +1,10 @@
 Package: prinvars
 Type: Package
 Title: Principal Variables
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
         person(
-            given = "Jan", 
+            given = "Jan O.", 
             family = "Bauer", 
             email = "", 
             role = c("aut", "ctb")
