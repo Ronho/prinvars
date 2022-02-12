@@ -282,3 +282,122 @@ pla.drop_blocks <- function(object, blocks, ...) {
 
   return(result)
 }
+
+#' @title Sparse Principal Loading Analysis
+#'
+#' @description Sparse PLA
+#'
+#' @param x a numeric matrix or data frame which provides the data for the
+#' sparse principal loading analysis.
+#' @param cor a logical value indicating whether the calculation should use the
+#' correlation or the covariance matrix. This option is only effective if the
+#' parameter orthogonol is set to TRUE.
+#' @param threshold a numeric value used to determine "small" values inside the
+#' loadings. This option is only effective if the parameter orthogonol is set to FALSE.
+#' @param threshold_mode a character string indicating how the threshold is
+#' determined and used. \code{cutoff} indicates the usage of a threshold value.
+#' \code{percentage} indicates that the cutoff value is determined by the maximum
+#' element of each vector multiplied with the threshold value. This option is only
+#' effective if the parameter orthogonol is set to FALSE.
+#' @param expvar a character string indicating the method used for calculating
+#' the explained variance. \code{approx} uses the explained variance of each
+#' eigenvector i.e. its eigenvalue. \code{exact} uses the variance of each variable.
+#' @param check a character string indicating if only rows or rows as well as columns
+#' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
+#' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
+#' @param orthogonal a logical value indicating whether ...
+#' @param type a character string indicating how ...
+#' @param lambda a numeric value used to determine ...
+#' @param para a numeric value used to determine ...
+#' @param ... further arguments passed to or from other methods.
+#'
+#' @return
+#' single or list of pla class containing the following attributes:
+#' \item{x}{
+#'   a numeric matrix or data frame which equals the input of \code{x}.
+#' }
+#' \item{loadings}{
+#'   a matrix of variable loadings (i.e. a matrix containing the
+#'   eigenvectors of the dispersion matrix).
+#' }
+#' \item{threshold}{
+#'   a numeric value which equals the input of \code{thresholds}.
+#' }
+#' \item{threshold_mode}{
+#'   a character string which equals the input of \code{threshold_mode}.
+#' }
+#' \item{blocks}{
+#'   a list of blocks which are identified by principal loading analysis.
+#' }
+#' @examples
+#' if(requireNamespace("AER")){
+#' require(AER)
+#' }
+#' 
+#' @export
+pla.spla <- function(x,
+                    cor = FALSE,
+                    threshold = 0.01,
+                    threshold_mode = "cutoff",
+                    expvar = "approx",
+                    check = "rnc",
+                    orthogonal = TRUE,
+                    type = "data",
+                    lambda = 0,
+                    para = 0.5,
+                    ...) {
+  chkDots(...)
+  feature_names <- get_feature_names(x=x)
+  num_vars <- dim(x)[2]
+  
+  if (orthogonal == TRUE) {
+    type <- select_sparse_type_orthogonal(type=type)
+    obj <- spEigen(X=x, q=num_vars, rho=para, data=type, thres=threshold)
+    eigen$vectors <- obj$vectors
+    eigen$values <- obj$values/sum(obj$values)
+    threshold_matrix <- eigen$vectors
+  } else {
+    type <- select_sparse_type_not_orthogonal(type=type)
+    if (length(para) == 1) {
+      para <- rep(para, num_vars)
+    }
+    obj <- spca(
+      x=x, K=num_vars,
+      para=para,
+      type=type,
+      sparse="penalty",
+      use.corr=cor,
+      max.iter=400
+    )
+    eigen$vectors <- obj$loadings
+    eigen$values <- obj$pev
+    threshold_matrix <- select_thresholding(
+      eigen_vectors=eigen$vectors,
+      threshold=threshold,
+      mode=threshold_mode
+    )
+  }
+
+  blocks <- get_blocks(
+    threshold_matrix=threshold_matrix,
+    feature_names=feature_names,
+    check=check
+  )
+  blocks <- calculate_explained_variance(
+    blocks=blocks,
+    eigen=eigen,
+    feature_names=feature_names,
+    type=expvar,
+    threshold_matrix=threshold_matrix
+  )
+  result <- list(
+    x=x,
+    loadings=eigen$vectors,
+    threshold=threshold,
+    threshold_mode=threshold_mode,
+    blocks=blocks
+  )
+  class(result) <- "pla"
+
+  return(result)
+}

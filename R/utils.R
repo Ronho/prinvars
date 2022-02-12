@@ -175,3 +175,40 @@ str_loadings <- function(loadings, threshold, threshold_mode, feature_names) {
 
   return(strrep)
 }
+
+select_sparse_type_orthogonal <- function(type) {
+  value = switch(
+    tolower(type),
+    "data"=TRUE,
+    "dispersion"=FALSE,
+    err_wrong_sparse_type(type=type, orthogonal=TRUE)
+  )
+
+  return(value)
+}
+
+select_sparse_type_not_orthogonal <- function(type) {
+  value = switch(
+    tolower(type),
+    "data"="predictor",
+    "dispersion"="Gram",
+    err_wrong_sparse_type(type=type, orthogonal=FALSE)
+  )
+
+  return(value)
+}
+
+err_wrong_sparse_type <- function(type, orthogonal) {
+  stop(
+    paste(
+      "'",
+      type,
+      "'",
+      " is not a valid value for type using",
+      "orthogonal =",
+      orthogonal,
+      ".",
+      sep=""
+    )
+  )
+}
