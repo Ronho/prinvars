@@ -293,7 +293,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' correlation or the covariance matrix. This option is only effective if the
 #' parameter orthogonol is set to TRUE.
 #' @param threshold a numeric value used to determine "small" values inside the
-#' loadings. This option is only effective if the parameter orthogonol is set to FALSE.
+#' loadings.
 #' @param threshold_mode a character string indicating how the threshold is
 #' determined and used. \code{cutoff} indicates the usage of a threshold value.
 #' \code{percentage} indicates that the cutoff value is determined by the maximum
