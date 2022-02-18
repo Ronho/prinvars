@@ -7,7 +7,7 @@
 pla.spla(
   x,
   cor = FALSE,
-  threshold = 0.01,
+  thresholds = 0.01,
   threshold_mode = "cutoff",
   expvar = "approx",
   check = "rnc",
@@ -26,8 +26,9 @@ sparse principal loading analysis.}
 correlation or the covariance matrix. This option is only effective if the
 parameter orthogonol is set to TRUE.}
 
-\item{threshold}{a numeric value used to determine "small" values inside the
-loadings. This option is only effective if the parameter orthogonol is set to FALSE.}
+\item{thresholds}{a numeric value or list of numeric values used to determine
+"small" values inside the eigenvectors. If multiple values are given, a list
+of pla results will be returned.}
 
 \item{threshold_mode}{a character string indicating how the threshold is
 determined and used. \code{cutoff} indicates the usage of a threshold value.

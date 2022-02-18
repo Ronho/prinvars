@@ -293,8 +293,9 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix. This option is only effective if the
 #' parameter orthogonol is set to TRUE.
-#' @param threshold a numeric value used to determine "small" values inside the
-#' loadings.
+#' @param thresholds a numeric value or list of numeric values used to determine
+#' "small" values inside the eigenvectors. If multiple values are given, a list
+#' of pla results will be returned.
 #' @param threshold_mode a character string indicating how the threshold is
 #' determined and used. \code{cutoff} indicates the usage of a threshold value.
 #' \code{percentage} indicates that the cutoff value is determined by the maximum
