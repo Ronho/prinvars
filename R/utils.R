@@ -205,7 +205,7 @@ err_wrong_sparse_type <- function(type, orthogonal) {
       type,
       "'",
       " is not a valid value for type using",
-      "orthogonal =",
+      " orthogonal = ",
       orthogonal,
       ".",
       sep=""
