@@ -135,6 +135,7 @@ pla_helper <- function(
     threshold=threshold,
     mode=threshold_mode
   )
+  valid_threshold_matrix(threshold_matrix)
   blocks <- get_blocks(
     threshold_matrix=threshold_matrix,
     feature_names=feature_names,

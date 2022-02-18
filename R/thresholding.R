@@ -9,7 +9,6 @@ select_thresholding <- function(eigen_vectors, threshold, mode) {
     ),
     err_wrong_mode(mode=mode)
   )
-  valid_threshold_matrix(threshold_matrix)
 
   return(threshold_matrix)
 }
