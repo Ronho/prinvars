@@ -107,7 +107,8 @@ pla <- function(x,
     threshold_mode=threshold_mode,
     feature_names=feature_names,
     check=check,
-    expvar=expvar
+    expvar=expvar,
+    helper=pla_helper
   )
 
   return(result)
@@ -373,7 +374,6 @@ pla.spla <- function(x,
     eigen$vectors <- obj$loadings
     eigen$values <- obj$pev
   }
-  print(eigen)
 
   result <- select_threshold(
     x=x,
@@ -383,35 +383,9 @@ pla.spla <- function(x,
     threshold_mode=threshold_mode,
     feature_names=feature_names,
     check=check,
-    expvar=expvar
+    expvar=expvar,
+    helper=spla_helper
   )
-  # result <- within(result, rm(c))
-  # threshold_matrix <- select_thresholding(
-  #   eigen_vectors=eigen$vectors,
-  #   threshold=threshold,
-  #   mode=threshold_mode
-  # )
-
-  # blocks <- get_blocks(
-  #   threshold_matrix=threshold_matrix,
-  #   feature_names=feature_names,
-  #   check=check
-  # )
-  # blocks <- calculate_explained_variance(
-  #   blocks=blocks,
-  #   eigen=eigen,
-  #   feature_names=feature_names,
-  #   type=expvar,
-  #   threshold_matrix=threshold_matrix
-  # )
-  # result <- list(
-  #   x=x,
-  #   loadings=eigen$vectors,
-  #   threshold=threshold,
-  #   threshold_mode=threshold_mode,
-  #   blocks=blocks
-  # )
-  # class(result) <- "pla"
 
   return(result)
 }

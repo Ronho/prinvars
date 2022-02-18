@@ -24,6 +24,22 @@ valid_threshold_matrix <- function(threshold_matrix) {
   }
 }
 
+valid_threshold_matrix_spla <- function(threshold_matrix) {
+  row_zeros <- which(get_zero_count(threshold_matrix) == ncol(threshold_matrix))
+  col_zeros <- which(
+    get_zero_count(t(threshold_matrix)) == nrow(threshold_matrix)
+  )
+
+  if(length(row_zeros) > 0) {
+    err_invalid_spla()
+  } else if (length(col_zeros) > 0) {
+    warn_sparse_loadings()
+    threshold_matrix <- threshold_matrix[-col_zeros]
+  }
+
+  return(threshold_matrix)
+}
+
 valid_threshold <- function(threshold) {
   if (threshold > 1 || threshold < 0) {
     stop("Threshold must be between 0 and 1.")
@@ -52,6 +68,14 @@ percentage_per_eigen_vector <- function(eigen_vectors, threshold) {
 
 err_invalid_pla <- function() {
   stop("PLA is not valid. Threshold might be too large.")
+}
+
+err_invalid_spla <- function() {
+  stop("Penalty term is too large. Some variables are not reflected by the loadings.")
+}
+
+warn_sparse_loadings <- function() {
+  warning("Loadings are too sparse. Lower the penalty term to increase the explainability of the loadings")
 }
 
 err_wrong_mode <- function(mode) {

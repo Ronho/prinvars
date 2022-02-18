@@ -84,8 +84,40 @@ test_that("valid_threshold_matrix", {
   )
 })
 
+test_that("valid_threshold_matrix_spla", {
+  expect_error(
+    valid_threshold_matrix_spla(
+      threshold_matrix=matrix(
+        c(0, 1, 0, 1), nrow=2, ncol=2
+      )
+    )
+  )
+  expect_warning(
+    valid_threshold_matrix_spla(
+      threshold_matrix=matrix(
+        c(1, 1, 0, 0), nrow=2, ncol=2
+      )
+    )
+  )
+  x <- matrix(c(1, 1, 0, 1), nrow=2, ncol=2)
+  expect_equal(
+    valid_threshold_matrix_spla(
+      threshold_matrix=x
+    ),
+    x
+  )
+})
+
 test_that("err_invalid_pla", {
   expect_error(err_invalid_pla())
+})
+
+test_that("err_invalid_spla", {
+  expect_error(err_invalid_spla())
+})
+
+test_that("warn_sparse_loadings", {
+  expect_warning(warn_sparse_loadings())
 })
 
 test_that("err_wrong_mode", {

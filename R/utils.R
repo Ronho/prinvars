@@ -89,12 +89,13 @@ select_threshold <- function(
   threshold_mode,
   feature_names,
   check,
-  expvar) {
+  expvar,
+  helper) {
   if (length(thresholds) > 1) {
     result <- list()
 
     for (threshold in thresholds) {
-      result[[length(result) + 1]] <- pla_helper(
+      result[[length(result) + 1]] <- helper(
         x=x,
         c=c,
         eigen=eigen,
@@ -106,7 +107,7 @@ select_threshold <- function(
       )
     }
   } else {
-    result <- pla_helper(
+    result <- helper(
       x=x,
       c=c,
       eigen=eigen,
@@ -152,6 +153,46 @@ pla_helper <- function(
   result <- list(
     x=x,
     c=c,
+    loadings=eigen$vectors,
+    threshold=threshold,
+    threshold_mode=threshold_mode,
+    blocks=blocks
+  )
+  class(result) <- "pla"
+
+  return(result)
+}
+
+spla_helper <- function(
+  x,
+  c,
+  eigen,
+  threshold,
+  threshold_mode,
+  feature_names,
+  check,
+  expvar) {
+  threshold_matrix <- select_thresholding(
+    eigen_vectors=eigen$vectors,
+    threshold=threshold,
+    mode=threshold_mode
+  )
+  threshold_matrix <- valid_threshold_matrix_spla(threshold_matrix)
+  blocks <- get_blocks(
+    threshold_matrix=threshold_matrix,
+    feature_names=feature_names,
+    check=check
+  )
+  blocks <- calculate_explained_variance(
+    blocks=blocks,
+    eigen=eigen,
+    feature_names=feature_names,
+    type=expvar,
+    threshold_matrix=threshold_matrix
+  )
+
+  result <- list(
+    x=x,
     loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
