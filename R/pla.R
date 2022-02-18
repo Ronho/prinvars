@@ -337,7 +337,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @export
 pla.spla <- function(x,
                     cor = FALSE,
-                    threshold = 0.01,
+                    thresholds = 0.01,
                     threshold_mode = "cutoff",
                     expvar = "approx",
                     check = "rnc",
@@ -349,20 +349,21 @@ pla.spla <- function(x,
   chkDots(...)
   feature_names <- get_feature_names(x=x)
   num_vars <- dim(x)[2]
+  eigen <- list()
   
   if (orthogonal == TRUE) {
     type <- select_sparse_type_orthogonal(type=type)
-    obj <- spEigen(X=x, q=num_vars, rho=para, data=type, thres=threshold)
+    obj <- spEigen(X=x, q=num_vars, rho=para, data=type, thres=-2)
     eigen$vectors <- obj$vectors
     eigen$values <- obj$values/sum(obj$values)
-    threshold_matrix <- eigen$vectors
   } else {
     type <- select_sparse_type_not_orthogonal(type=type)
     if (length(para) == 1) {
       para <- rep(para, num_vars)
     }
     obj <- spca(
-      x=x, K=num_vars,
+      x=x,
+      K=num_vars,
       para=para,
       type=type,
       sparse="penalty",
@@ -371,33 +372,46 @@ pla.spla <- function(x,
     )
     eigen$vectors <- obj$loadings
     eigen$values <- obj$pev
-    threshold_matrix <- select_thresholding(
-      eigen_vectors=eigen$vectors,
-      threshold=threshold,
-      mode=threshold_mode
-    )
   }
+  print(eigen)
 
-  blocks <- get_blocks(
-    threshold_matrix=threshold_matrix,
-    feature_names=feature_names,
-    check=check
-  )
-  blocks <- calculate_explained_variance(
-    blocks=blocks,
-    eigen=eigen,
-    feature_names=feature_names,
-    type=expvar,
-    threshold_matrix=threshold_matrix
-  )
-  result <- list(
+  result <- select_threshold(
     x=x,
-    loadings=eigen$vectors,
-    threshold=threshold,
+    c=c(),
+    eigen=eigen,
+    thresholds=thresholds,
     threshold_mode=threshold_mode,
-    blocks=blocks
+    feature_names=feature_names,
+    check=check,
+    expvar=expvar
   )
-  class(result) <- "pla"
+  # result <- within(result, rm(c))
+  # threshold_matrix <- select_thresholding(
+  #   eigen_vectors=eigen$vectors,
+  #   threshold=threshold,
+  #   mode=threshold_mode
+  # )
+
+  # blocks <- get_blocks(
+  #   threshold_matrix=threshold_matrix,
+  #   feature_names=feature_names,
+  #   check=check
+  # )
+  # blocks <- calculate_explained_variance(
+  #   blocks=blocks,
+  #   eigen=eigen,
+  #   feature_names=feature_names,
+  #   type=expvar,
+  #   threshold_matrix=threshold_matrix
+  # )
+  # result <- list(
+  #   x=x,
+  #   loadings=eigen$vectors,
+  #   threshold=threshold,
+  #   threshold_mode=threshold_mode,
+  #   blocks=blocks
+  # )
+  # class(result) <- "pla"
 
   return(result)
 }
