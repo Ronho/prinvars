@@ -286,31 +286,30 @@ pla.drop_blocks <- function(object, blocks, ...) {
 
 #' @title Sparse Principal Loading Analysis
 #'
-#' @description Sparse PLA
+#' @description This function performs a sparse principal loading analysis (SPLA) on the given
+#' data matrix and returns the results as an object of class \code{spla}.
 #'
-#' @param x a numeric matrix or data frame which provides the data for the
-#' sparse principal loading analysis.
+#' @param x a numeric matrix which can either be the data matrix or the covariance/
+#' correlation matrix for sparse principal loading analysis.
 #' @param cor a logical value indicating whether the calculation should use the
-#' correlation or the covariance matrix. This option is only effective if the
-#' parameter orthogonol is set to TRUE.
-#' @param thresholds a numeric value or list of numeric values used to determine
-#' "small" values inside the eigenvectors. If multiple values are given, a list
-#' of pla results will be returned.
+#' correlation or the covariance matrix. This option is only effective if \code{type = dispersion}.
+#' @param thresholds a numeric value or list of numeric values. All values of the
+#' sparse eigenvectors that are less or equal to the threshold are set zo zero. If
+#' multiple values are given, a list of SPLA results will be returned.
 #' @param threshold_mode a character string indicating how the threshold is
 #' determined and used. \code{cutoff} indicates the usage of a threshold value.
 #' \code{percentage} indicates that the cutoff value is determined by the maximum
 #' element of each vector multiplied with the threshold value. This option is only
 #' effective if the parameter orthogonol is set to FALSE.
-#' @param expvar a character string indicating the method used for calculating
-#' the explained variance. \code{approx} uses the explained variance of each
-#' eigenvector i.e. its eigenvalue. \code{exact} uses the variance of each variable.
 #' @param check a character string indicating if only rows or rows as well as columns
 #' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
 #' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
-#' @param orthogonal a logical value indicating whether ...
-#' @param type a character string indicating how ...
-#' @param lambda a numeric value used to determine ...
-#' @param para a numeric value used to determine ...
+#' @param orthogonal a logical value indicating whether the sparse eigenvectors should be
+#' orthogonal or not. SPLA proceeds then either according to Benidis et al. (2016) or according
+#' to Zou et al. (2006).
+#' @param type a character string. \code{data} indicates that \code{x} is the data matrix, and
+#' \code{dispersion} indicates that \code{x} is the covariance or correlation matrix.
+#' @param para a numeric value that gives the weight factor for sparsity.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
