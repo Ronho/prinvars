@@ -33,7 +33,7 @@
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
-#' single or list of pla class containing the following attributes:
+#' single or list of \code{pla} class containing the following attributes:
 #' \item{x}{
 #'   a numeric matrix or data frame which equals the input of \code{x}.
 #' }
@@ -313,7 +313,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
-#' single or list of pla class containing the following attributes:
+#' single or list of \code{spla} class containing the following attributes:
 #' \item{x}{
 #'   a numeric matrix or data frame which equals the input of \code{x}.
 #' }
