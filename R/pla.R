@@ -356,9 +356,17 @@ pla.spla <- function(x,
     type <- select_sparse_type_orthogonal(type=type)
     obj <- spEigen(X=x, q=num_vars, rho=para, data=type, thres=-2)
     eigen$vectors <- obj$vectors
-    u <- scale(x, scale = cor) %*% eigen$vectors
-    R <- qr.R(qr(u))
-    eigen$values <- diag(R^2)/sum(svd(scale(x, scale = cor))$d^2)
+    
+    if (type = "data"){
+      xsc <- scale(x, scale = cor)
+      u <- xsc %*% eigen$vectors
+      eigen$values <- diag(qr.R(qr(u))^2)/sum(svd(xsc)$d^2)
+    } else {
+      svd <- svd(x)
+      u <- svd$v %*% diag(sqrt(svd$d)) %*% t(svd$v)%*% eigen$vectors
+      eigen$values <- diag(qr.R(qr(u))^2)/sum(svd$d)
+    }
+    
   } else {
     type <- select_sparse_type_not_orthogonal(type=type)
     if (length(para) == 1) {
