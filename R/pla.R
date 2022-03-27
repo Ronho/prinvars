@@ -9,7 +9,7 @@
 #' @title Principal Loading Analysis
 #'
 #' @description This function performs a principal loading analysis on the given
-#' data matrix and returns the results as an object of class \code{pla}.
+#' data matrix.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
@@ -286,8 +286,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 
 #' @title Sparse Principal Loading Analysis
 #'
-#' @description This function performs a sparse principal loading analysis (SPLA) on the given
-#' data matrix and returns the results as an object of class \code{spla}.
+#' @description Performs a sparse principal loading analysis (SPLA) on the given data matrix.
 #'
 #' @param x a numeric matrix which can either be the data matrix or the covariance/
 #' correlation matrix for sparse principal loading analysis.
@@ -305,15 +304,15 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
 #' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
 #' @param orthogonal a logical value indicating whether the sparse eigenvectors should be
-#' orthogonal or not. SPLA proceeds then either according to Benidis et al. (2016) or according
-#' to Zou et al. (2006).
+#' orthogonal or not. If true, SPLA proceeds according to \insertRef{Benidis.2016}{prinvars} otherwise
+#' according to \insertRef{Zou.2006}{prinvars}.
 #' @param type a character string. \code{data} indicates that \code{x} is the data matrix, and
 #' \code{dispersion} indicates that \code{x} is the covariance or correlation matrix.
 #' @param para a numeric value that gives the weight factor for sparsity.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
-#' single or list of \code{spla} class containing the following attributes:
+#' single or list of \code{pla} class containing the following attributes:
 #' \item{x}{
 #'   a numeric matrix or data frame which equals the input of \code{x}.
 #' }
@@ -336,17 +335,15 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' }
 #' 
 #' @export
-pla.spla <- function(x,
-                    cor = FALSE,
-                    thresholds = 0.01,
-                    threshold_mode = "cutoff",
-                    expvar = "approx",
-                    check = "rnc",
-                    orthogonal = TRUE,
-                    type = "data",
-                    lambda = 0,
-                    para = 0.5,
-                    ...) {
+spla <- function(x,
+                 cor = FALSE,
+                 thresholds = 0.01,
+                 threshold_mode = "cutoff",
+                 check = "rnc",
+                 orthogonal = TRUE,
+                 type = "data",
+                 para = 0.5,
+                 ...) {
   chkDots(...)
   feature_names <- get_feature_names(x=x)
   num_vars <- dim(x)[2]
@@ -393,7 +390,7 @@ pla.spla <- function(x,
     threshold_mode=threshold_mode,
     feature_names=feature_names,
     check=check,
-    expvar=expvar,
+    expvar="approx",
     helper=spla_helper
   )
 
