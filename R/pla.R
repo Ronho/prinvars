@@ -354,7 +354,7 @@ spla <- function(x,
     obj <- spEigen(X=x, q=num_vars, rho=para, data=type, thres=-2)
     eigen$vectors <- obj$vectors
     
-    if (type = "data"){
+    if (type){
       xsc <- scale(x, scale = cor)
       u <- xsc %*% eigen$vectors
       eigen$values <- diag(qr.R(qr(u))^2)/sum(svd(xsc)$d^2)
