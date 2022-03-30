@@ -351,7 +351,11 @@ spla <- function(x,
   
   if (orthogonal == TRUE) {
     type <- select_sparse_type_orthogonal(type=type)
-    obj <- spEigen(X=x, q=num_vars, rho=para, data=type, thres=-2)
+    if (!type) {
+      cor = FALSE
+    }
+    obj <- spEigen(X=scale(x, center = FALSE, scale = cor),
+                   q=num_vars, rho=para, data=type, thres=-2)
     eigen$vectors <- obj$vectors
     
     if (type){
