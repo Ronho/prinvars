@@ -45,7 +45,7 @@ the required structure. \code{rnc} checks if rows and columns fulfill the requir
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
-single or list of pla class containing the following attributes:
+single or list of \code{pla} class containing the following attributes:
 \item{x}{
   a numeric matrix or data frame which equals the input of \code{x}.
 }
@@ -70,7 +70,7 @@ See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} fo
 }
 \description{
 This function performs a principal loading analysis on the given
-data matrix and returns the results as an object of class \code{pla}.
+data matrix.
 }
 \examples{
 if(requireNamespace("AER")){
