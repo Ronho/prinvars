@@ -290,8 +290,14 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' @param x a numeric matrix which can either be the data matrix or the covariance/
 #' correlation matrix for sparse principal loading analysis.
+#' @param type a character string. \code{data} indicates that \code{x} is the data matrix, and
+#' \code{dispersion} indicates that \code{x} is the covariance or correlation matrix.
+#' @param para a numeric value that gives the weight factor for sparsity.
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix. This option is only effective if \code{type = "data"}.
+#' @param orthogonal a logical value indicating whether the sparse eigenvectors should be
+#' orthogonal or not. If true, SPLA proceeds according to \insertRef{Benidis.2016}{prinvars} otherwise
+#' according to \insertRef{Zou.2006}{prinvars}.
 #' @param thresholds a numeric value or list of numeric values. All values of the
 #' sparse eigenvectors that are less or equal to the threshold are set zo zero. If
 #' multiple values are given, a list of SPLA results will be returned.
@@ -303,12 +309,6 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @param check a character string indicating if only rows or rows as well as columns
 #' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
 #' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
-#' @param orthogonal a logical value indicating whether the sparse eigenvectors should be
-#' orthogonal or not. If true, SPLA proceeds according to \insertRef{Benidis.2016}{prinvars} otherwise
-#' according to \insertRef{Zou.2006}{prinvars}.
-#' @param type a character string. \code{data} indicates that \code{x} is the data matrix, and
-#' \code{dispersion} indicates that \code{x} is the covariance or correlation matrix.
-#' @param para a numeric value that gives the weight factor for sparsity.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -336,13 +336,13 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' 
 #' @export
 spla <- function(x,
+                 type = "data",
+                 para = 0.5,
                  cor = FALSE,
+                 orthogonal = TRUE,
                  thresholds = 0.01,
                  threshold_mode = "cutoff",
                  check = "rnc",
-                 orthogonal = TRUE,
-                 type = "data",
-                 para = 0.5,
                  ...) {
   chkDots(...)
   feature_names <- get_feature_names(x=x)
