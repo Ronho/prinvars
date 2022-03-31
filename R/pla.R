@@ -291,7 +291,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @param x a numeric matrix which can either be the data matrix or the covariance/
 #' correlation matrix for sparse principal loading analysis.
 #' @param cor a logical value indicating whether the calculation should use the
-#' correlation or the covariance matrix. This option is only effective if \code{type = dispersion}.
+#' correlation or the covariance matrix. This option is only effective if \code{type = "data"}.
 #' @param thresholds a numeric value or list of numeric values. All values of the
 #' sparse eigenvectors that are less or equal to the threshold are set zo zero. If
 #' multiple values are given, a list of SPLA results will be returned.
