@@ -385,6 +385,8 @@ spla <- function(x,
     eigen$vectors <- obj$loadings
     eigen$values <- obj$pev
   }
+  
+  ovexpvar = sum(eigen$values)
 
   result <- select_threshold(
     x=x,
