@@ -145,15 +145,25 @@ print.pla <- function(x, ...) {
     ":\n"
   )
   
-  i = 1
+  sum_expvar <- 0
+  i <- 1
   for (block in x$blocks) {
     if (block@is_valid) {
       cat("Block ", i, ": ", str(block), "\n", sep = "")
     } else {
       cat(str(block), "\n")
     }
-    i = i + 1
+
+    sum_expvar <- sum_expvar + block@explained_variance
+    i <- i + 1
   }
+
+  cat(
+    "\nAll blocks together explain ", 
+    round(sum_expvar * 100, 2),
+    "% of the total variance.\n",
+    sep = ""
+  )
 
   cat("\nLoadings:\n")
   print(
@@ -385,8 +395,6 @@ spla <- function(x,
     eigen$vectors <- obj$loadings
     eigen$values <- obj$pev
   }
-  
-  ovexpvar = sum(eigen$values)
 
   result <- select_threshold(
     x=x,
