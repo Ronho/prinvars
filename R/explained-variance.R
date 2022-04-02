@@ -3,16 +3,24 @@ calculate_explained_variance <- function(
   eigen,
   feature_names,
   type,
-  threshold_matrix) {
+  threshold_matrix,
+  is_absolute = FALSE) {
   blocks <- lapply(blocks, function(block) {
     feature_idxs <- match(block@features, feature_names)
 
-    block@explained_variance <- proportional_explained_variance(
-      eigen=eigen,
-      feature_idxs=feature_idxs,
-      type=type,
-      threshold_matrix=threshold_matrix
-    )
+    if (is_absolute) {
+      block@explained_variance <- explained_variance.approx(
+          eigen_values=eigen$values,
+          feature_idxs=feature_idxs
+      )
+    } else {
+      block@explained_variance <- proportional_explained_variance(
+        eigen=eigen,
+        feature_idxs=feature_idxs,
+        type=type,
+        threshold_matrix=threshold_matrix
+      )
+    }
 
     return(block)
   })

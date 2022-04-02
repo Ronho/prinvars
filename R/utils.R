@@ -183,12 +183,14 @@ spla_helper <- function(
     feature_names=feature_names,
     check=check
   )
+
   blocks <- calculate_explained_variance(
     blocks=blocks,
     eigen=eigen,
     feature_names=feature_names,
     type=expvar,
-    threshold_matrix=threshold_matrix
+    threshold_matrix=threshold_matrix,
+    is_absolute=TRUE
   )
 
   result <- list(
