@@ -205,11 +205,17 @@ spla_helper <- function(
   return(result)
 }
 
-str_loadings <- function(loadings, feature_names) {
+str_loadings <- function(loadings, threshold, threshold_mode, feature_names) {
   loadings <- unclass(loadings)
   rownames(loadings) <- feature_names
   strrep <- format(round(loadings, digits=3L))
   nc <- nchar(strrep[1L], type="c")
+  threshold_matrix <- select_thresholding(
+    eigen_vectors=loadings,
+    threshold=threshold,
+    mode=threshold_mode
+  )
+  strrep[round(abs(threshold_matrix), digits=3L) == 0] <- strrep(" ", nc)
   strrep[round(abs(loadings), digits=3L) == 0] <- strrep(" ", nc)
 
   return(strrep)
