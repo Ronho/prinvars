@@ -88,7 +88,8 @@ test_that("explained_variance.approx", {
   expect_equal(
     explained_variance.approx(
         eigen_values=eigen_values,
-        feature_idxs=feature_idxs
+        feature_idxs=feature_idxs,
+        threshold_matrix=threshold_matrix
     ),
     5
   )

@@ -91,8 +91,6 @@ test_that("str_loadings", {
   expect_type(
     str_loadings(
       loadings=matrix(c(1:16), nrow=4, ncol=4),
-      threshold=0.5,
-      threshold_mode="cutoff",
       feature_names=c("a", "b", "c", "d")
     ),
     "character"

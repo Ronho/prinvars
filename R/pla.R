@@ -169,8 +169,6 @@ print.pla <- function(x, ...) {
   print(
     str_loadings(
       loadings=x$loadings,
-      threshold=x$threshold,
-      threshold_mode=x$threshold_mode,
       feature_names=get_feature_names(x$x)
     ),
     quote=FALSE,

@@ -11,7 +11,8 @@ calculate_explained_variance <- function(
     if (is_absolute) {
       block@explained_variance <- explained_variance.approx(
           eigen_values=eigen$values,
-          feature_idxs=feature_idxs
+          feature_idxs=feature_idxs,
+          threshold_matrix=threshold_matrix
       )
     } else {
       block@explained_variance <- proportional_explained_variance(
@@ -37,14 +38,10 @@ proportional_explained_variance <- function(
     switch(
       tolower(type),
       "approx" = {
-        row_combination <- sum_vectors(
-          x=threshold_matrix,
-          indices=feature_idxs
-        )
-        feature_idxs <- which(row_combination > 0)
         explained_variance <- explained_variance.approx(
           eigen_values=eigen$values,
-          feature_idxs=feature_idxs
+          feature_idxs=feature_idxs,
+          threshold_matrix=threshold_matrix
       )},
       "exact" = {
         explained_variance <- explained_variance.exact(
@@ -96,7 +93,12 @@ weighted_explained_variance <- function(eigen, feature_idxs) {
     return(explained_variance)
 }
 
-explained_variance.approx <- function(eigen_values, feature_idxs) {
+explained_variance.approx <- function(eigen_values, feature_idxs, threshold_matrix) {
+  row_combination <- sum_vectors(
+    x=threshold_matrix,
+    indices=feature_idxs
+  )
+  feature_idxs <- which(row_combination > 0)
   explained_variance <- sum(eigen_values[feature_idxs])
   
   return(explained_variance)
