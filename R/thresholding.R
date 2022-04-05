@@ -1,5 +1,6 @@
 select_thresholding <- function(eigen_vectors, threshold, mode) {
   valid_threshold(threshold=threshold)
+  eigen_vectors = round(eigen_vectors, 10)
   threshold_matrix = switch(
     tolower(mode),
     "cutoff"=cutoff(x=eigen_vectors, threshold=threshold),

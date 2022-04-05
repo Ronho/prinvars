@@ -215,8 +215,7 @@ str_loadings <- function(loadings, threshold, threshold_mode, feature_names) {
     threshold=threshold,
     mode=threshold_mode
   )
-  strrep[round(abs(threshold_matrix), digits=3L) == 0] <- strrep(" ", nc)
-  strrep[round(abs(loadings), digits=3L) == 0] <- strrep(" ", nc)
+  strrep[threshold_matrix == 0] <- strrep(" ", nc)
 
   return(strrep)
 }
