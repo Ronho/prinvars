@@ -430,7 +430,7 @@ spla2 <- function(x,
                  eps.conv = 1e-3,
                  ...) {
   chkDots(...)
-  feature_names <- get_feature_names(x=x) ##brauchen wir das?
+  feature_names <- get_feature_names(x=x)
   num_vars <- dim(x)[2]
   eigen <- list()                         ##brauche wir das?
   
