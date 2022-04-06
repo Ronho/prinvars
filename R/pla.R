@@ -410,3 +410,62 @@ spla <- function(x,
 
   return(result)
 }
+
+
+
+#' @title Sparse Principal Loading Analysis 2
+
+
+spla2 <- function(x,
+                 para,
+                 type = "predictor",
+                 sparse = "penalty",
+                 cor = FALSE,
+                 thresholds = 0,
+                 threshold_mode = "cutoff",
+                 check = "rnc",
+                 lambda = 0,
+                 max.iter = 200,
+                 trace = FALSE,
+                 eps.conv = 1e-3,
+                 ...) {
+  chkDots(...)
+  feature_names <- get_feature_names(x=x) ##brauchen wir das?
+  num_vars <- dim(x)[2]
+  eigen <- list()                         ##brauche wir das?
+  
+
+    type <- select_sparse_type_not_orthogonal(type=type)
+
+    obj <- spca(
+      x=x,
+      K=num_vars,
+      para=para,
+      type=type,
+      sparse=sparse,
+      lambda=lambda,
+      use.corr=cor,
+      max.iter=max.iter,
+      trace=trace,
+      eps.conv=eps.conv
+    )
+    eigen$vectors <- obj$loadings
+    eigen$values <- obj$pev
+  
+  
+  ovexpvar = sum(eigen$values)
+  
+  result <- select_threshold(
+    x=x,
+    c=c(),
+    eigen=eigen,
+    thresholds=thresholds,
+    threshold_mode=threshold_mode,
+    feature_names=feature_names,
+    check=check,
+    expvar="approx",
+    helper=spla_helper
+  )
+  
+  return(result)
+}
