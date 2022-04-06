@@ -432,25 +432,23 @@ spla2 <- function(x,
   chkDots(...)
   feature_names <- get_feature_names(x=x)
   num_vars <- dim(x)[2]
-  eigen <- list()                         ##brauche wir das?
+  eigen <- list()
   
-    obj <- spca(
-      x=x,
-      K=num_vars,
-      para=para,
-      type=type,
-      sparse=sparse,
-      lambda=lambda,
-      use.corr=cor,
-      max.iter=max.iter,
-      trace=trace,
-      eps.conv=eps.conv
-    )
-    eigen$vectors <- obj$loadings
-    eigen$values <- obj$pev
-  
-  
-  ovexpvar = sum(eigen$values)
+  obj <- spca(
+    x=x,
+    K=num_vars,
+    para=para,
+    type=type,
+    sparse=sparse,
+    lambda=lambda,
+    use.corr=cor,
+    max.iter=max.iter,
+    trace=trace,
+    eps.conv=eps.conv
+  )
+
+  eigen$vectors <- obj$loadings
+  eigen$values <- obj$pev
   
   result <- select_threshold(
     x=x,
