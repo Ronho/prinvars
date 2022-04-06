@@ -434,9 +434,6 @@ spla2 <- function(x,
   num_vars <- dim(x)[2]
   eigen <- list()                         ##brauche wir das?
   
-
-    type <- select_sparse_type_not_orthogonal(type=type)
-
     obj <- spca(
       x=x,
       K=num_vars,
