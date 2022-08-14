@@ -450,6 +450,13 @@ spla2 <- function(x,
   eigen$vectors <- obj$loadings
   eigen$values <- obj$pev
   
+  if (type = "predictor"){
+    Sigma = cov(scale(x, center = TRUE, scale = FALSE))
+  } else { #i.e. type = "Gram"
+   Sigma = x
+  }
+  C = eigen$values[-1] / diag(t(eigen$vectors) %*% Sigma %*% eigen$vectors)[-1]  / (N-1) * obj$var.all
+  
   result <- select_threshold(
     x=x,
     c=c(),
