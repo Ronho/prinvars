@@ -451,7 +451,7 @@ spla2 <- function(x,
   eigen$values <- obj$pev
   
   if (type = "predictor"){
-    Sigma = cov(scale(x, center = TRUE, scale = FALSE))
+    Sigma = cov(x)
   } else { #i.e. type = "Gram"
    Sigma = x
   }
