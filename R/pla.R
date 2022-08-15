@@ -455,7 +455,8 @@ spla2 <- function(x,
   } else { #i.e. type = "Gram"
    Sigma = x
   }
-  C = eigen$values[-1] / diag(t(eigen$vectors) %*% Sigma %*% eigen$vectors)[-1]  / (N-1) * obj$var.all
+  C = eigen$values / diag(t(eigen$vectors) %*% Sigma %*% eigen$vectors)  / (N-1) * obj$var.all
+  C[1] = -77 #"blank"
   
   result <- select_threshold(
     x=x,
