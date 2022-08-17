@@ -166,7 +166,6 @@ print.pla <- function(x, ...) {
   )
 
   cat("\nLoadings:\n")
-  x$C[length(x$C)] <- -16.333333
   print(
     str_loadings(
       loadings=x$loadings,
