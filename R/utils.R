@@ -195,6 +195,7 @@ spla_helper <- function(
 
   result <- list(
     x=x,
+    C=c,
     loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
@@ -205,17 +206,36 @@ spla_helper <- function(
   return(result)
 }
 
-str_loadings <- function(loadings, threshold, threshold_mode, feature_names) {
+str_loadings <- function(loadings, threshold, threshold_mode, feature_names, C) {
   loadings <- unclass(loadings)
-  rownames(loadings) <- feature_names
-  strrep <- format(round(loadings, digits=3L))
-  nc <- nchar(strrep[1L], type="c")
+  # strrep <- format(round(loadings, digits=3L))
   threshold_matrix <- select_thresholding(
     eigen_vectors=loadings,
     threshold=threshold,
     mode=threshold_mode
   )
+
+  # Add C to output
+  if (!is.null(C)) {
+    loadings <- rbind(loadings, rep.int(0, ncol(loadings)))
+    loadings <- rbind(loadings, c(0, C))
+
+    # Prevent threshold_matrix from overwriting new rows by columwraps
+    threshold_matrix <- rbind(threshold_matrix, rep(1, ncol(loadings)))
+    threshold_matrix <- rbind(threshold_matrix, rep(1, ncol(loadings)))
+  }
+ 
+  strrep <- format(round(loadings, digits=3L))
+  nc <- nchar(strrep[1L], type="c")
   strrep[threshold_matrix == 0] <- strrep(" ", nc)
+
+  # Add C to output
+  if (!is.null(C)) {
+    strrep[loadings == 0] <- strrep(" ", nc)
+    feature_names <- c(feature_names, " ", "C:")
+  }
+
+  rownames(strrep) <- feature_names
 
   return(strrep)
 }

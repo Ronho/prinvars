@@ -13,7 +13,6 @@
 #' @importFrom methods new
 #' @importFrom stats cov cor
 #' @importFrom Rdpack reprompt
-#' @importFrom sparseEigen spEigen
 #' @importFrom elasticnet spca
 
 # The following block is used by usethis to automatically manage

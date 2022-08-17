@@ -165,17 +165,50 @@ print.pla <- function(x, ...) {
     sep = ""
   )
 
+  # loadings <- x$loadings
+  # # print(list(c(get_feature_names(x$x), "C")))
+  # feature_names <- list(c(get_feature_names(x$x), "C"))
+  # C <- matrix(c(x$loadings, C), nrow=length(x$C)+2, ncol=length(x$C)+1, dimnames=feature_names)
+  # print(c(x$loadings, x$C))
+  # print(matrix(c(x$loadings, x$C), nrow=length(x$C)+2, ncol=length(x$C)+1))
+  # print(x$C)
+  # loadings <- C
+
   cat("\nLoadings:\n")
+  x$C[length(x$C)] <- -16.333333
   print(
     str_loadings(
       loadings=x$loadings,
       threshold=x$threshold,
       threshold_mode=x$threshold_mode,
-      feature_names=get_feature_names(x$x)
+      feature_names=get_feature_names(x$x),
+      C=x$C
     ),
     quote=FALSE,
     ...
   )
+
+  # cat("\nC:\n")
+  # nc <- nchar(format(round(x$loadings, digits=3L))[1L], type="c") + nchar(get_feature_names(x$x)[1L], type="c")
+
+  # feature_names <- colnames(x$loadings)[-1]
+  # C <- x$C
+  # cat(
+  #   strrep(" ", nc+3),
+  #   feature_names,
+  #   "\n",
+  #   strrep(" ", nc+2),
+  #   format(round(C, digits=3L))
+  # )
+
+  # tryCatch({
+  #   C <- x$C
+  #   C <- matrix(c(0, C), ncol=length(C)+1, dimnames=list("C"))
+  #   strrep <- format(round(C, digits=3L))
+  #   strrep[1] <- strrep(" ", 1)
+
+  #   print(strrep, quote=FALSE, ...)
+  # })
 
   invisible(x)
 }
@@ -295,128 +328,9 @@ pla.drop_blocks <- function(object, blocks, ...) {
 }
 
 #' @title Sparse Principal Loading Analysis
-#'
-#' @description Performs a sparse principal loading analysis (SPLA) on the given data matrix.
-#'
-#' @param x a numeric matrix which can either be the data matrix or the covariance/
-#' correlation matrix for sparse principal loading analysis.
-#' @param type a character string. \code{data} indicates that \code{x} is the data matrix, and
-#' \code{dispersion} indicates that \code{x} is the covariance or correlation matrix.
-#' @param para a numeric value that gives the weight factor for sparsity.
-#' @param cor a logical value indicating whether the calculation should use the
-#' correlation or the covariance matrix. This option is only effective if \code{type = "data"}.
-#' @param orthogonal a logical value indicating whether the sparse eigenvectors should be
-#' orthogonal or not. If true, SPLA proceeds according to \insertRef{Benidis.2016}{prinvars} otherwise
-#' according to \insertRef{Zou.2006}{prinvars}.
-#' @param thresholds a numeric value or list of numeric values. All values of the
-#' sparse eigenvectors that are less or equal to the threshold are set zo zero. If
-#' multiple values are given, a list of SPLA results will be returned.
-#' @param threshold_mode a character string indicating how the threshold is
-#' determined and used. \code{cutoff} indicates the usage of a threshold value.
-#' \code{percentage} indicates that the cutoff value is determined by the maximum
-#' element of each vector multiplied with the threshold value. This option is only
-#' effective if the parameter orthogonol is set to FALSE.
-#' @param check a character string indicating if only rows or rows as well as columns
-#' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
-#' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
-#' @param ... further arguments passed to or from other methods.
-#'
-#' @return
-#' single or list of \code{pla} class containing the following attributes:
-#' \item{x}{
-#'   a numeric matrix or data frame which equals the input of \code{x}.
-#' }
-#' \item{loadings}{
-#'   a matrix of variable loadings (i.e. a matrix containing the
-#'   eigenvectors of the dispersion matrix).
-#' }
-#' \item{threshold}{
-#'   a numeric value which equals the input of \code{thresholds}.
-#' }
-#' \item{threshold_mode}{
-#'   a character string which equals the input of \code{threshold_mode}.
-#' }
-#' \item{blocks}{
-#'   a list of blocks which are identified by principal loading analysis.
-#' }
-#' @examples
-#' if(requireNamespace("AER")){
-#' require(AER)
-#' }
 #' 
 #' @export
 spla <- function(x,
-                 type = "data",
-                 para = 0.5,
-                 cor = FALSE,
-                 orthogonal = TRUE,
-                 thresholds = 0.01,
-                 threshold_mode = "cutoff",
-                 check = "rnc",
-                 ...) {
-  chkDots(...)
-  feature_names <- get_feature_names(x=x)
-  num_vars <- dim(x)[2]
-  eigen <- list()
-  
-  if (orthogonal == TRUE) {
-    type <- select_sparse_type_orthogonal(type=type)
-    if (!type) {
-      cor = FALSE
-    }
-    obj <- spEigen(X=scale(x, center = FALSE, scale = cor),
-                   q=num_vars, rho=para, data=type, thres=-2)
-    eigen$vectors <- obj$vectors
-    
-    if (type){
-      xsc <- scale(x, scale = cor)
-      u <- xsc %*% eigen$vectors
-      eigen$values <- diag(qr.R(qr(u))^2)/sum(svd(xsc)$d^2)
-    } else {
-      svd <- svd(x)
-      u <- svd$v %*% diag(sqrt(svd$d)) %*% t(svd$v)%*% eigen$vectors
-      eigen$values <- diag(qr.R(qr(u))^2)/sum(svd$d)
-    }
-    
-  } else {
-    type <- select_sparse_type_not_orthogonal(type=type)
-    if (length(para) == 1) {
-      para <- rep(para, num_vars)
-    }
-    obj <- spca(
-      x=x,
-      K=num_vars,
-      para=para,
-      type=type,
-      sparse="penalty",
-      use.corr=cor,
-      max.iter=400
-    )
-    eigen$vectors <- obj$loadings
-    eigen$values <- obj$pev
-  }
-
-  result <- select_threshold(
-    x=x,
-    c=c(),
-    eigen=eigen,
-    thresholds=thresholds,
-    threshold_mode=threshold_mode,
-    feature_names=feature_names,
-    check=check,
-    expvar="approx",
-    helper=spla_helper
-  )
-
-  return(result)
-}
-
-
-
-#' @title Sparse Principal Loading Analysis 2
-
-
-spla2 <- function(x,
                  para,
                  type = "predictor",
                  sparse = "penalty",
@@ -450,17 +364,19 @@ spla2 <- function(x,
   eigen$vectors <- obj$loadings
   eigen$values <- obj$pev
   
-  if (type = "predictor"){
-    Sigma = cov(x)
-  } else { #i.e. type = "Gram"
-   Sigma = x
+  if (type == "predictor"){
+    sigma <- cov(x)
+  } else {
+    #i.e. type = "Gram"
+    sigma <- x
   }
-  C = eigen$values / diag(t(eigen$vectors) %*% Sigma %*% eigen$vectors)  / (N-1) * obj$var.all
-  C[1] = -77 #"blank"
-  
+
+  C <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (num_vars-1) * obj$var.all
+  C <- C[-1]
+
   result <- select_threshold(
     x=x,
-    c=c(),
+    c=C,
     eigen=eigen,
     thresholds=thresholds,
     threshold_mode=threshold_mode,
