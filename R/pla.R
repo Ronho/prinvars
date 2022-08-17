@@ -165,15 +165,6 @@ print.pla <- function(x, ...) {
     sep = ""
   )
 
-  # loadings <- x$loadings
-  # # print(list(c(get_feature_names(x$x), "C")))
-  # feature_names <- list(c(get_feature_names(x$x), "C"))
-  # C <- matrix(c(x$loadings, C), nrow=length(x$C)+2, ncol=length(x$C)+1, dimnames=feature_names)
-  # print(c(x$loadings, x$C))
-  # print(matrix(c(x$loadings, x$C), nrow=length(x$C)+2, ncol=length(x$C)+1))
-  # print(x$C)
-  # loadings <- C
-
   cat("\nLoadings:\n")
   x$C[length(x$C)] <- -16.333333
   print(
@@ -187,28 +178,6 @@ print.pla <- function(x, ...) {
     quote=FALSE,
     ...
   )
-
-  # cat("\nC:\n")
-  # nc <- nchar(format(round(x$loadings, digits=3L))[1L], type="c") + nchar(get_feature_names(x$x)[1L], type="c")
-
-  # feature_names <- colnames(x$loadings)[-1]
-  # C <- x$C
-  # cat(
-  #   strrep(" ", nc+3),
-  #   feature_names,
-  #   "\n",
-  #   strrep(" ", nc+2),
-  #   format(round(C, digits=3L))
-  # )
-
-  # tryCatch({
-  #   C <- x$C
-  #   C <- matrix(c(0, C), ncol=length(C)+1, dimnames=list("C"))
-  #   strrep <- format(round(C, digits=3L))
-  #   strrep[1] <- strrep(" ", 1)
-
-  #   print(strrep, quote=FALSE, ...)
-  # })
 
   invisible(x)
 }
