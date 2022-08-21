@@ -300,7 +300,6 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @export
 spla <- function(x,
                  para,
-                 #type = "predictor", brauchen wir möglicherweise nicht mehr, wenn type = "Gram" nicht mehr möglich
                  sparse = "penalty",
                  cor = FALSE,
                  thresholds = 0,
@@ -313,15 +312,13 @@ spla <- function(x,
                  ...) {
   chkDots(...)
   feature_names <- get_feature_names(x=x)
-  num_vars <- dim(x)[2] #brauchen wir möglicherweise gar nicht mehr? Wenn type = "Gram" nicht mehr möglich
   eigen <- list()
   
   obj <- spca(
     x=x,
-    K=num_vars,
+    K=ncol(x),
     para=para,
-    #type=type, Brauchen wir möglicherweise nicht mehr, wenn type = "Gram" nicht mehr möglich
-    type = "predictor", #nur noch type = "predictor"
+    type = "predictor",
     sparse=sparse,
     lambda=lambda,
     use.corr=cor,
@@ -333,21 +330,12 @@ spla <- function(x,
   eigen$vectors <- obj$loadings
   eigen$values <- obj$pev
   
-  #Brauchen wir möglicherweise nicht mehr, wenn type = "Gram" nicht mehr möglich
-  #if (type == "predictor"){
-  #  sigma <- cov(x)
-  #} else {
-  #  #i.e. type = "Gram"
-  #  sigma <- x
-  #}
-  
-  N = dim(x)[1]
-  C <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (N-1) * obj$var.all
-  C <- C[-1]
+  fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% cov(x) %*% eigen$vectors)  / (nrow(x)-1) * obj$var.all
+  fitting_criteria <- fitting_criteria[-1] # First entry will not be used
 
   result <- select_threshold(
     x=x,
-    c=C,
+    c=fitting_criteria,
     eigen=eigen,
     thresholds=thresholds,
     threshold_mode=threshold_mode,
