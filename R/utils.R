@@ -193,6 +193,17 @@ spla_helper <- function(
     is_absolute=TRUE
   )
 
+  # Change order of rows to follow the block structure.
+  feature_idxs <- c()
+  for (block in blocks) {
+    feature_idxs <- c(feature_idxs, match(block@features, feature_names))
+  }
+
+  I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
+  P <- I[feature_idxs,]
+  eigen$vectors <- P %*% eigen$vectors
+  rownames(eigen$vectors) <- feature_names[feature_idxs]
+
   result <- list(
     x=x,
     C=c,
@@ -215,7 +226,7 @@ str_loadings <- function(loadings, threshold, threshold_mode, feature_names, C) 
     mode=threshold_mode
   )
 
-  # Add C to output
+  # Add fitting criteria for SPLA to output
   if (!is.null(C)) {
     loadings <- rbind(loadings, rep.int(0, ncol(loadings)))
     loadings <- rbind(loadings, c(0, C))
@@ -229,7 +240,7 @@ str_loadings <- function(loadings, threshold, threshold_mode, feature_names, C) 
   nc <- nchar(strrep[1L], type="c")
   strrep[threshold_matrix == 0] <- strrep(" ", nc)
 
-  # Add C to output
+  # Add fitting criteria for SPLA to output
   if (!is.null(C)) {
     strrep[loadings == 0] <- strrep(" ", nc)
     feature_names <- c(feature_names, " ", "C:")

@@ -165,13 +165,18 @@ print.pla <- function(x, ...) {
     sep = ""
   )
 
+  feature_names <- rownames(x$loadings)
+  if (is.null(feature_names)) {
+    feature_names <- get_feature_names(x$x)
+  }
+
   cat("\nLoadings:\n")
   print(
     str_loadings(
       loadings=x$loadings,
       threshold=x$threshold,
       threshold_mode=x$threshold_mode,
-      feature_names=get_feature_names(x$x),
+      feature_names=feature_names,
       C=x$C
     ),
     quote=FALSE,
