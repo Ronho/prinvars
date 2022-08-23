@@ -316,6 +316,7 @@ spla <- function(x,
                  eps.conv = 1e-3,
                  ...) {
   chkDots(...)
+  x <- scale(x, center = TRUE, scale = FALSE)
   feature_names <- get_feature_names(x=x)
   eigen <- list()
   
@@ -334,13 +335,11 @@ spla <- function(x,
 
   eigen$vectors <- obj$loadings
   eigen$values <- obj$pev
-  
-  fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% cov(x) %*% eigen$vectors)  / (nrow(x)-1) * obj$var.all
-  fitting_criteria <- fitting_criteria[-1] # First entry will not be used
+  eigen$var.all <- obj$var.all
 
   result <- select_threshold(
     x=x,
-    c=fitting_criteria,
+    c=c(),
     eigen=eigen,
     thresholds=thresholds,
     threshold_mode=threshold_mode,

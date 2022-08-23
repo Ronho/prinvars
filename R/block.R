@@ -13,7 +13,8 @@ setClass(
   representation(
     features = "vector",
     explained_variance = "numeric",
-    is_valid = "logical"
+    is_valid = "logical",
+    ev_influenced = "vector"
   ),
   prototype(explained_variance = 0, is_valid=TRUE)
 )

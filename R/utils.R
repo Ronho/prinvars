@@ -5,12 +5,12 @@ get_feature_names <- function(x) {
   return(feature_names)
 }
 
-create_block <- function(feature_names, selected_features, is_valid) {
+create_block <- function(feature_names, selected_features, is_valid, ev_influenced) {
   if (length(feature_names) > 0) {
     selected_features <- feature_names[selected_features]
   }
 
-  return(new("Block", features=selected_features, is_valid=is_valid))
+  return(new("Block", features=selected_features, is_valid=is_valid, ev_influenced=ev_influenced))
 }
 
 # get number of zeros for each eigenvector
@@ -172,6 +172,7 @@ spla_helper <- function(
   feature_names,
   check,
   expvar) {
+
   threshold_matrix <- select_thresholding(
     eigen_vectors=eigen$vectors,
     threshold=threshold,
@@ -184,6 +185,24 @@ spla_helper <- function(
     check=check
   )
 
+  # Change order of rows to follow the block diagonal form.
+  feature_idxs <- c()
+  ev_idxs <- c()
+  for (block in blocks) {
+    feature_idxs <- c(feature_idxs, match(block@features, feature_names))
+    ev_idxs <- c(ev_idxs, block@ev_influenced)
+  }
+
+  I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
+  P1 <- I[feature_idxs,]
+  P2 <- I[,ev_idxs]
+  eigen$vectors <- P1 %*% eigen$vectors %*% P2
+  threshold_matrix <- P1 %*% threshold_matrix %*% P2 
+  eigen$values <- eigen$values[ev_idxs]
+  feature_names <- feature_names[feature_idxs]
+  colnames(eigen$vectors) <- sapply(1:ncol(eigen$vectors), function(num) paste("[,", num, "]", sep=""))
+  rownames(eigen$vectors) <- feature_names
+
   blocks <- calculate_explained_variance(
     blocks=blocks,
     eigen=eigen,
@@ -193,20 +212,15 @@ spla_helper <- function(
     is_absolute=TRUE
   )
 
-  # Change order of rows to follow the block structure.
-  feature_idxs <- c()
-  for (block in blocks) {
-    feature_idxs <- c(feature_idxs, match(block@features, feature_names))
-  }
-
-  I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
-  P <- I[feature_idxs,]
-  eigen$vectors <- P %*% eigen$vectors
-  rownames(eigen$vectors) <- feature_names[feature_idxs]
+  sigma <- cov(x %*% P1)
+  fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * eigen$var.all
+  fitting_criteria <- fitting_criteria[-1] # First entry will not be used
+  eigen$var.all <- NULL
+  
 
   result <- list(
     x=x,
-    C=c,
+    C=fitting_criteria,
     loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
@@ -219,7 +233,6 @@ spla_helper <- function(
 
 str_loadings <- function(loadings, threshold, threshold_mode, feature_names, C) {
   loadings <- unclass(loadings)
-  # strrep <- format(round(loadings, digits=3L))
   threshold_matrix <- select_thresholding(
     eigen_vectors=loadings,
     threshold=threshold,
