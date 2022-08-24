@@ -214,10 +214,11 @@ spla_helper <- function(
   )
 
   x_P1 <- x %*% P1
-  R <- qr.R(qr(x_P1 %*% eigen$vectors))
-  eigen$var.all <- sum(svd(x)$d^2)
-  exp.var <- diag(R^2)/eigen$var.all
   sigma <- cov(x_P1)
+  R <- qr.R(qr(x_P1 %*% eigen$vectors))
+  eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
+  exp.var <- diag(R^2)/eigen$var.all
+  
 
   #fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * exp.var
   fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)                             
