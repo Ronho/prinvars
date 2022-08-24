@@ -188,6 +188,7 @@ spla_helper <- function(
   # Change order of rows to follow the block diagonal form.
   feature_idxs <- c()
   ev_idxs <- c()
+
   for (block in blocks) {
     feature_idxs <- c(feature_idxs, match(block@features, feature_names))
     ev_idxs <- c(ev_idxs, block@ev_influenced)
@@ -202,7 +203,7 @@ spla_helper <- function(
   feature_names <- feature_names[feature_idxs]
   colnames(eigen$vectors) <- sapply(1:ncol(eigen$vectors), function(num) paste("[,", num, "]", sep=""))
   rownames(eigen$vectors) <- feature_names
-
+  
   blocks <- calculate_explained_variance(
     blocks=blocks,
     eigen=eigen,
@@ -212,8 +213,14 @@ spla_helper <- function(
     is_absolute=TRUE
   )
 
-  sigma <- cov(x %*% P1)
-  fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * eigen$var.all
+  x_P1 <- x %*% P1
+  R <- qr.R(qr(x_P1 %*% eigen$vectors))
+  eigen$var.all <- sum(svd(x)$d^2)
+  exp.var <- diag(R^2)/eigen$var.all
+  sigma <- cov(x_P1)
+
+  fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * exp.var
+  print(fitting_criteria)
   fitting_criteria <- fitting_criteria[-1] # First entry will not be used
   eigen$var.all <- NULL
   
