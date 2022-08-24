@@ -219,7 +219,8 @@ spla_helper <- function(
   exp.var <- diag(R^2)/eigen$var.all
   sigma <- cov(x_P1)
 
-  fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * exp.var
+  #fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * exp.var
+  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)                             
   print(fitting_criteria)
   fitting_criteria <- fitting_criteria[-1] # First entry will not be used
   eigen$var.all <- NULL
