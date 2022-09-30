@@ -209,12 +209,13 @@ spla_helper <- function(
   eigen$values <- eigen$values[ev_idxs]
   feature_names <- feature_names[feature_idxs]
   colnames(eigen$vectors) <- sapply(1:ncol(eigen$vectors), function(num) paste("[,", num, "]", sep=""))
-  rownames(eigen$vectors) <- feature_names
 
   if (orthogonal) {
     svd <- svd(eigen$vectors)
     eigen$vectors <- svd$u %*% t(svd$v)
   }
+  
+  rownames(eigen$vectors) <- feature_names
 
   blocks <- calculate_explained_variance(
     blocks=blocks,
