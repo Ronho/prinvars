@@ -195,19 +195,10 @@ spla_helper <- function(
   feature_idxs <- c()
   ev_idxs <- c()
 
-  print(eigen$vectors)
-  for (block in blocks) {
-    print(block@features)
-  }
-
   for (i in 1:length(blocks)) {
     feature_idxs <- c(feature_idxs, match(blocks[[i]]@features, feature_names))
     ev_idxs <- c(ev_idxs, blocks[[i]]@ev_influenced)
     blocks[[i]]@ev_influenced <- which(ev_idxs %in% blocks[[i]]@ev_influenced, arr.ind=TRUE, useNames=FALSE)
-  }
-
-  for (block in blocks) {
-    print(block@features)
   }
 
   I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
