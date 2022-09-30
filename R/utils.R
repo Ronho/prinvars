@@ -90,6 +90,7 @@ select_threshold <- function(
   feature_names,
   check,
   expvar,
+  orthogonal,
   helper) {
   if (length(thresholds) > 1) {
     result <- list()
@@ -103,7 +104,8 @@ select_threshold <- function(
         threshold_mode=threshold_mode,
         feature_names=feature_names,
         check=check,
-        expvar=expvar
+        expvar=expvar,
+        orthogonal=orthogonal
       )
     }
   } else {
@@ -115,7 +117,8 @@ select_threshold <- function(
       threshold_mode=threshold_mode,
       feature_names=feature_names,
       check=check,
-      expvar=expvar
+      expvar=expvar,
+      orthogonal=orthogonal
     )
   }
 
@@ -130,7 +133,9 @@ pla_helper <- function(
   threshold_mode,
   feature_names,
   check,
-  expvar) {
+  expvar,
+  orthogonal) {
+  # orthogonal is not used
   threshold_matrix <- select_thresholding(
     eigen_vectors=eigen$vectors,
     threshold=threshold,
@@ -171,7 +176,8 @@ spla_helper <- function(
   threshold_mode,
   feature_names,
   check,
-  expvar) {
+  expvar,
+  orthogonal) {
 
   threshold_matrix <- select_thresholding(
     eigen_vectors=eigen$vectors,
@@ -203,7 +209,12 @@ spla_helper <- function(
   feature_names <- feature_names[feature_idxs]
   colnames(eigen$vectors) <- sapply(1:ncol(eigen$vectors), function(num) paste("[,", num, "]", sep=""))
   rownames(eigen$vectors) <- feature_names
-  
+
+  if (orthogonal) {
+    svd <- svd(eigen$vectors)
+    eigen$vectors <- svd$u %*% t(svd$v)
+  }
+
   blocks <- calculate_explained_variance(
     blocks=blocks,
     eigen=eigen,
@@ -219,13 +230,9 @@ spla_helper <- function(
   eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
   exp.var <- diag(R^2)/eigen$var.all
   
-
-  #fitting_criteria <- eigen$values / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)  / (nrow(x)-1) * exp.var
   fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)                             
-  print(fitting_criteria)
   fitting_criteria <- fitting_criteria[-1] # First entry will not be used
   eigen$var.all <- NULL
-  
 
   result <- list(
     x=x,

@@ -314,6 +314,7 @@ spla <- function(x,
                  max.iter = 200,
                  trace = FALSE,
                  eps.conv = 1e-3,
+                 orthogonal = FALSE,
                  ...) {
   chkDots(...)
   x <- scale(x, center = TRUE, scale = FALSE)
@@ -346,6 +347,7 @@ spla <- function(x,
     feature_names=feature_names,
     check=check,
     expvar="approx",
+    orthogonal=orthogonal,
     helper=spla_helper
   )
   
