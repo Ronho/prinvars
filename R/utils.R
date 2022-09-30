@@ -231,8 +231,18 @@ spla_helper <- function(
   eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
   exp.var <- diag(R^2)/eigen$var.all
   
-  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)                         
-  fitting_criteria <- fitting_criteria[-1] # First entry will not be used
+  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)
+
+  # Only first entry of each block should be depicted since the other entries depend on this one
+  for (block in blocks) {
+    if (length(block@ev_influenced) > 1) {
+      for (i in block@ev_influenced[-1]) {
+        fitting_criteria[i] <- 0
+      }
+    }
+  }
+                  
+  fitting_criteria[1] <- 0 # First entry will not be used either
   eigen$var.all <- NULL
 
   result <- list(
@@ -259,7 +269,7 @@ str_loadings <- function(loadings, threshold, threshold_mode, feature_names, C) 
   # Add fitting criteria for SPLA to output
   if (!is.null(C)) {
     loadings <- rbind(loadings, rep.int(0, ncol(loadings)))
-    loadings <- rbind(loadings, c(0, C))
+    loadings <- rbind(loadings, C)
 
     # Prevent threshold_matrix from overwriting new rows by columwraps
     threshold_matrix <- rbind(threshold_matrix, rep(1, ncol(loadings)))
