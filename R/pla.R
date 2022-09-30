@@ -92,6 +92,7 @@ pla <- function(x,
                 ...) {
   chkDots(...)
   feature_names <- get_feature_names(x=x)
+  x <- scale(x, center = TRUE, scale = FALSE)
   c <- select_cor(x=x, cor=cor)
   eigen <- eigen(as.matrix(c))
   eigen$vectors <- select_eigen_vector_scaling(
