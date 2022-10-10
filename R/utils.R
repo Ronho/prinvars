@@ -208,8 +208,8 @@ spla_helper <- function(
   threshold_matrix <- P1 %*% threshold_matrix %*% P2 
   eigen$values <- eigen$values[ev_idxs]
   feature_names <- feature_names[feature_idxs]
-  a <- 1:ncol(eigen$vectors)
-  colnames(eigen$vectors) <- sapply(a[ev_idxs], function(num) paste("[,", num, "]", sep=""))
+  columns <- 1:ncol(eigen$vectors)
+  colnames(eigen$vectors) <- sapply(columns[ev_idxs], function(num) paste("[,", num, "]", sep=""))
 
   if (orthogonal) {
     svd <- svd(eigen$vectors)
