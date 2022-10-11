@@ -382,6 +382,10 @@ spla <- function(x,
                  orthogonal = FALSE,
                  check = "rnc",
                  ...) {
+  
+  thresholds = 0
+  threshold_mode = "cutoff"
+  
   chkDots(...)
   x <- scale(x, center = TRUE, scale = FALSE)
   feature_names <- get_feature_names(x=x)
