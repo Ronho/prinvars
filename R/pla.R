@@ -302,20 +302,88 @@ pla.drop_blocks <- function(object, blocks, ...) {
 }
 
 #' @title Sparse Principal Loading Analysis
+#'
+#' @description This function performs a sparse principal loading analysis on the given
+#' data matrix.
+#'
+#' @param x a numeric matrix or data frame which provides the data for the
+#' principal loading analysis.
+#' @param para a vector containing the penalization parameter for each variable
+#' @param cor a logical value indicating whether the calculation should use the
+#' correlation or the covariance matrix.
+#' @param rho quadratic penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
+#' a more elaborate explanation.
+#' @param max.iter maximum number of iterations.
+#' @param trace a logical value indicating if the progress is printed.
+#' @param eps.conv a numerical value as convergence criterion.
+#' @param orthogonal a logical value indicating if the sparse loadings are orthogonalized.
+#' @param check a character string indicating if only rows or rows as well as columns
+#' are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
+#' the required structure. \code{rnc} checks if rows and columns fulfill the required structure.
+#' @param ... further arguments passed to or from other methods.
+#'
+#' @return
+#' single or list of \code{pla} class containing the following attributes:
+#' \item{x}{
+#'   a numeric matrix or data frame which equals the input of \code{x}.
+#' }
+#' \item{c}{
+#'   a numeric matrix or data frame which is the covariance or correlation
+#'   matrix based on the input of \code{cov}.
+#' }
+#' \item{loadings}{
+#'   a matrix of variable loadings (i.e. a matrix containing the
+#'   eigenvectors of the dispersion matrix).
+#' }
+#' \item{threshold}{
+#'   a numeric value which equals the input of \code{thresholds}.
+#' }
+#' \item{threshold_mode}{
+#'   a character string which equals the input of \code{threshold_mode}.
+#' }
+#' \item{blocks}{
+#'   a list of blocks which are identified by principal loading analysis.
+#' }
+#' See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} for more information.
+#' 
+#' @examples
+#' if(requireNamespace("AER")){
+#' require(AER)
+#' data("OECDGrowth")
+#'
+#' ## the scales in OECDGrowth differ hence using the
+#' ## correlation matrix is highly recommended
+#'
+#' pla(OECDGrowth,thresholds = 0.5) ## not recommended
+#' pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#'
+#' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
+#' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
+#' ## (randd), explains only 5.76% of the overall variance.
+#' ## Hence, discarding this block seems appropriate.
+#'
+#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+#' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+#'
+#' ## Sometimes, considering the blocks we keep rather than
+#' ## the blocks we want to discard might be more convenient.
+#'
+#' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+#' }
 #' 
 #' @export
 spla <- function(x,
                  para,
-                 sparse = "penalty",
+                 #sparse = "penalty", das kann raus (machen bei spca ja eh <<type = "predictor">>)
                  cor = FALSE,
-                 thresholds = 0,
-                 threshold_mode = "cutoff",
-                 check = "rnc",
-                 lambda = 0,
+                 #thresholds = 0, soll 0 sein ohne dass man es ändern kann
+                 #threshold_mode = "cutoff", soll "cutoff" sein ohne dass man es ändern kann
+                 rho = 0, #zu rho umbenannt (vorher lambda)
                  max.iter = 200,
                  trace = FALSE,
                  eps.conv = 1e-3,
                  orthogonal = FALSE,
+                 check = "rnc",
                  ...) {
   chkDots(...)
   x <- scale(x, center = TRUE, scale = FALSE)
@@ -328,7 +396,7 @@ spla <- function(x,
     para=para,
     type = "predictor",
     sparse=sparse,
-    lambda=lambda,
+    lambda=rho, #rho anstelle von lambda im input
     use.corr=cor,
     max.iter=max.iter,
     trace=trace,
