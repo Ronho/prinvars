@@ -375,7 +375,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 spla <- function(x,
                  para,
                  cor = FALSE,
-                 rho = 0, #zu rho umbenannt (vorher lambda)
+                 rho = 0,
                  max.iter = 200,
                  trace = FALSE,
                  eps.conv = 1e-3,
@@ -397,7 +397,7 @@ spla <- function(x,
     para=para,
     type = "predictor",
     sparse=sparse,
-    lambda=rho, #rho anstelle von lambda im input
+    lambda=rho,
     use.corr=cor,
     max.iter=max.iter,
     trace=trace,
