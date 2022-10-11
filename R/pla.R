@@ -347,30 +347,19 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} for more information.
 #' 
 #' @examples
-#' if(requireNamespace("AER")){
-#' require(AER)
-#' data("OECDGrowth")
+#' spla(USArrests, para = c(0.5,0.5,0.5,0.5), cor = TRUE)
 #'
-#' ## the scales in OECDGrowth differ hence using the
-#' ## correlation matrix is highly recommended
+#' ## we obtain two blocks: 
+#' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
+#' ## The large BEC indicates that the given structure is reasonable.
 #'
-#' pla(OECDGrowth,thresholds = 0.5) ## not recommended
-#' pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
-#'
-#' ## we obtain three blocks: (randd), (gdp85,gdp60) and 
-#' ## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
-#' ## (randd), explains only 5.76% of the overall variance.
-#' ## Hence, discarding this block seems appropriate.
-#'
-#' pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
-#' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
-#'
-#' ## Sometimes, considering the blocks we keep rather than
-#' ## the blocks we want to discard might be more convenient.
-#'
-#' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
-#' }
+#' spla(USArrests, para = c(0.5,0.5,0.7,0.5), cor = TRUE)
 #' 
+#' ## we obtain three blocks: 
+#' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
+#' ## The mid-ish BEC for (Murder, Aussault) indicates that the 
+#' ## found structure might not be adequate.
+#'
 #' @export
 spla <- function(x,
                  para,
