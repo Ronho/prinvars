@@ -374,10 +374,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @export
 spla <- function(x,
                  para,
-                 #sparse = "penalty", das kann raus (machen bei spca ja eh <<type = "predictor">>)
                  cor = FALSE,
-                 #thresholds = 0, soll 0 sein ohne dass man es ändern kann
-                 #threshold_mode = "cutoff", soll "cutoff" sein ohne dass man es ändern kann
                  rho = 0, #zu rho umbenannt (vorher lambda)
                  max.iter = 200,
                  trace = FALSE,
