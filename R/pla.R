@@ -54,7 +54,7 @@
 #' \item{blocks}{
 #'   a list of blocks which are identified by principal loading analysis.
 #' }
-#' See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} for more information.
+#' See \insertRef{Bauer.2021}{prinvars} for more information.
 #' 
 #' @examples
 #' if(requireNamespace("AER")){
