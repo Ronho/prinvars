@@ -331,37 +331,35 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' \item{x}{
 #'   a numeric matrix or data frame which equals the input of \code{x}.
 #' }
-#' \item{c}{
-#'   a numeric matrix or data frame which is the covariance or correlation
-#'   matrix based on the input of \code{cov}.
+#' \item{EC}{
+#'   a numeric vector that contains the weight-corrected evaluation criterion (CEC) if
+#'   \code{criterion = "corrected"} and the evaluation criterion (EC) if \code{criterion = "normal"}.
 #' }
 #' \item{loadings}{
-#'   a matrix of variable loadings (i.e. a matrix containing the
-#'   eigenvectors of the dispersion matrix).
-#' }
-#' \item{threshold}{
-#'   a numeric value which equals the input of \code{thresholds}.
-#' }
-#' \item{threshold_mode}{
-#'   a character string which equals the input of \code{threshold_mode}.
+#'   a matrix of variable loadings (i.e. a matrix containing the sparse loadings).
 #' }
 #' \item{blocks}{
-#'   a list of blocks which are identified by principal loading analysis.
+#'   a list of blocks which are identified by sparse principal loading analysis.
 #' }
-#' See \insertRef{Bauer.06242021}{prinvars} and \insertRef{Bauer.2021}{prinvars} for more information.
+#' \item{W}{
+#'   a matrix of variable loadings used to calculate the evaluation criterion. If \code{criterion = "corrected"},
+#'   \code{W} contains an orthogonal matrix with equal weights in the first column of each loading-block. If
+#'   \code{criterion = "normal"}, \code{W} equals \code{loadings}.
+#' }
+#' See REF(Bauer22) for more information.
 #' 
 #' @examples
 #' spla(USArrests, para = c(0.5,0.5,0.5,0.5), cor = TRUE)
 #'
 #' ## we obtain two blocks: 
 #' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
-#' ## The large BEC indicates that the given structure is reasonable.
+#' ## The large EC indicates that the given structure is reasonable.
 #'
 #' spla(USArrests, para = c(0.5,0.5,0.7,0.5), cor = TRUE)
 #' 
 #' ## we obtain three blocks: 
 #' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
-#' ## The mid-ish BEC for (Murder, Aussault) indicates that the 
+#' ## The mid-ish EC for (Murder, Aussault) indicates that the 
 #' ## found structure might not be adequate.
 #'
 #' @export
