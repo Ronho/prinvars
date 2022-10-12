@@ -226,14 +226,31 @@ spla_helper <- function(
     threshold_matrix=threshold_matrix,
     is_absolute=TRUE
   )
+                                    
+  ###########
+  #### BEFORE                                  
 
+  #x_P1 <- x %*% P1
+  #sigma <- cov(x_P1)
+  #R <- qr.R(qr(x_P1 %*% eigen$vectors))
+  #eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
+  #exp.var <- diag(R^2)/eigen$var.all
+                                    
+  #fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)
+ 
+  ###########
+  #### NOW (with @param criterion)                                  
+                                    
+  W = eigen$vectors   #if (criterion = "corrected"): W = weight-matrix
+                      #else (criterion = "normal") : W = eigen$vectors                               
+                                    
   x_P1 <- x %*% P1
   sigma <- cov(x_P1)
-  R <- qr.R(qr(x_P1 %*% eigen$vectors))
+  R <- qr.R(qr(x_P1 %*% W))
   eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
-  exp.var <- diag(R^2)/eigen$var.all
+  exp.var <- diag(R^2)/eigen$var.all                                  
   
-  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)
+  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
 
   # Only first entry of each block should be depicted since the other entries depend on this one
   for (block in blocks) {
