@@ -311,6 +311,10 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @param para a vector containing the penalization parameter for each variable
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix.
+#' @param criterion a character string indicating if the weight-corrected evaluation criterion
+#' (CEC) or the evaluation criterion (EC) is used. \code{corrected} changes the loadings to
+#' weight all variables equally while \code{normal} does not change the loadings and therefore
+#' weights the variables differently.
 #' @param rho quadratic penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
 #' a more elaborate explanation.
 #' @param max.iter maximum number of iterations.
@@ -364,7 +368,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 spla <- function(x,
                  para,
                  cor = FALSE,
-                 rho = 0,
+                 criterion = "corrected",
+                 rho = 1e-06,
                  max.iter = 200,
                  trace = FALSE,
                  eps.conv = 1e-3,
