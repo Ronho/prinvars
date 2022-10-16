@@ -347,19 +347,19 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'   \code{criterion = "normal"}, \code{W} equals \code{loadings}.
 #' }
 #' See REF(Bauer22) for more information.
-#' 
+#'
 #' @examples
 #' spla(USArrests, para = c(0.5,0.5,0.5,0.5), cor = TRUE)
 #'
-#' ## we obtain two blocks: 
+#' ## we obtain two blocks:
 #' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
 #' ## The large EC indicates that the given structure is reasonable.
 #'
 #' spla(USArrests, para = c(0.5,0.5,0.7,0.5), cor = TRUE)
-#' 
-#' ## we obtain three blocks: 
+#'
+#' ## we obtain three blocks:
 #' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
-#' ## The mid-ish EC for (Murder, Aussault) indicates that the 
+#' ## The mid-ish EC for (Murder, Aussault) indicates that the
 #' ## found structure might not be adequate.
 #'
 #' @export
@@ -374,44 +374,40 @@ spla <- function(x,
                  orthogonal = FALSE,
                  check = "rnc",
                  ...) {
-  
-  thresholds = 0
-  threshold_mode = "cutoff"
-  
   chkDots(...)
-  x <- scale(x, center = TRUE, scale = FALSE)
-  feature_names <- get_feature_names(x=x)
+
+  feature_names <- get_feature_names(x = x)
   eigen <- list()
-  
+  x <- scale(x, center = TRUE, scale = FALSE)
+
   obj <- spca(
-    x=x,
-    K=ncol(x),
-    para=para,
+    x = x,
+    K = ncol(x),
+    para = para,
     type = "predictor",
-    sparse=sparse,
-    lambda=rho,
-    use.corr=cor,
-    max.iter=max.iter,
-    trace=trace,
-    eps.conv=eps.conv
+    lambda = rho,
+    use.corr = cor,
+    max.iter = max.iter,
+    trace = trace,
+    eps.conv = eps.conv
   )
 
   eigen$vectors <- obj$loadings
   eigen$values <- obj$pev
   eigen$var.all <- obj$var.all
 
-  result <- select_threshold(
-    x=x,
-    c=c(),
-    eigen=eigen,
-    thresholds=thresholds,
-    threshold_mode=threshold_mode,
-    feature_names=feature_names,
-    check=check,
-    expvar="approx",
-    orthogonal=orthogonal,
-    helper=spla_helper
+  result <- spla_helper(
+    x = x,
+    c = c(),
+    eigen = eigen,
+    threshold = 0,
+    threshold_mode = "cutoff",
+    feature_names = feature_names,
+    check = check,
+    expvar = "approx",
+    orthogonal = orthogonal,
+    criterion = criterion
   )
-  
+
   return(result)
 }

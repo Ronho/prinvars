@@ -90,7 +90,6 @@ select_threshold <- function(
   feature_names,
   check,
   expvar,
-  orthogonal,
   helper) {
   if (length(thresholds) > 1) {
     result <- list()
@@ -104,8 +103,7 @@ select_threshold <- function(
         threshold_mode=threshold_mode,
         feature_names=feature_names,
         check=check,
-        expvar=expvar,
-        orthogonal=orthogonal
+        expvar=expvar
       )
     }
   } else {
@@ -117,8 +115,7 @@ select_threshold <- function(
       threshold_mode=threshold_mode,
       feature_names=feature_names,
       check=check,
-      expvar=expvar,
-      orthogonal=orthogonal
+      expvar=expvar
     )
   }
 
@@ -133,9 +130,7 @@ pla_helper <- function(
   threshold_mode,
   feature_names,
   check,
-  expvar,
-  orthogonal) {
-  # orthogonal is not used
+  expvar) {
   threshold_matrix <- select_thresholding(
     eigen_vectors=eigen$vectors,
     threshold=threshold,
@@ -177,25 +172,26 @@ spla_helper <- function(
   feature_names,
   check,
   expvar,
-  orthogonal) {
+  orthogonal,
+  criterion) {
 
   threshold_matrix <- select_thresholding(
-    eigen_vectors=eigen$vectors,
-    threshold=threshold,
-    mode=threshold_mode
+    eigen_vectors = eigen$vectors,
+    threshold = threshold,
+    mode = threshold_mode
   )
   threshold_matrix <- valid_threshold_matrix_spla(threshold_matrix)
   blocks <- get_blocks(
-    threshold_matrix=threshold_matrix,
-    feature_names=feature_names,
-    check=check
+    threshold_matrix = threshold_matrix,
+    feature_names = feature_names,
+    check = check
   )
 
   # Change order of rows to follow the block diagonal form.
   feature_idxs <- c()
   ev_idxs <- c()
 
-  for (i in 1:length(blocks)) {
+  for (i in seq_along(blocks)) {
     feature_idxs <- c(feature_idxs, match(blocks[[i]]@features, feature_names))
     ev_idxs <- c(ev_idxs, blocks[[i]]@ev_influenced)
     blocks[[i]]@ev_influenced <- which(ev_idxs %in% blocks[[i]]@ev_influenced, arr.ind=TRUE, useNames=FALSE)
@@ -208,51 +204,55 @@ spla_helper <- function(
   threshold_matrix <- P1 %*% threshold_matrix %*% P2 
   eigen$values <- eigen$values[ev_idxs]
   feature_names <- feature_names[feature_idxs]
-  columns <- 1:ncol(eigen$vectors)
+  columns <- seq_len(ncol(eigen$vectors))
   colnames(eigen$vectors) <- sapply(columns[ev_idxs], function(num) paste("[,", num, "]", sep=""))
 
   if (orthogonal) {
     svd <- svd(eigen$vectors)
     eigen$vectors <- svd$u %*% t(svd$v)
   }
-  
+
   rownames(eigen$vectors) <- feature_names
 
   blocks <- calculate_explained_variance(
-    blocks=blocks,
-    eigen=eigen,
-    feature_names=feature_names,
-    type=expvar,
-    threshold_matrix=threshold_matrix,
-    is_absolute=TRUE
+    blocks = blocks,
+    eigen = eigen,
+    feature_names = feature_names,
+    type = expvar,
+    threshold_matrix = threshold_matrix,
+    is_absolute = TRUE
   )
-                                    
-  ###########
-  #### BEFORE                                  
 
-  #x_P1 <- x %*% P1
-  #sigma <- cov(x_P1)
-  #R <- qr.R(qr(x_P1 %*% eigen$vectors))
-  #eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
-  #exp.var <- diag(R^2)/eigen$var.all
-                                    
-  #fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(eigen$vectors) %*% sigma %*% eigen$vectors)
- 
-  ###########
-  #### NOW (with @param criterion)                                  
-                                    
-  W = eigen$vectors   #if (criterion = "corrected"): W = weight-matrix
-                      #else (criterion = "normal") : W = eigen$vectors                               
-                                    
+  if (criterion == "corrected") {
+    m <- length(feature_names)
+    W_m <- matrix(1, nrow = m, ncol = m)
+    M <- matrix(1, nrow = m - 1, ncol = m - 1)
+    M[(lower.tri(M))] <- 0
+    diag(M) <- -1:-(m-1)
+    W_m[2:m, 2:m] <- M
+
+    W <- matrix(0, nrow=m, ncol=m)
+    for (block in blocks) {
+      row_idxs <- match(block@features, feature_names)
+      W[row_idxs, block@ev_influenced] <- W_m[seq_along(row_idxs), seq_along(block@ev_influenced)]
+    }
+
+    print(W)
+    W <- W %*% diag(1/apply(W, 2, function(x) norm(x, type = "2")))
+    print(W)
+  } else {
+    W <- eigen$vectors
+  }
+
   x_P1 <- x %*% P1
   sigma <- cov(x_P1)
   R <- qr.R(qr(x_P1 %*% W))
-  eigen$var.all <- sum(diag(sigma))*(nrow(x)-1)
-  exp.var <- diag(R^2)/eigen$var.all                                  
-  
+  eigen$var.all <- sum(diag(sigma)) * (nrow(x) - 1)
+
   fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
 
-  # Only first entry of each block should be depicted since the other entries depend on this one
+  # Only first entry of each block should be depicted since the other entries
+  # depend on this one
   for (block in blocks) {
     if (length(block@ev_influenced) > 1) {
       for (i in block@ev_influenced[-1]) {
@@ -260,17 +260,18 @@ spla_helper <- function(
       }
     }
   }
-                  
+
   fitting_criteria[1] <- 0 # First entry will not be used either
   eigen$var.all <- NULL
 
   result <- list(
-    x=x,
-    C=fitting_criteria,
-    loadings=eigen$vectors,
-    threshold=threshold,
-    threshold_mode=threshold_mode,
-    blocks=blocks
+    x = x,
+    EC = fitting_criteria,
+    loadings = eigen$vectors,
+    threshold = threshold,
+    threshold_mode = threshold_mode,
+    blocks = blocks,
+    W = W
   )
   class(result) <- "pla"
 
