@@ -303,8 +303,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 
 #' @title Sparse Principal Loading Analysis
 #'
-#' @description This function performs a sparse principal loading analysis on the given
-#' data matrix.
+#' @description This function performs the sparse principal loading analysis provided by REF(Bauer22) on the given
+#' data matrix. The corresponding sparse loadings are calculated using \code{spca} from the \code{elasticnet} package.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
