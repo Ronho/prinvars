@@ -315,7 +315,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' (CEC) or the evaluation criterion (EC) is used. \code{corrected} changes the loadings to
 #' weight all variables equally while \code{normal} does not change the loadings and therefore
 #' weights the variables differently.
-#' @param rho quadratic penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
+#' @param rho penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
 #' a more elaborate explanation.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
