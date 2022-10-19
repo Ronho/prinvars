@@ -7,16 +7,16 @@
 #' @slot explained_variance a numeric which contains the variance explained of
 #' the blocks variables based on the whole data set.
 #' @slot is_valid a logical which indicates if the block structure is valid.
-#' @export 
+#' @export
 setClass(
   "Block",
   representation(
-    features = "vector",
-    explained_variance = "numeric",
-    is_valid = "logical",
-    ev_influenced = "vector"
+    features="vector",
+    explained_variance="numeric",
+    is_valid="logical",
+    ev_influenced="vector"
   ),
-  prototype(explained_variance = 0, is_valid=TRUE)
+  prototype(explained_variance=0, is_valid=TRUE)
 )
 
 #' @title Block - Show
@@ -29,12 +29,12 @@ setClass(
 #' No return value.
 #'
 #' @examples
-#' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
+#' block <- new("Block", features=c(2, 5), explained_variance=0.03)
 #' print(block)
 setMethod(
-  f = "show",
-  signature = "Block",
-  definition = function(object) {
+  f="show",
+  signature="Block",
+  definition=function(object) {
     print(str(object))
   }
 )
@@ -44,35 +44,35 @@ setMethod(
 #' Generic function to create a string out of the blocks structure.
 #'
 #' @param object block.
-#' 
-#' @return 
+#'
+#' @return
 #' A string representing the Block.
 #'
 #' @examples
-#' block <- new("Block", features = c(2, 5), explained_variance = 0.03)
+#' block <- new("Block", features=c(2, 5), explained_variance=0.03)
 #' str(block)
 #' @export
 setMethod(
-  f = "str",
-  signature = "Block",
-  definition = function(object) {
-    features = paste(unlist(object@features), collapse = ", ")
-    expvar = round(object@explained_variance * 100, 2)
+  f="str",
+  signature="Block",
+  definition=function(object) {
+    features <- paste(unlist(object@features), collapse=", ")
+    expvar <- round(object@explained_variance * 100, 2)
     if (object@is_valid) {
-      str = paste(
+      str <- paste(
         "Features (",
         features,
         ") explain ",
         expvar,
         "% of the overall explained variance",
-        sep = ""
+        sep=""
       )
     } else {
-      str = paste(
+      str <- paste(
         "Features (",
         features,
         ") remain without a block structure row-wise.",
-        sep = ""
+        sep=""
       )
     }
 

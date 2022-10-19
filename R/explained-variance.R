@@ -52,7 +52,7 @@ proportional_explained_variance <- function(
         err_wrong_type(type)
       }
     )
-    proportional_explained_variance <- explained_variance/sum(eigen$values)
+    proportional_explained_variance <- explained_variance / sum(eigen$values)
 
     return(proportional_explained_variance)
 }
@@ -84,32 +84,35 @@ vector_not_empty <- function(x) {
 
 weighted_explained_variance <- function(eigen, feature_idxs) {
     explained_variance <- 0
-    for (col in 1:ncol(eigen$vectors)) {
+    for (col in seq_len(ncol(eigen$vectors))) {
       summed_eigen_vector_elements <- sum(eigen$vectors[feature_idxs, col]^2)
       explained_variance <- explained_variance + (
-        eigen$values[col] * (summed_eigen_vector_elements) )
+        eigen$values[col] * (summed_eigen_vector_elements))
     }
 
     return(explained_variance)
 }
 
-explained_variance.approx <- function(eigen_values, feature_idxs, threshold_matrix) {
+explained_variance.approx <- function(
+  eigen_values,
+  feature_idxs,
+  threshold_matrix) {
   row_combination <- sum_vectors(
     x=threshold_matrix,
     indices=feature_idxs
   )
   feature_idxs <- which(row_combination > 0)
   explained_variance <- sum(eigen_values[feature_idxs])
-  
+
   return(explained_variance)
 }
 
 sum_vectors <- function(x, indices) {
   if (length(indices) > 1) {
     result <- colSums(x[indices, ]) ## sum row-wise
-  } else (
+  } else {
     result <- x[indices, ]
-  )
+  }
 
   return(result)
 }

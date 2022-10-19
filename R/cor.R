@@ -7,7 +7,7 @@ select_cor <- function(x, cor) {
     wrong_cor(cor=cor)
   }
 
-  return(x) 
+  return(x)
 }
 
 wrong_cor <- function(cor) {

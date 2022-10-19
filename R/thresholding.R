@@ -1,7 +1,7 @@
 select_thresholding <- function(eigen_vectors, threshold, mode) {
   valid_threshold(threshold=threshold)
-  eigen_vectors = round(eigen_vectors, 10)
-  threshold_matrix = switch(
+  eigen_vectors <- round(eigen_vectors, 10)
+  threshold_matrix <- switch(
     tolower(mode),
     "cutoff"=cutoff(x=eigen_vectors, threshold=threshold),
     "percentage"=percentage_per_eigen_vector(
@@ -54,7 +54,7 @@ cutoff <- function(x, threshold) {
 }
 
 percentage_per_eigen_vector <- function(eigen_vectors, threshold) {
-  eigen_vectors = apply(
+  eigen_vectors <- apply(
     eigen_vectors,
     MARGIN=2,
     FUN=function(eigen_vector) {
@@ -72,11 +72,13 @@ err_invalid_pla <- function() {
 }
 
 err_invalid_spla <- function() {
-  stop("Penalty term is too large. Some variables are not reflected by the loadings.")
+  stop("Penalty term is too large. Some variables are not reflected by the
+  loadings.")
 }
 
 warn_sparse_loadings <- function() {
-  warning("Loadings are too sparse. Lower the penalty term to increase the explainability of the loadings")
+  warning("Loadings are too sparse. Lower the penalty term to increase the
+  explainability of the loadings")
 }
 
 err_wrong_mode <- function(mode) {

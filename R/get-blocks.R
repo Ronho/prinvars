@@ -1,7 +1,7 @@
 get_blocks <- function(threshold_matrix, feature_names, check) {
   num_features <- nrow(threshold_matrix)
   untaken_features <- 1:num_features
-  untaken_evs <- 1:ncol(threshold_matrix)
+  untaken_evs <- seq_len(ncol(threshold_matrix))
   zero_counts <- get_zero_count(threshold_matrix)
   ones <- 1
   blocks <- list()
@@ -9,7 +9,7 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   while (length(untaken_features) > 0 && ones <= length(untaken_features)) {
     eligible_features <- get_eligible_features(
       zero_counts=zero_counts,
-      zeros=num_features-ones,
+      zeros=num_features - ones,
       untaken_features=untaken_features
     )
 
@@ -28,7 +28,7 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
         ev_influenced <- combination$ev_influenced
         combination <- combination$combination
 
-        blocks[[length(blocks)+1]] <- create_block(
+        blocks[[length(blocks) + 1]] <- create_block(
           feature_names=feature_names,
           selected_features=combination,
           is_valid=is_valid,
@@ -48,7 +48,7 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   }
 
   if(length(untaken_features) > 0) {
-    blocks[[length(blocks)+1]] <- create_block(
+    blocks[[length(blocks) + 1]] <- create_block(
       feature_names=feature_names,
       selected_features=untaken_features,
       is_valid=FALSE,
@@ -81,12 +81,14 @@ find_combination <- function(
     if (check_cols(check=check)) {
       is_valid <- is_valid[1] & is_valid[2]
       if (is_valid) {
-        result <- list(combination=current_combination, is_valid=is_valid, ev_influenced=valid_combination$ev_influenced)
+        result <- list(combination=current_combination, is_valid=is_valid,
+          ev_influenced=valid_combination$ev_influenced)
         return(result)
       }
     } else {
       if (is_valid[1]) {
-        result <- list(combination=current_combination, is_valid=is_valid[2], ev_influenced=valid_combination$ev_influenced)
+        result <- list(combination=current_combination, is_valid=is_valid[2],
+          ev_influenced=valid_combination$ev_influenced)
         return(result)
       }
     }
@@ -112,7 +114,9 @@ find_combination <- function(
       if (!is.atomic(result)) {
         return(result)
       } else {
-        current_combination <- current_combination[1:(length(current_combination)-1)]
+        current_combination <- current_combination[1:
+          (length(current_combination) - 1)
+        ]
       }
     }
     return(FALSE)
