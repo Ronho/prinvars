@@ -213,6 +213,10 @@ spla_helper <- function(
   }
 
   rownames(eigen$vectors) <- feature_names
+                                    
+  #####################################
+  ### CALCULATE EXP. VAR. BELOW ??????
+  #################################### 
 
   blocks <- calculate_explained_variance(
     blocks = blocks,
@@ -243,6 +247,10 @@ spla_helper <- function(
   } else {
     W <- eigen$vectors
   }
+                            
+  ############################
+  ### CALCULATE EXP. VAR. HERE
+  ############################                          
 
   x_P1 <- x %*% P1
   sigma <- cov(x_P1)
