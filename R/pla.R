@@ -302,12 +302,19 @@ pla.drop_blocks <- function(object, blocks, ...) {
 
 #' @title Sparse Principal Loading Analysis
 #'
-#' @description This function performs a sparse principal loading analysis on
-#' the given data matrix.
+#' @description This function performs the sparse principal loading analysis
+#' provided by REF(Bauer22) on the given data matrix. The corresponding sparse
+#' loadings are calculated either using \code{PMD} from the \code{PMA} package
+#' or using \code{spca} from the \code{elasticnet} package.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
-#' @param para a vector containing the penalization parameter for each variable
+#' @param method chooses the methods to calculate the sparse loadings.
+#' \code{PMD} uses the method from REF(WittenEtAl2009) and \code{SPCA} uses the
+#' method from REF(Zou2006).
+#' @param para when \code{method = "PMD"}: an integer giving the bound for the
+#' L1 regularization. When \code{method = "SPCA"}: a vector containing the
+#' penalization parameter for each variable.
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix.
 #' @param criterion a character string indicating if the weight-corrected
@@ -315,8 +322,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' \code{corrected} changes the loadings to weight all variables equally while
 #' \code{normal} does not change the loadings and therefore weights the
 #' variables differently.
-#' @param rho quadratic penalty parameter. We refer to REF(Zou2006) and
-#' REF(Bauer22) for a more elaborate explanation.
+#' @param rho penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
+#' a more elaborate explanation.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
 #' @param eps.conv a numerical value as convergence criterion.
@@ -369,6 +376,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' @export
 spla <- function(x,
+                 method=c("PMD", "SPCA"), #ist dann "PMD" default?
                  para,
                  cor=FALSE,
                  criterion="corrected",
@@ -383,23 +391,61 @@ spla <- function(x,
 
   feature_names <- get_feature_names(x=x)
   eigen <- list()
-  x <- scale(x, center=TRUE, scale=FALSE)
+  x <- scale(x, center = TRUE, scale = cor)
+  K <- ncol(x)
+  method <- tolower(method)
 
-  obj <- spca(
-    x=x,
-    K=ncol(x),
-    para=para,
-    type="predictor",
-    lambda=rho,
-    use.corr=cor,
-    max.iter=max.iter,
-    trace=trace,
-    eps.conv=eps.conv
+  # if (method == "pmd" && length(para) != 1) {
+  #   # 'PMD' oder so möglich?
+  #   stop("Enter a single sparseness parameter when method = PMD")
+  # } else if (method == "spca" && length(para) != K) {
+  #   # 'PCA' oder so möglich?
+  #   stop("Enter a penalization parameter for each loading when method = PCA")
+  # } else {
+  #   stop("Enter a penalization parameter for each loading when method = PCA")
+  # }
+
+  switch(
+    method,
+    "pmd"=stop("Enter a single sparseness parameter when method = PMD"),
+    "percentage"=stop("Enter a penalization parameter for each loading when method = PCA"),
+    stop("Enter a penalization parameter for each loading when method = PCA")
   )
 
-  eigen$vectors <- obj$loadings
-  eigen$values <- obj$pev
-  eigen$var.all <- obj$var.all
+  if (method == "pmd") {
+    obj <- PMD(
+      x=x,
+      K=K,
+      type="standard",
+      sumabsv=para,
+      sumabsu=sqrt(nrow(x)),
+      niter=max.iter,
+      trace=trace,
+      center=FALSE
+    )
+
+    eigen$vectors <- obj$v
+
+    R <- qr.R(qr(x %*% eigen$vectors))
+    eigen$values <- diag(R^2)
+    eigen$var.all <- sum(diag(cov(x)) * (nrow(x) - 1))
+
+  } else if (method == "SPCA") {
+    obj <- spca(
+      x = x,
+      K = K,
+      type = "predictor",
+      para = para,
+      lambda = rho,
+      max.iter = max.iter,
+      trace = trace,
+      eps.conv = eps.conv
+    )
+
+    eigen$vectors <- obj$loadings
+    eigen$values <- obj$pev 
+    eigen$var.all <- obj$var.all
+  }
 
   result <- spla_helper(
     x=x,

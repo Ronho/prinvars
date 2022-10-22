@@ -66,7 +66,7 @@ err_index_out_of_bounds <- function() {
 }
 
 conditional_matrix <- function(x, indices, drop=TRUE) {
-  if (ncol(x) == length(indices)){
+  if (ncol(x) == length(indices)) {
     return(FALSE)
   }
 
@@ -223,6 +223,10 @@ spla_helper <- function(
 
   rownames(eigen$vectors) <- feature_names
 
+  #####################################
+  ### CALCULATE EXP. VAR. BELOW ??????
+  #####################################
+
   blocks <- calculate_explained_variance(
     blocks=blocks,
     eigen=eigen,
@@ -251,6 +255,10 @@ spla_helper <- function(
   } else {
     W <- eigen$vectors
   }
+
+  ############################
+  ### CALCULATE EXP. VAR. HERE
+  ############################
 
   x_P1 <- x %*% P1
   sigma <- cov(x_P1)

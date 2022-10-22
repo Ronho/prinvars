@@ -31,7 +31,7 @@ valid_threshold_matrix_spla <- function(threshold_matrix) {
     get_zero_count(t(threshold_matrix)) == nrow(threshold_matrix)
   )
 
-  if(length(row_zeros) > 0) {
+  if (length(row_zeros) > 0) {
     err_invalid_spla()
   } else if (length(col_zeros) > 0) {
     warn_sparse_loadings()
