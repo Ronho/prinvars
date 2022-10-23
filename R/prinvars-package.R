@@ -14,6 +14,7 @@
 #' @importFrom stats cov cor
 #' @importFrom Rdpack reprompt
 #' @importFrom elasticnet spca
+#' @importFrom PMA PMD
 
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!

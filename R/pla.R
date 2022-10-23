@@ -376,7 +376,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' @export
 spla <- function(x,
-                 method=c("PMD", "SPCA"), #ist dann "PMD" default?
+                 method=c("PMD", "SPCA"),
                  para,
                  cor=FALSE,
                  criterion="corrected",
@@ -393,23 +393,23 @@ spla <- function(x,
   eigen <- list()
   x <- scale(x, center = TRUE, scale = cor)
   K <- ncol(x)
-  method <- tolower(method)
 
-  # if (method == "pmd" && length(para) != 1) {
-  #   # 'PMD' oder so möglich?
-  #   stop("Enter a single sparseness parameter when method = PMD")
-  # } else if (method == "spca" && length(para) != K) {
-  #   # 'PCA' oder so möglich?
-  #   stop("Enter a penalization parameter for each loading when method = PCA")
-  # } else {
-  #   stop("Enter a penalization parameter for each loading when method = PCA")
-  # }
+  method <- match.arg(method)
+  method <- tolower(method)
 
   switch(
     method,
-    "pmd"=stop("Enter a single sparseness parameter when method = PMD"),
-    "percentage"=stop("Enter a penalization parameter for each loading when method = PCA"),
-    stop("Enter a penalization parameter for each loading when method = PCA")
+    "pmd"={
+      if (length(para) != 1) {
+        stop("Enter a single sparseness parameter when method = PMD")
+      }
+    },
+    "spca"={
+      if (length(para) != K) {
+        stop("Enter a penalization parameter for each loading when method = SPCA")
+      }
+    },
+    stop("Method unknown")
   )
 
   if (method == "pmd") {
@@ -430,7 +430,7 @@ spla <- function(x,
     eigen$values <- diag(R^2)
     eigen$var.all <- sum(diag(cov(x)) * (nrow(x) - 1))
 
-  } else if (method == "SPCA") {
+  } else if (method == "spca") {
     obj <- spca(
       x = x,
       K = K,
