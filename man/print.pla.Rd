@@ -22,7 +22,7 @@ if(requireNamespace("AER")){
 require(AER)
 data("OECDGrowth")
 
-pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+pla_obj = pla(OECDGrowth, cor=TRUE, thresholds=0.5)
 print(pla_obj)
 }
 

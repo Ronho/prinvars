@@ -8,7 +8,7 @@
 
 This package provides methods for dimensionality reduction.}
 \description{
-Provides methods for reducing the number of features within a data set. See Bauer JO (2021) <doi:10.1145/3475827.3475832> and Bauer JO, Drabant B (2021) <doi:10.1016/j.jmva.2021.104754> for more information on principal loading analysis.
+Provides methods for reducing the number of features within a data set. See Bauer JO (2021) \doi{10.1145/3475827.3475832} and Bauer JO, Drabant B (2021) \doi{10.1016/j.jmva.2021.104754} for more information on principal loading analysis.
 }
 \references{
 \insertRef{Bauer.06242021}{prinvars}

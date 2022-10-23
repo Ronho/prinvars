@@ -6,45 +6,56 @@
 \usage{
 spla(
   x,
-  type = "data",
-  para = 0.5,
+  method = c("PMD", "SPCA"),
+  para,
   cor = FALSE,
-  orthogonal = TRUE,
-  thresholds = 0.01,
-  threshold_mode = "cutoff",
+  criterion = "corrected",
+  rho = 1e-06,
+  max.iter = 200,
+  trace = FALSE,
+  eps.conv = 0.001,
+  orthogonal = FALSE,
   check = "rnc",
   ...
 )
 }
 \arguments{
-\item{x}{a numeric matrix which can either be the data matrix or the covariance/
-correlation matrix for sparse principal loading analysis.}
+\item{x}{a numeric matrix or data frame which provides the data for the
+principal loading analysis.}
 
-\item{type}{a character string. \code{data} indicates that \code{x} is the data matrix, and
-\code{dispersion} indicates that \code{x} is the covariance or correlation matrix.}
+\item{method}{chooses the methods to calculate the sparse loadings.
+\code{PMD} uses the method from REF(WittenEtAl2009) and \code{SPCA} uses the
+method from REF(Zou2006).}
 
-\item{para}{a numeric value that gives the weight factor for sparsity.}
+\item{para}{when \code{method = "PMD"}: an integer giving the bound for the
+L1 regularization. When \code{method = "SPCA"}: a vector containing the
+penalization parameter for each variable.}
 
 \item{cor}{a logical value indicating whether the calculation should use the
-correlation or the covariance matrix. This option is only effective if \code{type = "data"}.}
+correlation or the covariance matrix.}
 
-\item{orthogonal}{a logical value indicating whether the sparse eigenvectors should be
-orthogonal or not. If true, SPLA proceeds according to \insertRef{Benidis.2016}{prinvars} otherwise
-according to \insertRef{Zou.2006}{prinvars}.}
+\item{criterion}{a character string indicating if the weight-corrected
+evaluation criterion (CEC) or the evaluation criterion (EC) is used.
+\code{corrected} changes the loadings to weight all variables equally while
+\code{normal} does not change the loadings and therefore weights the
+variables differently.}
 
-\item{thresholds}{a numeric value or list of numeric values. All values of the
-sparse eigenvectors that are less or equal to the threshold are set zo zero. If
-multiple values are given, a list of SPLA results will be returned.}
+\item{rho}{penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
+a more elaborate explanation.}
 
-\item{threshold_mode}{a character string indicating how the threshold is
-determined and used. \code{cutoff} indicates the usage of a threshold value.
-\code{percentage} indicates that the cutoff value is determined by the maximum
-element of each vector multiplied with the threshold value. This option is only
-effective if the parameter orthogonol is set to FALSE.}
+\item{max.iter}{maximum number of iterations.}
 
-\item{check}{a character string indicating if only rows or rows as well as columns
-are used to detect the underlying block structure. \code{rows} checks if the rows fulfill
-the required structure. \code{rnc} checks if rows and columns fulfill the required structure.}
+\item{trace}{a logical value indicating if the progress is printed.}
+
+\item{eps.conv}{a numerical value as convergence criterion.}
+
+\item{orthogonal}{a logical value indicating if the sparse loadings are
+orthogonalized.}
+
+\item{check}{a character string indicating if only rows or rows as well as
+columns are used to detect the underlying block structure. \code{rows} checks
+if the rows fulfill the required structure. \code{rnc} checks if rows and
+columns fulfill the required structure.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
@@ -53,26 +64,44 @@ single or list of \code{pla} class containing the following attributes:
 \item{x}{
   a numeric matrix or data frame which equals the input of \code{x}.
 }
+\item{EC}{
+  a numeric vector that contains the weight-corrected evaluation criterion
+  (CEC) if \code{criterion="corrected"} and the evaluation criterion (EC) if
+  \code{criterion="normal"}.
+}
 \item{loadings}{
-  a matrix of variable loadings (i.e. a matrix containing the
-  eigenvectors of the dispersion matrix).
-}
-\item{threshold}{
-  a numeric value which equals the input of \code{thresholds}.
-}
-\item{threshold_mode}{
-  a character string which equals the input of \code{threshold_mode}.
+  a matrix of variable loadings (i.e. a matrix containing the sparse
+  loadings).
 }
 \item{blocks}{
-  a list of blocks which are identified by principal loading analysis.
+  a list of blocks which are identified by sparse principal loading analysis.
 }
+\item{W}{
+  a matrix of variable loadings used to calculate the evaluation criterion.
+  If \code{criterion="corrected"}, \code{W} contains an orthogonal matrix
+  with equal weights in the first column of each loading-block. If
+  \code{criterion="normal"}, \code{W} equals \code{loadings}.
+}
+See REF(Bauer22) for more information.
 }
 \description{
-Performs a sparse principal loading analysis (SPLA) on the given data matrix.
+This function performs the sparse principal loading analysis
+provided by REF(Bauer22) on the given data matrix. The corresponding sparse
+loadings are calculated either using \code{PMD} from the \code{PMA} package
+or using \code{spca} from the \code{elasticnet} package.
 }
 \examples{
-if(requireNamespace("AER")){
-require(AER)
-}
+spla(USArrests, para=c(0.5,0.5,0.5,0.5), cor=TRUE)
+
+## we obtain two blocks:
+## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
+## The large EC indicates that the given structure is reasonable.
+
+spla(USArrests, para=c(0.5,0.5,0.7,0.5), cor=TRUE)
+
+## we obtain three blocks:
+## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
+## The mid-ish EC for (Murder, Aussault) indicates that the found structure
+## might not be adequate.
 
 }

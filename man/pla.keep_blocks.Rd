@@ -27,23 +27,22 @@ list of the following attributes:
 }
 }
 \description{
-Used to pass the indices of the blocks we want to keep 
-(i.e. which we do no want to be discarded).
+Used to pass the indices of the blocks we want to keep (i.e.
+which we do no want to be discarded).
 }
 \examples{
 if(requireNamespace("AER")){
 require(AER)
 data("OECDGrowth")
 
-pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+pla(OECDGrowth,cor=TRUE,thresholds=0.5)
 
-## we obtain three blocks: (randd), (gdp85,gdp60) and 
-## (invest, school, popgrowth). Block 1, i.e. the 1x1 block 
-## (randd), explains only 5.76\% of the overall variance.
-## Hence, discarding this block seems appropriate. Therefore,
-## we keep block 2 and block 3
+## we obtain three blocks: (randd), (gdp85,gdp60) and (invest, school,
+## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76\% of
+## the overall variance. Hence, discarding this block seems appropriate.
+## Therefore, we keep block 2 and block 3.
 
-pla_obj = pla(OECDGrowth,cor=TRUE,thresholds = 0.5)
+pla_obj = pla(OECDGrowth, cor=TRUE, thresholds=0.5)
 pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 }
 
