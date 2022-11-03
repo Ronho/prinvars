@@ -423,12 +423,11 @@ spla <- function(x,
       trace=trace,
       center=FALSE
     )
-
-    eigen$vectors <- obj$v
-
-    R <- qr.R(qr(x %*% eigen$vectors))
-    eigen$values <- diag(R^2)
+    
     eigen$var.all <- sum(diag(cov(x)) * (nrow(x) - 1))
+    eigen$vectors <- obj$v
+    R <- qr.R(qr(x %*% eigen$vectors))
+    eigen$values <- diag(R^2) / eigen$var.all
 
   } else if (method == "spca") {
     obj <- spca(
