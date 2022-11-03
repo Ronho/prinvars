@@ -314,16 +314,16 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' method from REF(Zou2006).
 #' @param para when \code{method = "PMD"}: an integer giving the bound for the
 #' L1 regularization. When \code{method = "SPCA"}: a vector containing the
-#' penalization parameter for each variable.
+#' regularization parameter for each variable.
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix.
 #' @param criterion a character string indicating if the weight-corrected
 #' evaluation criterion (CEC) or the evaluation criterion (EC) is used.
 #' \code{corrected} changes the loadings to weight all variables equally while
-#' \code{normal} does not change the loadings and therefore weights the
-#' variables differently.
-#' @param rho penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
-#' a more elaborate explanation.
+#' \code{normal} does not change the loadings.
+#' @param rho penalty parameter. When \code{method = "SPCA"}, we need further
+#' regularizations if the number of variables is larger than the number of
+#' observations. We refer to REF(Zou2006) and REF(Bauer22) for details.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
 #' @param eps.conv a numerical value as convergence criterion.
