@@ -387,18 +387,21 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' ## might not be adequate.
 #'
 #' #############
-#' ## Second example: we replicate the synthetic example from \insertRef{Bauer.2022}{prinvars}
+#' ## Second example: we replicate a synthetic example similar to \insertRef{Bauer.2022}{prinvars}
 #' #############
 #' 
 #' set.seed(1)
-#' N = 5000
-#' V1 = rnorm(N,0,sqrt(290))
-#' V2 = rnorm(N,0,sqrt(300))
+#' N = 500
+#' V1 = rnorm(N,0,10)
+#' V2 = rnorm(N,0,11)
+#' 
+#' ## Create the blocks (X_1,...,X_4) and (X_5,...,X_8) synthetically
 #' 
 #' X1 = V1 + rnorm(N,0,1) #X_j = V_1 + N(0,1) for j =1,...,4
 #' X2 = V1 + rnorm(N,0,1)
 #' X3 = V1 + rnorm(N,0,1)
 #' X4 = V1 + rnorm(N,0,1)
+#' 
 #' X5 = V2 + rnorm(N,0,1) #X_j = V_1 + N(0,1) for j =5,...9
 #' X6 = V2 + rnorm(N,0,1)
 #' X7 = V2 + rnorm(N,0,1)
@@ -406,9 +409,14 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' 
 #' X = cbind(X1, X2, X3, X4, X5, X6, X7, X8)
 #' 
-#' 
 #' ## Conduct SPLA to obtain the blocks (X_1,...,X_4) and (X_5,...,X_8)
+#'
+#' ## use method = "PMD" (default)
 #' spla(X, para = 1.4)
+#' 
+#' ## use method = "SPCA"
+#' spla(X, method = "SPCA", para = c(500,60,3,8,5,7,13,4))
+#' 
 #' @export
 spla <- function(x,
                  method=c("PMD", "SPCA"),
