@@ -323,7 +323,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' \code{normal} does not change the loadings.
 #' @param rho penalty parameter. When \code{method = "SPCA"}, we need further
 #' regularizations if the number of variables is larger than the number of
-#' observations. We refer to REF(Zou2006) and REF(Bauer22) for details.
+#' observations. We refer to \insertRef{Zou.2006}{prinvars} and \insertRef{Bauer.2022}{prinvars}
+#' for details.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
 #' @param eps.conv a numerical value as convergence criterion.
@@ -359,6 +360,13 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'   \code{criterion="normal"}, \code{W} equals \code{loadings}.
 #' }
 #' See REF(Bauer22) for more information.
+#' See \insertRef{Bauer.2022}{prinvars} for more information.
+#' This function performs sparse principal loading analysis
+#' provided on the given data matrix. We refer to \insertRef{Bauer.2022}{prinvars}
+#' for more information. The corresponding sparse loadings are calculated either
+#' using \code{PMD} from the \code{PMA} package or using \code{spca} from the
+#' \code{elasticnet} package. The respective methods are given by \insertRef{Witten.2009}{prinvars}
+#' and \insertRef{Zou.2006}{prinvars} respectively.
 #'
 #' @examples
 #' spla(USArrests, para=c(0.5,0.5,0.5,0.5), cor=TRUE)
