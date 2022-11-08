@@ -387,7 +387,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' ## might not be adequate.
 #'
 #' #############
-#' ## Second example: we replicate the synthetic example of \insertRef{Bauer.2022}{prinvars}
+#' ## Second example: we replicate the synthetic example from \insertRef{Bauer.2022}{prinvars}
 #' #############
 #' 
 #' set.seed(1)
