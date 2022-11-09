@@ -427,7 +427,7 @@ spla <- function(x,
                  max.iter=200,
                  trace=FALSE,
                  eps.conv=1e-3,
-                 orthogonal=FALSE,
+                 orthogonal=TRUE,
                  check="rnc",
                  ...) {
   chkDots(...)
