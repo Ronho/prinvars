@@ -204,15 +204,13 @@ spla_helper <- function(
     blocks[[i]]@ev_influenced <- which(ev_idxs %in% blocks[[i]]@ev_influenced,
       arr.ind=TRUE, useNames=FALSE)
   }
-
+  columns <- seq_len(ncol(eigen$vectors))
   I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
   P1 <- I[feature_idxs, ]
   P2 <- I[, ev_idxs]
   eigen$vectors <- P1 %*% eigen$vectors %*% P2
   threshold_matrix <- P1 %*% threshold_matrix %*% P2
-  eigen$values <- eigen$values[ev_idxs]
   feature_names <- feature_names[feature_idxs]
-  columns <- seq_len(ncol(eigen$vectors))
   colnames(eigen$vectors) <- sapply(columns[ev_idxs],
     function(num) paste("[,", num, "]", sep=""))
 
@@ -223,6 +221,27 @@ spla_helper <- function(
 
   rownames(eigen$vectors) <- feature_names
 
+  m <- length(feature_names)
+  W_m <- matrix(1, nrow=m, ncol=m)
+  M <- matrix(1, nrow=m - 1, ncol=m - 1)
+  M[(lower.tri(M))] <- 0
+  diag(M) <- -1:-(m-1)
+  W_m[2:m, 2:m] <- M
+
+  W <- matrix(0, nrow=m, ncol=m)
+  for (block in blocks) {
+    row_idxs <- match(block@features, feature_names)
+    W[row_idxs, block@ev_influenced] <- W_m[seq_along(row_idxs),
+      seq_along(block@ev_influenced)]
+  }
+
+  W <- W %*% diag(1/apply(W, 2, function(x) norm(x, type="2")))
+  colnames(W) <- sapply(columns[ev_idxs],
+    function(num) paste("[,", num, "]", sep=""))
+
+  R <- qr.R(qr(x %*% W))
+  eigen$values <- diag(R^2) / eigen$var.all
+
   blocks <- calculate_explained_variance(
     blocks=blocks,
     eigen=eigen,
@@ -232,23 +251,8 @@ spla_helper <- function(
     is_absolute=TRUE
   )
 
-  if (criterion == "corrected") {
-    m <- length(feature_names)
-    W_m <- matrix(1, nrow=m, ncol=m)
-    M <- matrix(1, nrow=m - 1, ncol=m - 1)
-    M[(lower.tri(M))] <- 0
-    diag(M) <- -1:-(m-1)
-    W_m[2:m, 2:m] <- M
-
-    W <- matrix(0, nrow=m, ncol=m)
-    for (block in blocks) {
-      row_idxs <- match(block@features, feature_names)
-      W[row_idxs, block@ev_influenced] <- W_m[seq_along(row_idxs),
-        seq_along(block@ev_influenced)]
-    }
-
-    W <- W %*% diag(1/apply(W, 2, function(x) norm(x, type="2")))
-  } else {
+  # weighted loadings
+  if (criterion != "corrected") {
     W <- eigen$vectors
   }
 

@@ -87,11 +87,16 @@ pla <- function(x,
                 cor=FALSE,
                 scaled_ev=FALSE,
                 thresholds=0.33,
-                threshold_mode="cutoff",
-                expvar="approx",
-                check="rnc",
+                threshold_mode=c("cutoff", "percentage"),
+                expvar=c("approx", "exact"),
+                check=c("rnc", "rows"),
                 ...) {
   chkDots(...)
+
+  threshold_mode <- match.arg(threshold_mode)
+  check <- match.arg(check)
+  expvar <- match.arg(expvar)
+
   feature_names <- get_feature_names(x=x)
   x <- scale(x, center=TRUE, scale=FALSE)
   c <- select_cor(x=x, cor=cor)
@@ -179,7 +184,7 @@ print.pla <- function(x, ...) {
       threshold=x$threshold,
       threshold_mode=x$threshold_mode,
       feature_names=feature_names,
-      C=x$C
+      C=x$EC
     ),
     quote=FALSE,
     ...
@@ -215,7 +220,7 @@ print.pla <- function(x, ...) {
 #' require(AER)
 #' data("OECDGrowth")
 #'
-#' pla(OECDGrowth,cor=TRUE,thresholds=0.5)
+#' pla(OECDGrowth, cor=TRUE, thresholds=0.5)
 #'
 #' ## we obtain three blocks: (randd), (gdp85,gdp60) and (invest, school,
 #' ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
@@ -303,17 +308,17 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @title Sparse Principal Loading Analysis
 #'
 #' @description This function performs the sparse principal loading analysis
-#' provided by REF(Bauer22) on the given data matrix. The corresponding sparse
-#' loadings are calculated either using \code{PMD} from the \code{PMA} package
-#' or using \code{spca} from the \code{elasticnet} package.
+#' provided by \insertRef{Bauer.2022}{prinvars} on the given data matrix. The
+#' corresponding sparse loadings are calculated either using \code{PMD} from the
+#' \code{PMA} package or using \code{spca} from the \code{elasticnet} package.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' principal loading analysis.
 #' @param method chooses the methods to calculate the sparse loadings.
-#' \code{PMD} uses the method from REF(WittenEtAl2009) and \code{SPCA} uses the
-#' method from REF(Zou2006).
-#' @param para when \code{method = "PMD"}: an integer giving the bound for the
-#' L1 regularization. When \code{method = "SPCA"}: a vector containing the
+#' \code{pmd} uses the method from \insertRef{Witten.2009}{prinvars} and
+#' \code{spca} uses the method from \insertRef{Zou.2006}{prinvars}.
+#' @param para when \code{method = "pmd"}: an integer giving the bound for the
+#' L1 regularization. When \code{method = "spca"}: a vector containing the
 #' penalization parameter for each variable.
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix.
@@ -322,8 +327,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' \code{corrected} changes the loadings to weight all variables equally while
 #' \code{normal} does not change the loadings and therefore weights the
 #' variables differently.
-#' @param rho penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
-#' a more elaborate explanation.
+#' @param rho penalty parameter. We refer to \insertRef{Zou2006}{prinvars} and
+#' \insertRef{Bauer.2022}{prinvars} for a more elaborate explanation.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
 #' @param eps.conv a numerical value as convergence criterion.
@@ -358,16 +363,16 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'   with equal weights in the first column of each loading-block. If
 #'   \code{criterion="normal"}, \code{W} equals \code{loadings}.
 #' }
-#' See REF(Bauer22) for more information.
+#' See \insertRef{Bauer.2022}{prinvars} for more information.
 #'
 #' @examples
-#' spla(USArrests, para=c(0.5,0.5,0.5,0.5), cor=TRUE)
+#' spla(USArrests, para=c(0.5, 0.5, 0.5, 0.5), cor=TRUE, method="spca")
 #'
 #' ## we obtain two blocks:
 #' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
 #' ## The large EC indicates that the given structure is reasonable.
 #'
-#' spla(USArrests, para=c(0.5,0.5,0.7,0.5), cor=TRUE)
+#' spla(USArrests, para=c(0.5, 0.5, 0.7, 0.5), cor=TRUE)
 #'
 #' ## we obtain three blocks:
 #' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
@@ -376,16 +381,16 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' @export
 spla <- function(x,
-                 method=c("PMD", "SPCA"),
+                 method=c("pmd", "spca"),
                  para,
                  cor=FALSE,
-                 criterion="corrected",
+                 criterion=c("corrected", "normal"),
                  rho=1e-06,
                  max.iter=200,
                  trace=FALSE,
                  eps.conv=1e-3,
                  orthogonal=FALSE,
-                 check="rnc",
+                 check=c("rnc", "rows"),
                  ...) {
   chkDots(...)
 
@@ -395,18 +400,20 @@ spla <- function(x,
   K <- ncol(x)
 
   method <- match.arg(method)
-  method <- tolower(method)
+  criterion <- match.arg(criterion)
+  check <- match.arg(check)
 
   switch(
     method,
     "pmd"={
       if (length(para) != 1) {
-        stop("Enter a single sparseness parameter when method = PMD")
+        stop("Enter a single sparseness parameter when method = pmd")
       }
     },
     "spca"={
       if (length(para) != K) {
-        stop("Enter a penalization parameter for each loading when method = SPCA")
+        stop("Enter a penalization parameter for each loading when method =",
+        "spca")
       }
     },
     stop("Method unknown")
@@ -423,12 +430,8 @@ spla <- function(x,
       trace=trace,
       center=FALSE
     )
-
-    eigen$vectors <- obj$v
-
-    R <- qr.R(qr(x %*% eigen$vectors))
-    eigen$values <- diag(R^2)
     eigen$var.all <- sum(diag(cov(x)) * (nrow(x) - 1))
+    eigen$vectors <- obj$v
 
   } else if (method == "spca") {
     obj <- spca(
@@ -443,7 +446,6 @@ spla <- function(x,
     )
 
     eigen$vectors <- obj$loadings
-    eigen$values <- obj$pev 
     eigen$var.all <- obj$var.all
   }
 
