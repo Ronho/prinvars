@@ -204,10 +204,12 @@ spla_helper <- function(
     blocks[[i]]@ev_influenced <- which(ev_idxs %in% blocks[[i]]@ev_influenced,
       arr.ind=TRUE, useNames=FALSE)
   }
+
   columns <- seq_len(ncol(eigen$vectors))
   I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
   P1 <- I[feature_idxs, ]
   P2 <- I[, ev_idxs]
+  x_P1 <- x[, feature_idxs]
   eigen$vectors <- P1 %*% eigen$vectors %*% P2
   threshold_matrix <- P1 %*% threshold_matrix %*% P2
   feature_names <- feature_names[feature_idxs]
@@ -221,6 +223,7 @@ spla_helper <- function(
 
   rownames(eigen$vectors) <- feature_names
 
+  # Compute weighted loadings
   m <- length(feature_names)
   W_m <- matrix(1, nrow=m, ncol=m)
   M <- matrix(1, nrow=m - 1, ncol=m - 1)
@@ -239,8 +242,15 @@ spla_helper <- function(
   colnames(W) <- sapply(columns[ev_idxs],
     function(num) paste("[,", num, "]", sep=""))
 
-  R <- qr.R(qr(x %*% W))
+  # weighted loadings
+  if (criterion != "corrected") {
+    W <- eigen$vectors
+  }
+
+  R <- qr.R(qr(x_P1 %*% W))
   eigen$values <- diag(R^2) / eigen$var.all
+  sigma <- cov(x_P1)
+  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
 
   blocks <- calculate_explained_variance(
     blocks=blocks,
@@ -250,18 +260,6 @@ spla_helper <- function(
     threshold_matrix=threshold_matrix,
     is_absolute=TRUE
   )
-
-  # weighted loadings
-  if (criterion != "corrected") {
-    W <- eigen$vectors
-  }
-
-  x_P1 <- x %*% P1
-  sigma <- cov(x_P1)
-  R <- qr.R(qr(x_P1 %*% W))
-  eigen$var.all <- sum(diag(sigma)) * (nrow(x) - 1)
-
-  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
 
   # Only first entry of each block should be depicted since the other entries
   # depend on this one
@@ -274,7 +272,6 @@ spla_helper <- function(
   }
 
   fitting_criteria[1] <- 0 # First entry will not be used either
-  eigen$var.all <- NULL
 
   result <- list(
     x=x,

@@ -434,7 +434,7 @@ spla <- function(x,
                  max.iter=200,
                  trace=FALSE,
                  eps.conv=1e-3,
-                 orthogonal=True,
+                 orthogonal=TRUE,
                  check=c("rnc", "rows"),
                  ...) {
   chkDots(...)
@@ -475,9 +475,8 @@ spla <- function(x,
       trace=trace,
       center=FALSE
     )
-    eigen$var.all <- sum(diag(cov(x)) * (nrow(x) - 1))
-    eigen$vectors <- obj$v
 
+    eigen$vectors <- obj$v
   } else if (method == "spca") {
     obj <- spca(
       x = x,
@@ -490,8 +489,8 @@ spla <- function(x,
       eps.conv = eps.conv
     )
 
-    eigen$vectors <- obj$loadings
     eigen$var.all <- obj$var.all
+    eigen$vectors <- obj$loadings
   }
 
   result <- spla_helper(
