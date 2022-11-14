@@ -379,7 +379,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' ## First example: we apply SPLA to the a classic example from PCA
 #' #############
 #'
-#' spla(USArrests, method = "SPCA", para=c(0.5, 0.5, 0.5, 0.5), cor=TRUE)
+#' spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.5, 0.5), cor=TRUE)
 #'
 #' ## we obtain two blocks:
 #' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
@@ -393,8 +393,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' ## might not be adequate.
 #'
 #' #############
-#' ## Second example: we replicate a synthetic example similar to
-#' ## \insertRef{Bauer.2022}{prinvars}
+#' ## Second example: we replicate a synthetic example similar to Bauer (2022)
 #' #############
 #'
 #' set.seed(1)
@@ -418,11 +417,11 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' ## Conduct SPLA to obtain the blocks (X_1,...,X_4) and (X_5,...,X_8)
 #'
-#' ## use method = "PMD" (default)
+#' ## use method = "pmd" (default)
 #' spla(X, para = 1.4)
 #'
-#' ## use method = "SPCA"
-#' spla(X, method = "SPCA", para = c(500,60,3,8,5,7,13,4))
+#' ## use method = "spca"
+#' spla(X, method = "scpa", para = c(500,60,3,8,5,7,13,4))
 #'
 #' @export
 spla <- function(x,
