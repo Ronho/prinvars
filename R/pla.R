@@ -364,8 +364,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'   with equal weights in the first column of each loading-block. If
 #'   \code{criterion="normal"}, \code{W} equals \code{loadings}.
 #' }
-#' See \insertRef{Bauer.2022}{prinvars} for more information.
-#' See \insertRef{Bauer.2022}{prinvars} for more information.
+#'
 #' This function performs sparse principal loading analysis provided on the
 #' given data matrix. We refer to \insertRef{Bauer.2022}{prinvars} for more
 #' information. The corresponding sparse loadings are calculated either using
