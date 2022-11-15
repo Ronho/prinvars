@@ -487,7 +487,7 @@ spla <- function(x,
       eps.conv = eps.conv
     )
 
-    eigen$var.all <- obj$var.all
+    #eigen$var.all <- obj$var.all ##Jan 15.11.22
     eigen$vectors <- obj$loadings
   }
 
