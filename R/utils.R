@@ -247,9 +247,9 @@ spla_helper <- function(
     W <- eigen$vectors
   }
 
-  eigen$var.all = sum(diag(cov(x)) * (nrow(x) - 1))  #Jan 15.11.22                    
+  eigen$var.all = sum(diag(cov(x))   #Jan 15.11.22                    
   R <- qr.R(qr(x_P1 %*% W))
-  eigen$values <- diag(R^2) / eigen$var.all
+  eigen$values <- (diag(R^2) / (nrow(x) - 1))) / eigen$var.all
   sigma <- cov(x_P1)
   fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
 
