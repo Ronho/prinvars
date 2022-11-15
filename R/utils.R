@@ -250,9 +250,9 @@ spla_helper <- function(
   R <- qr.R(qr(x_P1 %*% W))
   sigma <- cov(x_P1)
   eigen$var.all = sum(diag(sigma))
-  eigen$values <- (diag(R^2)/(nrow(x) - 1)) / eigen$var.all
+  eigen$values <- (diag(R)^2/(nrow(x) - 1)) / eigen$var.all
   
-  fitting_criteria <- (diag(R^2)/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
+  fitting_criteria <- (diag(R)^2/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
 
   blocks <- calculate_explained_variance(
     blocks=blocks,
