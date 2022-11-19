@@ -1,6 +1,6 @@
 #' @title Principal Variables Package
 #'
-#' This package provides methods for dimensionality reduction.
+#' @description This package provides methods for dimensionality reduction.
 #'
 #' @references
 #' \insertRef{Bauer.06242021}{prinvars}

@@ -420,7 +420,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' spla(X, para = 1.4)
 #'
 #' ## use method = "spca"
-#' spla(X, method = "scpa", para = c(500,60,3,8,5,7,13,4))
+#' spla(X, method = "spca", para = c(500,60,3,8,5,7,13,4))
 #'
 #' @export
 spla <- function(x,
@@ -487,7 +487,6 @@ spla <- function(x,
       eps.conv = eps.conv
     )
 
-    #eigen$var.all <- obj$var.all ##Jan 15.11.22
     eigen$vectors <- obj$loadings
   }
 

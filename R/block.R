@@ -1,12 +1,14 @@
-#' Block
+#' @title Block
 #'
-#' Class used within the package to keep the structure and information about
-#' the generated blocks.
+#' @description Class used within the package to keep the structure and
+#' information about the generated blocks.
 #'
 #' @slot features a vector of numeric which contains the indices of the block.
 #' @slot explained_variance a numeric which contains the variance explained of
 #' the blocks variables based on the whole data set.
 #' @slot is_valid a logical which indicates if the block structure is valid.
+#' @slot ev_influenced a vector of numeric which contains the indices of the
+#' eigenvectors influenced by this block.
 #' @export
 setClass(
   "Block",
@@ -21,10 +23,10 @@ setClass(
 
 #' @title Block - Show
 #'
-#' Prints the blocks structure.
+#' @description Prints the blocks structure.
 #'
 #' @param object block.
-#' 
+#'
 #' @return
 #' No return value.
 #'
@@ -41,7 +43,7 @@ setMethod(
 
 #' @title Block - str
 #'
-#' Generic function to create a string out of the blocks structure.
+#' @description Generic function to create a string out of the blocks structure.
 #'
 #' @param object block.
 #'
