@@ -58,12 +58,14 @@ test_that("create_block", {
   blocks[[1]] <- create_block(
     feature_names=c("a", "b", "c", "d", "e"),
     selected_features=selected_features,
-    is_valid=FALSE
+    is_valid=FALSE,
+    ev_influenced=c(1, 2)
   )
   blocks[[2]] <- create_block(
     feature_names=c(1:5),
     selected_features=selected_features,
-    is_valid=TRUE
+    is_valid=TRUE,
+    ev_influenced=c(4, 5)
   )
 
   expect_s4_class(blocks[[1]], "Block")
@@ -71,9 +73,11 @@ test_that("create_block", {
   expect_equal(blocks[[1]]@features, c("b", "c"))
   expect_equal(blocks[[1]]@explained_variance, 0)
   expect_equal(blocks[[1]]@is_valid, FALSE)
+  expect_equal(blocks[[1]]@ev_influenced, c(1, 2))
   expect_equal(blocks[[2]]@features, c(2, 3))
   expect_equal(blocks[[2]]@explained_variance, 0)
   expect_equal(blocks[[2]]@is_valid, TRUE)
+  expect_equal(blocks[[2]]@ev_influenced, c(4, 5))
 })
 
 test_that("get_zero_count", {
@@ -93,7 +97,8 @@ test_that("str_loadings", {
       loadings=matrix(c(1:16), nrow=4, ncol=4),
       threshold=0.5,
       threshold_mode="cutoff",
-      feature_names=c("a", "b", "c", "d")
+      feature_names=c("a", "b", "c", "d"),
+      C=c(1:4)
     ),
     "character"
   )

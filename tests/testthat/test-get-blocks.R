@@ -7,12 +7,24 @@ test_that("get_blocks", {
   ), nrow=3, ncol=3)
 
   expected_result <- list()
-  expected_result[[1]] <- new("Block", features=c(1), is_valid=TRUE)
-  expected_result[[2]] <- new("Block", features=c(3), is_valid=TRUE)
-  expected_result[[3]] <- new("Block", features=c(2), is_valid=FALSE)
-  
+  expected_result[[1]] <- new("Block",
+    features=c(1),
+    is_valid=TRUE,
+    ev_influenced=c(1))
+  expected_result[[2]] <- new("Block",
+    features=c(3),
+    is_valid=TRUE,
+    ev_influenced=c(3))
+  expected_result[[3]] <- new("Block",
+    features=c(2),
+    is_valid=FALSE,
+    ev_influenced=c(2))
+
   expect_equal(
-    get_blocks(threshold_matrix=matrix, feature_names=c(1:nrow(matrix)), check="rows"),
+    get_blocks(
+      threshold_matrix=matrix,
+      feature_names=seq_len(nrow(matrix)),
+      check="rows"),
     expected_result
   )
 })
@@ -33,7 +45,7 @@ test_that("find_combination", {
       check="rows",
       taken_features=c()
     ),
-    list(combination=c(1), is_valid=TRUE)
+    list(combination=c(1), is_valid=TRUE, ev_influenced=c(1))
   )
 })
 
@@ -83,7 +95,7 @@ test_that("is_valid_combination", {
         check=check,
         ones=2
     ),
-    c(TRUE, TRUE)
+    list(is_valid=c(TRUE, TRUE), ev_influenced=c(1, 3))
   )
   expect_equal(
     is_valid_combination(
@@ -92,6 +104,6 @@ test_that("is_valid_combination", {
       check=check,
       ones=1
     ),
-    c(TRUE, FALSE)
+    list(is_valid=c(TRUE, FALSE), ev_influenced=c(1))
   )
 })
