@@ -2,9 +2,7 @@
 % Please edit documentation in R/block.R
 \name{show,Block-method}
 \alias{show,Block-method}
-\title{Block - Show
-
-Prints the blocks structure.}
+\title{Block - Show}
 \usage{
 \S4method{show}{Block}(object)
 }
@@ -15,8 +13,6 @@ Prints the blocks structure.}
 No return value.
 }
 \description{
-Block - Show
-
 Prints the blocks structure.
 }
 \examples{

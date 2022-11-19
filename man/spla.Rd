@@ -6,16 +6,16 @@
 \usage{
 spla(
   x,
-  method = c("PMD", "SPCA"),
+  method = c("pmd", "spca"),
   para,
   cor = FALSE,
-  criterion = "corrected",
+  criterion = c("corrected", "normal"),
   rho = 1e-06,
   max.iter = 200,
   trace = FALSE,
   eps.conv = 0.001,
-  orthogonal = FALSE,
-  check = "rnc",
+  orthogonal = TRUE,
+  check = c("rnc", "rows"),
   ...
 )
 }
@@ -24,12 +24,12 @@ spla(
 principal loading analysis.}
 
 \item{method}{chooses the methods to calculate the sparse loadings.
-\code{PMD} uses the method from REF(WittenEtAl2009) and \code{SPCA} uses the
-method from REF(Zou2006).}
+\code{pmd} uses the method from \insertRef{Witten.2009}{prinvars} and
+\code{spca} uses the method from \insertRef{Zou.2006}{prinvars}.}
 
-\item{para}{when \code{method = "PMD"}: an integer giving the bound for the
-L1 regularization. When \code{method = "SPCA"}: a vector containing the
-penalization parameter for each variable.}
+\item{para}{when \code{method = "pmd"}: an integer giving the bound for the
+L1 regularization. When \code{method = "spca"}: a vector containing the
+regularization parameter for each variable.}
 
 \item{cor}{a logical value indicating whether the calculation should use the
 correlation or the covariance matrix.}
@@ -37,11 +37,12 @@ correlation or the covariance matrix.}
 \item{criterion}{a character string indicating if the weight-corrected
 evaluation criterion (CEC) or the evaluation criterion (EC) is used.
 \code{corrected} changes the loadings to weight all variables equally while
-\code{normal} does not change the loadings and therefore weights the
-variables differently.}
+\code{normal} does not change the loadings.}
 
-\item{rho}{penalty parameter. We refer to REF(Zou2006) and REF(Bauer22) for
-a more elaborate explanation.}
+\item{rho}{penalty parameter. When \code{method = "SPCA"}, we need further
+regularizations if the number of variables is larger than the number of
+observations. We refer to \insertRef{Zou.2006}{prinvars} and
+\insertRef{Bauer.2022}{prinvars} for details.}
 
 \item{max.iter}{maximum number of iterations.}
 
@@ -82,26 +83,68 @@ single or list of \code{pla} class containing the following attributes:
   with equal weights in the first column of each loading-block. If
   \code{criterion="normal"}, \code{W} equals \code{loadings}.
 }
-See REF(Bauer22) for more information.
+
+This function performs sparse principal loading analysis provided on the
+given data matrix. We refer to \insertRef{Bauer.2022}{prinvars} for more
+information. The corresponding sparse loadings are calculated either using
+\code{PMD} from the \code{PMA} package or using \code{spca} from the
+\code{elasticnet} package. The respective methods are given by
+\insertRef{Witten.2009}{prinvars} and \insertRef{Zou.2006}{prinvars}
+respectively.
 }
 \description{
 This function performs the sparse principal loading analysis
-provided by REF(Bauer22) on the given data matrix. The corresponding sparse
-loadings are calculated either using \code{PMD} from the \code{PMA} package
-or using \code{spca} from the \code{elasticnet} package.
+provided by \insertRef{Bauer.2022}{prinvars} on the given data matrix. The
+corresponding sparse loadings are calculated either using \code{PMD} from the
+\code{PMA} package or using \code{spca} from the \code{elasticnet} package.
 }
 \examples{
-spla(USArrests, para=c(0.5,0.5,0.5,0.5), cor=TRUE)
+#############
+## First example: we apply SPLA to the a classic example from PCA
+#############
+
+spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.5, 0.5), cor=TRUE)
 
 ## we obtain two blocks:
 ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
 ## The large EC indicates that the given structure is reasonable.
 
-spla(USArrests, para=c(0.5,0.5,0.7,0.5), cor=TRUE)
+spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.7, 0.5), cor=TRUE)
 
 ## we obtain three blocks:
 ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
 ## The mid-ish EC for (Murder, Aussault) indicates that the found structure
 ## might not be adequate.
+
+#############
+## Second example: we replicate a synthetic example similar to Bauer (2022)
+#############
+
+set.seed(1)
+N = 500
+V1 = rnorm(N,0,10)
+V2 = rnorm(N,0,11)
+
+## Create the blocks (X_1,...,X_4) and (X_5,...,X_8) synthetically
+
+X1 = V1 + rnorm(N,0,1) #X_j = V_1 + N(0,1) for j =1,...,4
+X2 = V1 + rnorm(N,0,1)
+X3 = V1 + rnorm(N,0,1)
+X4 = V1 + rnorm(N,0,1)
+
+X5 = V2 + rnorm(N,0,1) #X_j = V_1 + N(0,1) for j =5,...9
+X6 = V2 + rnorm(N,0,1)
+X7 = V2 + rnorm(N,0,1)
+X8 = V2 + rnorm(N,0,1)
+
+X = cbind(X1, X2, X3, X4, X5, X6, X7, X8)
+
+## Conduct SPLA to obtain the blocks (X_1,...,X_4) and (X_5,...,X_8)
+
+## use method = "pmd" (default)
+spla(X, para = 1.4)
+
+## use method = "spca"
+spla(X, method = "spca", para = c(500,60,3,8,5,7,13,4))
 
 }

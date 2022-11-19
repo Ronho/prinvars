@@ -9,9 +9,9 @@ pla(
   cor = FALSE,
   scaled_ev = FALSE,
   thresholds = 0.33,
-  threshold_mode = "cutoff",
-  expvar = "approx",
-  check = "rnc",
+  threshold_mode = c("cutoff", "percentage"),
+  expvar = c("approx", "exact"),
+  check = c("rnc", "rows"),
   ...
 )
 }
