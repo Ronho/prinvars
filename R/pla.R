@@ -320,8 +320,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' @param x a numeric matrix or data frame which provides the data for the
 #' sparse principal loading analysis.
 #' @param method chooses the methods to calculate the sparse loadings.
-#' \code{pmd} uses the method from Witten et al. (2009) and
-#' \code{spca} uses the method from Zou et al. (2006).
+#' \code{pmd} uses the method from Witten et al. (2009) and \code{spca} uses the
+#' method from Zou et al. (2006).
 #' @param para when \code{method="pmd"}: an integer giving the bound for the
 #' L1 regularization. When \code{method="spca"}: a vector containing the
 #' regularization parameter for each variable.
