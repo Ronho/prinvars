@@ -343,6 +343,8 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' columns are used to detect the underlying block structure. \code{rows} checks
 #' if the rows fulfill the required structure. \code{rnc} checks if rows and
 #' columns fulfill the required structure.
+#' @param threshold a numeric value used to determine zero elements in the loading.
+#' This serves mostly to correct approximation errors.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
