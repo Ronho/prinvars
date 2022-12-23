@@ -307,18 +307,20 @@ pla.drop_blocks <- function(object, blocks, ...) {
 
 #' @title Sparse Principal Loading Analysis
 #'
-#' @description This function performs the sparse principal loading analysis
-#' provided by \insertRef{Bauer.2022}{prinvars} on the given data matrix. The
-#' corresponding sparse loadings are calculated either using \code{PMD} from the
+#' @description This function performs sparse principal loading analysis
+#' on the given data matrix. We refer to Bauer (2022) for more information.
+#' The corresponding sparse loadings are calculated either using \code{PMD} from the 
 #' \code{PMA} package or using \code{spca} from the \code{elasticnet} package.
+#' The respective methods are given by Zou et al. (2006) and Witten et al. (2009)
+#' respectively.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
-#' principal loading analysis.
+#' sparse principal loading analysis.
 #' @param method chooses the methods to calculate the sparse loadings.
-#' \code{pmd} uses the method from \insertRef{Witten.2009}{prinvars} and
-#' \code{spca} uses the method from \insertRef{Zou.2006}{prinvars}.
-#' @param para when \code{method = "pmd"}: an integer giving the bound for the
-#' L1 regularization. When \code{method = "spca"}: a vector containing the
+#' \code{pmd} uses the method from Witten et al. (2009) and
+#' \code{spca} uses the method from Zou et al. (2006).
+#' @param para when \code{method="pmd"}: an integer giving the bound for the
+#' L1 regularization. When \code{method="spca"}: a vector containing the
 #' regularization parameter for each variable.
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix.
@@ -326,10 +328,9 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' evaluation criterion (CEC) or the evaluation criterion (EC) is used.
 #' \code{corrected} changes the loadings to weight all variables equally while
 #' \code{normal} does not change the loadings.
-#' @param rho penalty parameter. When \code{method = "SPCA"}, we need further
-#' regularizations if the number of variables is larger than the number of
-#' observations. We refer to \insertRef{Zou.2006}{prinvars} and
-#' \insertRef{Bauer.2022}{prinvars} for details.
+#' @param rho penalty parameter. When \code{method="SPCA"}, we need further regularizations
+#' for the case when the number of variables is larger than the number of
+#' observations. We refer to Zou et al. (2006) and Bauer (2022) for more details.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
 #' @param eps.conv a numerical value as convergence criterion.
@@ -362,34 +363,31 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'   a matrix of variable loadings used to calculate the evaluation criterion.
 #'   If \code{criterion="corrected"}, \code{W} contains an orthogonal matrix
 #'   with equal weights in the first column of each loading-block. If
-#'   \code{criterion="normal"}, \code{W} equals \code{loadings}.
+#'   \code{criterion="normal"}, \code{W} are the \code{loadings}.
 #' }
 #'
-#' This function performs sparse principal loading analysis provided on the
-#' given data matrix. We refer to \insertRef{Bauer.2022}{prinvars} for more
-#' information. The corresponding sparse loadings are calculated either using
-#' \code{PMD} from the \code{PMA} package or using \code{spca} from the
-#' \code{elasticnet} package. The respective methods are given by
-#' \insertRef{Witten.2009}{prinvars} and \insertRef{Zou.2006}{prinvars}
-#' respectively.
+#' @references
+#' \insertRef{Bauer.2022}{prinvars}
+#' \insertRef{Witten.2009}{prinvars}
+#' \insertRef{Zou.2006}{prinvars}
 #'
 #' @examples
 #' #############
-#' ## First example: we apply SPLA to the a classic example from PCA
+#' ## First example: we apply SPLA to a classic example from PCA
 #' #############
 #'
 #' spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.5, 0.5), cor=TRUE)
 #'
 #' ## we obtain two blocks:
 #' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
-#' ## The large EC indicates that the given structure is reasonable.
+#' ## The large CEC of 0.922 indicates that the given structure is reasonable.
 #'
 #' spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.7, 0.5), cor=TRUE)
 #'
 #' ## we obtain three blocks:
 #' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
-#' ## The mid-ish EC for (Murder, Aussault) indicates that the found structure
-#' ## might not be adequate.
+#' ## The mid-ish CEC of 0.571 for (Murder, Aussault) indicates that the found 
+#' ## structure might not be adequate.
 #'
 #' #############
 #' ## Second example: we replicate a synthetic example similar to Bauer (2022)
