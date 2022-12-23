@@ -56,7 +56,7 @@
 #' \item{blocks}{
 #'   a list of blocks which are identified by principal loading analysis.
 #' }
-#' See \insertRef{Bauer.2021}{prinvars} for more information.
+#' See Bauer and Drabant (2021) for more information.
 #'
 #' @examples
 #' if(requireNamespace("AER")){
@@ -81,6 +81,9 @@
 #'
 #' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 #' }
+#'
+#' @references
+#' \insertRef{Bauer.2021}{prinvars}
 #'
 #' @export
 pla <- function(x,
