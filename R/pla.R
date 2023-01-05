@@ -493,9 +493,6 @@ spla <- function(x,
 
     eigen$vectors <- obj$loadings
   }
-  
-  #Quick change Jan 05.01.23
-  eigen$vectors[which(abs(eigen$vectors) <= threshold)] = 0
 
   result <- spla_helper(
     x=x,

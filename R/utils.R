@@ -217,6 +217,7 @@ spla_helper <- function(
     function(num) paste("[,", num, "]", sep=""))
 
   if (orthogonal) {
+    eigen$vectors[threshold_matrix == 0] <- 0
     svd <- svd(eigen$vectors)
     eigen$vectors <- svd$u %*% t(svd$v)
   }
@@ -301,24 +302,26 @@ str_loadings <- function(
     mode=threshold_mode
   )
 
-  # Add fitting criteria for SPLA to output
+  # This should be TRUE for SPLA!
   if (!is.null(C)) {
+    # Add fitting criteria for SPLA to output
     loadings <- rbind(loadings, rep.int(0, ncol(loadings)))
     loadings <- rbind(loadings, C)
 
     # Prevent threshold_matrix from overwriting new rows by columwraps
     threshold_matrix <- rbind(threshold_matrix, rep(1, ncol(loadings)))
-    threshold_matrix <- rbind(threshold_matrix, rep(1, ncol(loadings)))
   }
 
   strrep <- format(round(loadings, digits=3L))
   nc <- nchar(strrep[1L], type="c")
-  strrep[threshold_matrix == 0] <- strrep(" ", nc)
 
-  # Add fitting criteria for SPLA to output
+  # This should be TRUE for SPLA!
   if (!is.null(C)) {
+    # Add fitting criteria for SPLA to output
     strrep[loadings == 0] <- strrep(" ", nc)
     feature_names <- c(feature_names, " ", "C:")
+  } else {
+    strrep[threshold_matrix == 0] <- strrep(" ", nc)
   }
 
   rownames(strrep) <- feature_names
