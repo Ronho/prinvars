@@ -68,7 +68,7 @@ single or list of \code{pla} class containing the following attributes:
 \item{blocks}{
   a list of blocks which are identified by principal loading analysis.
 }
-See \insertRef{Bauer.2021}{prinvars} for more information.
+See Bauer and Drabant (2021) for more information.
 }
 \description{
 This function performs a principal loading analysis on the given
@@ -98,4 +98,7 @@ pla.drop_blocks(pla_obj, c(1)) ## drop block 1
 pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
 }
 
+}
+\references{
+\insertRef{Bauer.2021}{prinvars}
 }

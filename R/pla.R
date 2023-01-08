@@ -312,10 +312,10 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' @description This function performs sparse principal loading analysis
 #' on the given data matrix. We refer to Bauer (2022) for more information.
-#' The corresponding sparse loadings are calculated either using \code{PMD} from the 
-#' \code{PMA} package or using \code{spca} from the \code{elasticnet} package.
-#' The respective methods are given by Zou et al. (2006) and Witten et al. (2009)
-#' respectively.
+#' The corresponding sparse loadings are calculated either using \code{PMD} from
+#' the \code{PMA} package or using \code{spca} from the \code{elasticnet}
+#' package. The respective methods are given by Zou et al. (2006) and Witten et
+#' al. (2009) respectively.
 #'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' sparse principal loading analysis.
@@ -331,9 +331,12 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' evaluation criterion (CEC) or the evaluation criterion (EC) is used.
 #' \code{corrected} changes the loadings to weight all variables equally while
 #' \code{normal} does not change the loadings.
-#' @param rho penalty parameter. When \code{method="SPCA"}, we need further regularizations
-#' for the case when the number of variables is larger than the number of
-#' observations. We refer to Zou et al. (2006) and Bauer (2022) for more details.
+#' @param threshold a numeric value used to determine zero elements in the
+#' loading. This serves mostly to correct approximation errors.
+#' @param rho penalty parameter. When \code{method="SPCA"}, we need further
+#' regularizations for the case when the number of variables is larger than the
+#' number of observations. We refer to Zou et al. (2006) and Bauer (2022) for
+#' more details.
 #' @param max.iter maximum number of iterations.
 #' @param trace a logical value indicating if the progress is printed.
 #' @param eps.conv a numerical value as convergence criterion.
@@ -343,8 +346,6 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' columns are used to detect the underlying block structure. \code{rows} checks
 #' if the rows fulfill the required structure. \code{rnc} checks if rows and
 #' columns fulfill the required structure.
-#' @param threshold a numeric value used to determine zero elements in the loading.
-#' This serves mostly to correct approximation errors.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
