@@ -5,8 +5,8 @@
 \alias{Block-class}
 \title{Block}
 \description{
-Class used within the package to keep the structure and information about
-the generated blocks.
+Class used within the package to keep the structure and
+information about the generated blocks.
 }
 \section{Slots}{
 
@@ -17,5 +17,8 @@ the generated blocks.
 the blocks variables based on the whole data set.}
 
 \item{\code{is_valid}}{a logical which indicates if the block structure is valid.}
+
+\item{\code{ev_influenced}}{a vector of numeric which contains the indices of the
+eigenvectors influenced by this block.}
 }}
 

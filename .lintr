@@ -1,0 +1,3 @@
+linters: linters_with_defaults(
+    line_length_linter(80),
+    infix_spaces_linter(exclude_operators = c("="), allow_multiple_spaces = FALSE))

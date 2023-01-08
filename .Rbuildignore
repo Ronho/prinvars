@@ -3,4 +3,5 @@
 ^LICENSE\.md$
 ^\.vscode
 ^\.github$
-^documentation\.pdf$
+.lintr
+CHANGELOG.md

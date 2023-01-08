@@ -3,16 +3,25 @@ calculate_explained_variance <- function(
   eigen,
   feature_names,
   type,
-  threshold_matrix) {
+  threshold_matrix,
+  is_absolute = FALSE) {
   blocks <- lapply(blocks, function(block) {
     feature_idxs <- match(block@features, feature_names)
 
-    block@explained_variance <- proportional_explained_variance(
-      eigen=eigen,
-      feature_idxs=feature_idxs,
-      type=type,
-      threshold_matrix=threshold_matrix
-    )
+    if (is_absolute) {
+      block@explained_variance <- explained_variance.approx(
+          eigen_values=eigen$values,
+          feature_idxs=feature_idxs,
+          threshold_matrix=threshold_matrix
+      )
+    } else {
+      block@explained_variance <- proportional_explained_variance(
+        eigen=eigen,
+        feature_idxs=feature_idxs,
+        type=type,
+        threshold_matrix=threshold_matrix
+      )
+    }
 
     return(block)
   })
@@ -29,14 +38,10 @@ proportional_explained_variance <- function(
     switch(
       tolower(type),
       "approx" = {
-        row_combination <- sum_vectors(
-          x=threshold_matrix,
-          indices=feature_idxs
-        )
-        feature_idxs <- which(row_combination > 0)
         explained_variance <- explained_variance.approx(
           eigen_values=eigen$values,
-          feature_idxs=feature_idxs
+          feature_idxs=feature_idxs,
+          threshold_matrix=threshold_matrix
       )},
       "exact" = {
         explained_variance <- explained_variance.exact(
@@ -47,7 +52,7 @@ proportional_explained_variance <- function(
         err_wrong_type(type)
       }
     )
-    proportional_explained_variance <- explained_variance/sum(eigen$values)
+    proportional_explained_variance <- explained_variance / sum(eigen$values)
 
     return(proportional_explained_variance)
 }
@@ -79,27 +84,35 @@ vector_not_empty <- function(x) {
 
 weighted_explained_variance <- function(eigen, feature_idxs) {
     explained_variance <- 0
-    for (col in 1:ncol(eigen$vectors)) {
+    for (col in seq_len(ncol(eigen$vectors))) {
       summed_eigen_vector_elements <- sum(eigen$vectors[feature_idxs, col]^2)
       explained_variance <- explained_variance + (
-        eigen$values[col] * (summed_eigen_vector_elements) )
+        eigen$values[col] * (summed_eigen_vector_elements))
     }
 
     return(explained_variance)
 }
 
-explained_variance.approx <- function(eigen_values, feature_idxs) {
+explained_variance.approx <- function(
+  eigen_values,
+  feature_idxs,
+  threshold_matrix) {
+  row_combination <- sum_vectors(
+    x=threshold_matrix,
+    indices=feature_idxs
+  )
+  feature_idxs <- which(row_combination > 0)
   explained_variance <- sum(eigen_values[feature_idxs])
-  
+
   return(explained_variance)
 }
 
 sum_vectors <- function(x, indices) {
   if (length(indices) > 1) {
     result <- colSums(x[indices, ]) ## sum row-wise
-  } else (
+  } else {
     result <- x[indices, ]
-  )
+  }
 
   return(result)
 }

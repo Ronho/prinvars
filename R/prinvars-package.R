@@ -1,6 +1,6 @@
 #' @title Principal Variables Package
 #'
-#' This package provides methods for dimensionality reduction.
+#' @description This package provides methods for dimensionality reduction.
 #'
 #' @references
 #' \insertRef{Bauer.06242021}{prinvars}
@@ -13,6 +13,8 @@
 #' @importFrom methods new
 #' @importFrom stats cov cor
 #' @importFrom Rdpack reprompt
+#' @importFrom elasticnet spca
+#' @importFrom PMA PMD
 
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!

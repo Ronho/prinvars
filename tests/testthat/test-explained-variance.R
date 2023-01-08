@@ -15,7 +15,17 @@ test_that("calculate_explained_variance", {
     threshold_matrix=threshold_matrix
   )
 
+  blocks_2 <- calculate_explained_variance(
+    blocks=list(block),
+    eigen=eigen,
+    feature_names=c(1:3),
+    type="approx",
+    threshold_matrix=threshold_matrix,
+    is_absolute=TRUE
+  )
+
   expect_equal(blocks[[1]]@explained_variance, 0.8)
+  expect_equal(blocks_2[[1]]@explained_variance, 0.8)
 })
 
 test_that("err_wrong_type", {
@@ -78,7 +88,8 @@ test_that("explained_variance.approx", {
   expect_equal(
     explained_variance.approx(
         eigen_values=eigen_values,
-        feature_idxs=feature_idxs
+        feature_idxs=feature_idxs,
+        threshold_matrix=threshold_matrix
     ),
     5
   )

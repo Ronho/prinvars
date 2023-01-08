@@ -1,6 +1,7 @@
 get_blocks <- function(threshold_matrix, feature_names, check) {
   num_features <- nrow(threshold_matrix)
   untaken_features <- 1:num_features
+  untaken_evs <- seq_len(ncol(threshold_matrix))
   zero_counts <- get_zero_count(threshold_matrix)
   ones <- 1
   blocks <- list()
@@ -8,7 +9,7 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   while (length(untaken_features) > 0 && ones <= length(untaken_features)) {
     eligible_features <- get_eligible_features(
       zero_counts=zero_counts,
-      zeros=num_features-ones,
+      zeros=num_features - ones,
       untaken_features=untaken_features
     )
 
@@ -24,15 +25,19 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
 
       if (!is.atomic(combination)) {
         is_valid <- combination$is_valid
+        ev_influenced <- combination$ev_influenced
         combination <- combination$combination
-        blocks[[length(blocks)+1]] <- create_block(
+
+        blocks[[length(blocks) + 1]] <- create_block(
           feature_names=feature_names,
           selected_features=combination,
-          is_valid=is_valid
+          is_valid=is_valid,
+          ev_influenced=ev_influenced
         )
         eligible_features <- eligible_features[
           !eligible_features %in% combination
         ]
+        untaken_evs <- untaken_evs[!untaken_evs %in% ev_influenced]
         untaken_features <- untaken_features[!untaken_features %in% combination]
       } else {
         eligible_features <- eligible_features[-1]
@@ -43,10 +48,11 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
   }
 
   if(length(untaken_features) > 0) {
-    blocks[[length(blocks)+1]] <- create_block(
+    blocks[[length(blocks) + 1]] <- create_block(
       feature_names=feature_names,
       selected_features=untaken_features,
-      is_valid=FALSE
+      is_valid=FALSE,
+      ev_influenced=untaken_evs
     )
   }
 
@@ -63,23 +69,26 @@ find_combination <- function(
   num_remaining_features <- ones - length(current_combination)
 
   if (num_remaining_features == 0) {
-    is_valid <- is_valid_combination(
+    valid_combination <- is_valid_combination(
       threshold_matrix=threshold_matrix,
       current_combination=current_combination,
       ones=ones,
       check=check,
       taken_features=taken_features
     )
+    is_valid <- valid_combination$is_valid
 
     if (check_cols(check=check)) {
       is_valid <- is_valid[1] & is_valid[2]
       if (is_valid) {
-        result <- list(combination=current_combination, is_valid=is_valid)
+        result <- list(combination=current_combination, is_valid=is_valid,
+          ev_influenced=valid_combination$ev_influenced)
         return(result)
       }
     } else {
       if (is_valid[1]) {
-        result <- list(combination=current_combination, is_valid=is_valid[2])
+        result <- list(combination=current_combination, is_valid=is_valid[2],
+          ev_influenced=valid_combination$ev_influenced)
         return(result)
       }
     }
@@ -105,7 +114,9 @@ find_combination <- function(
       if (!is.atomic(result)) {
         return(result)
       } else {
-        current_combination <- current_combination[1:(length(current_combination)-1)]
+        current_combination <- current_combination[1:
+          (length(current_combination) - 1)
+        ]
       }
     }
     return(FALSE)
@@ -151,7 +162,7 @@ is_valid_combination <- function(
     }
   }
 
-  return(c(row_valid, col_valid))
+  return(list(is_valid=c(row_valid, col_valid), ev_influenced=ev_influenced))
 }
 
 check_cols <- function(check) {

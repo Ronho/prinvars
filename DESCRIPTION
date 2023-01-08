@@ -1,13 +1,13 @@
 Package: prinvars
 Type: Package
 Title: Principal Variables
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
         person(
-            given = "Jan", 
+            given = "Jan O.", 
             family = "Bauer", 
             email = "", 
-            role = c("aut", "ctb")
+            role = c("aut")
         ),
         person(
             given = "Ron",
@@ -18,13 +18,13 @@ Authors@R: c(
     )
 Description: Provides methods for reducing the number of features within a data set. See Bauer JO (2021) <doi:10.1145/3475827.3475832> and Bauer JO, Drabant B (2021) <doi:10.1016/j.jmva.2021.104754> for more information on principal loading analysis.
 License: MIT + file LICENSE
-Imports: methods, Rdpack
+Imports: methods, Rdpack, elasticnet, PMA
 RdMacros: Rdpack
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/Ronho/prinvars
 BugReports: https://github.com/Ronho/prinvars/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Collate: 
     'block.R'
     'cor.R'

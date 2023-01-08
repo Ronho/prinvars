@@ -4,11 +4,9 @@
 \name{prinvars-package}
 \alias{prinvars-package}
 \alias{_PACKAGE}
-\title{Principal Variables Package
-
-This package provides methods for dimensionality reduction.}
+\title{Principal Variables Package}
 \description{
-Provides methods for reducing the number of features within a data set. See Bauer JO (2021) <doi:10.1145/3475827.3475832> and Bauer JO, Drabant B (2021) <doi:10.1016/j.jmva.2021.104754> for more information on principal loading analysis.
+This package provides methods for dimensionality reduction.
 }
 \references{
 \insertRef{Bauer.06242021}{prinvars}
@@ -27,7 +25,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Jan Bauer [contributor]
+  \item Jan O. Bauer
 }
 
 }

@@ -2,9 +2,7 @@
 % Please edit documentation in R/block.R
 \name{str,Block-method}
 \alias{str,Block-method}
-\title{Block - str
-
-Generic function to create a string out of the blocks structure.}
+\title{Block - str}
 \usage{
 \S4method{str}{Block}(object)
 }
@@ -15,11 +13,9 @@ Generic function to create a string out of the blocks structure.}
 A string representing the Block.
 }
 \description{
-Block - str
-
 Generic function to create a string out of the blocks structure.
 }
 \examples{
-block <- new("Block", features = c(2, 5), explained_variance = 0.03)
+block <- new("Block", features=c(2, 5), explained_variance=0.03)
 str(block)
 }
