@@ -47,7 +47,7 @@ get_blocks <- function(threshold_matrix, feature_names, check) {
     ones <- ones+1
   }
 
-  if(length(untaken_features) > 0) {
+  if (length(untaken_features) > 0) {
     blocks[[length(blocks) + 1]] <- create_block(
       feature_names=feature_names,
       selected_features=untaken_features,
@@ -95,7 +95,7 @@ find_combination <- function(
 
     return(FALSE)
   } else {
-    while(
+    while (
       length(eligible_features) > 0 &&
       length(eligible_features) >= num_remaining_features
     ) {

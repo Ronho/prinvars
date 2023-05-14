@@ -59,27 +59,27 @@
 #' See Bauer and Drabant (2021) for more information.
 #'
 #' @examples
-#' if(requireNamespace("AER")){
-#' require(AER)
-#' data("OECDGrowth")
+#' if (requireNamespace("AER")) {
+#'   require(AER)
+#'   data("OECDGrowth")
 #'
-#' ## The scales in OECDGrowth differ hence using the correlation matrix is
-#' ## highly recommended.
+#'   ## The scales in OECDGrowth differ hence using the correlation matrix is
+#'   ## highly recommended.
 #'
-#' pla(OECDGrowth, thresholds=0.5) ## not recommended
-#' pla(OECDGrowth, cor=TRUE, thresholds=0.5)
+#'   pla(OECDGrowth, thresholds = 0.5) ## not recommended
+#'   pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
 #'
-#' ## We obtain three blocks: (randd), (gdp85, gdp60) and (invest, school,
-#' ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
-#' ## the overall variance. Hence, discarding this block seems appropriate.
+#'   ## We obtain three blocks: (randd), (gdp85, gdp60) and (invest, school,
+#'   ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
+#'   ## the overall variance. Hence, discarding this block seems appropriate.
 #'
-#' pla_obj = pla(OECDGrowth, cor=TRUE, thresholds=0.5)
-#' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+#'   pla_obj <- pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
+#'   pla.drop_blocks(pla_obj, c(1)) ## drop block 1
 #'
-#' ## Sometimes, considering the blocks we keep rather than the blocks we want
-#' ## to discard might be more convenient.
+#'   ## Sometimes, considering the blocks we keep rather than the blocks we want
+#'   ## to discard might be more convenient.
 #'
-#' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+#'   pla.keep_blocks(pla_obj, c(2, 3)) ## keep block 2 and block 3
 #' }
 #'
 #' @references
@@ -87,12 +87,12 @@
 #'
 #' @export
 pla <- function(x,
-                cor=FALSE,
-                scaled_ev=FALSE,
-                thresholds=0.33,
-                threshold_mode=c("cutoff", "percentage"),
-                expvar=c("approx", "exact"),
-                check=c("rnc", "rows"),
+                cor = FALSE,
+                scaled_ev = FALSE,
+                thresholds = 0.33,
+                threshold_mode = c("cutoff", "percentage"),
+                expvar = c("approx", "exact"),
+                check = c("rnc", "rows"),
                 ...) {
   chkDots(...)
 
@@ -100,25 +100,25 @@ pla <- function(x,
   check <- match.arg(check)
   expvar <- match.arg(expvar)
 
-  feature_names <- get_feature_names(x=x)
-  x <- scale(x, center=TRUE, scale=FALSE)
-  c <- select_cor(x=x, cor=cor)
+  feature_names <- get_feature_names(x = x)
+  x <- scale(x, center = TRUE, scale = FALSE)
+  c <- select_cor(x = x, cor = cor)
   eigen <- eigen(as.matrix(c))
   eigen$vectors <- select_eigen_vector_scaling(
-    eigen_vectors=eigen$vectors,
-    scale=scaled_ev
+    eigen_vectors = eigen$vectors,
+    scale = scaled_ev
   )
 
   result <- select_threshold(
-    x=x,
-    c=c,
-    eigen=eigen,
-    thresholds=thresholds,
-    threshold_mode=threshold_mode,
-    feature_names=feature_names,
-    check=check,
-    expvar=expvar,
-    helper=pla_helper
+    x = x,
+    c = c,
+    eigen = eigen,
+    thresholds = thresholds,
+    threshold_mode = threshold_mode,
+    feature_names = feature_names,
+    check = check,
+    expvar = expvar,
+    helper = pla_helper
   )
 
   return(result)
@@ -135,12 +135,12 @@ pla <- function(x,
 #' A pla object which equals the input of \code{x}.
 #'
 #' @examples
-#' if(requireNamespace("AER")){
-#' require(AER)
-#' data("OECDGrowth")
+#' if (requireNamespace("AER")) {
+#'   require(AER)
+#'   data("OECDGrowth")
 #'
-#' pla_obj = pla(OECDGrowth, cor=TRUE, thresholds=0.5)
-#' print(pla_obj)
+#'   pla_obj <- pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
+#'   print(pla_obj)
 #' }
 #'
 #' @export
@@ -159,7 +159,7 @@ print.pla <- function(x, ...) {
   i <- 1
   for (block in x$blocks) {
     if (block@is_valid) {
-      cat("Block ", i, ": ", str(block), "\n", sep="")
+      cat("Block ", i, ": ", str(block), "\n", sep = "")
     } else {
       cat(str(block), "\n")
     }
@@ -172,7 +172,7 @@ print.pla <- function(x, ...) {
     "\nAll blocks together explain ",
     round(sum_expvar * 100, 2),
     "% of the total variance.\n",
-    sep=""
+    sep = ""
   )
 
   feature_names <- rownames(x$loadings)
@@ -183,13 +183,13 @@ print.pla <- function(x, ...) {
   cat("\nLoadings:\n")
   print(
     str_loadings(
-      loadings=x$loadings,
-      threshold=x$threshold,
-      threshold_mode=x$threshold_mode,
-      feature_names=feature_names,
-      C=x$EC
+      loadings = x$loadings,
+      threshold = x$threshold,
+      threshold_mode = x$threshold_mode,
+      feature_names = feature_names,
+      C = x$EC
     ),
-    quote=FALSE,
+    quote = FALSE,
     ...
   )
 
@@ -219,35 +219,35 @@ print.pla <- function(x, ...) {
 #' }
 #'
 #' @examples
-#' if(requireNamespace("AER")){
-#' require(AER)
-#' data("OECDGrowth")
+#' if (requireNamespace("AER")) {
+#'   require(AER)
+#'   data("OECDGrowth")
 #'
-#' pla(OECDGrowth, cor=TRUE, thresholds=0.5)
+#'   pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
 #'
-#' ## we obtain three blocks: (randd), (gdp85,gdp60) and (invest, school,
-#' ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
-#' ## the overall variance. Hence, discarding this block seems appropriate.
-#' ## Therefore, we keep block 2 and block 3.
+#'   ## we obtain three blocks: (randd), (gdp85,gdp60) and (invest, school,
+#'   ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
+#'   ## the overall variance. Hence, discarding this block seems appropriate.
+#'   ## Therefore, we keep block 2 and block 3.
 #'
-#' pla_obj = pla(OECDGrowth, cor=TRUE, thresholds=0.5)
-#' pla.keep_blocks(pla_obj, c(2,3)) ## keep block 2 and block 3
+#'   pla_obj <- pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
+#'   pla.keep_blocks(pla_obj, c(2, 3)) ## keep block 2 and block 3
 #' }
 #'
 #' @export
 pla.keep_blocks <- function(object, blocks, ...) {
   chkDots(...)
-  col_idxs <- get_indices(object=object, block_indices=blocks)
+  col_idxs <- get_indices(object = object, block_indices = blocks)
   cc_matrix <- conditional_matrix(
-    x=object$c,
-    indices=col_idxs,
-    drop=TRUE
+    x = object$c,
+    indices = col_idxs,
+    drop = TRUE
   )
-  x <- object$x[, col_idxs, drop=FALSE]
+  x <- object$x[, col_idxs, drop = FALSE]
 
   result <- list(
-    x=x,
-    cc_matrix=cc_matrix
+    x = x,
+    cc_matrix = cc_matrix
   )
 
   return(result)
@@ -275,34 +275,34 @@ pla.keep_blocks <- function(object, blocks, ...) {
 #' }
 #'
 #' @examples
-#' if(requireNamespace("AER")){
-#' require(AER)
-#' data("OECDGrowth")
+#' if (requireNamespace("AER")) {
+#'   require(AER)
+#'   data("OECDGrowth")
 #'
-#' pla(OECDGrowth, cor=TRUE, thresholds=0.5)
+#'   pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
 #'
-#' ## we obtain three blocks: (randd), (gdp85,gdp60) and (invest, school,
-#' ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
-#' ## the overall variance. Hence, discarding this block seems appropriate.
+#'   ## we obtain three blocks: (randd), (gdp85,gdp60) and (invest, school,
+#'   ## popgrowth). Block 1, i.e. the 1x1 block (randd), explains only 5.76% of
+#'   ## the overall variance. Hence, discarding this block seems appropriate.
 #'
-#' pla_obj = pla(OECDGrowth, cor=TRUE, thresholds=0.5)
-#' pla.drop_blocks(pla_obj, c(1)) ## drop block 1
+#'   pla_obj <- pla(OECDGrowth, cor = TRUE, thresholds = 0.5)
+#'   pla.drop_blocks(pla_obj, c(1)) ## drop block 1
 #' }
 #'
 #' @export
 pla.drop_blocks <- function(object, blocks, ...) {
   chkDots(...)
-  col_idxs <- get_indices(object=object, block_indices=blocks)
+  col_idxs <- get_indices(object = object, block_indices = blocks)
   conditional_matrix <- conditional_matrix(
-    x=object$c,
-    indices=col_idxs,
-    drop=FALSE
+    x = object$c,
+    indices = col_idxs,
+    drop = FALSE
   )
-  x <- object$x[, -col_idxs, drop=FALSE]
+  x <- object$x[, -col_idxs, drop = FALSE]
 
   result <- list(
-    x=x,
-    conditional_matrix=conditional_matrix
+    x = x,
+    conditional_matrix = conditional_matrix
   )
 
   return(result)
@@ -382,17 +382,17 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' ## First example: we apply SPLA to a classic example from PCA
 #' #############
 #'
-#' spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.5, 0.5), cor=TRUE)
+#' spla(USArrests, method = "spca", para = c(0.5, 0.5, 0.5, 0.5), cor = TRUE)
 #'
 #' ## we obtain two blocks:
 #' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
 #' ## The large CEC of 0.922 indicates that the given structure is reasonable.
 #'
-#' spla(USArrests, method = "spca", para=c(0.5, 0.5, 0.7, 0.5), cor=TRUE)
+#' spla(USArrests, method = "spca", para = c(0.5, 0.5, 0.7, 0.5), cor = TRUE)
 #'
 #' ## we obtain three blocks:
 #' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
-#' ## The mid-ish CEC of 0.571 for (Murder, Aussault) indicates that the found 
+#' ## The mid-ish CEC of 0.571 for (Murder, Aussault) indicates that the found
 #' ## structure might not be adequate.
 #'
 #' #############
@@ -400,23 +400,23 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' #############
 #'
 #' set.seed(1)
-#' N = 500
-#' V1 = rnorm(N,0,10)
-#' V2 = rnorm(N,0,11)
+#' N <- 500
+#' V1 <- rnorm(N, 0, 10)
+#' V2 <- rnorm(N, 0, 11)
 #'
 #' ## Create the blocks (X_1,...,X_4) and (X_5,...,X_8) synthetically
 #'
-#' X1 = V1 + rnorm(N,0,1) #X_j = V_1 + N(0,1) for j =1,...,4
-#' X2 = V1 + rnorm(N,0,1)
-#' X3 = V1 + rnorm(N,0,1)
-#' X4 = V1 + rnorm(N,0,1)
+#' X1 <- V1 + rnorm(N, 0, 1) # X_j = V_1 + N(0,1) for j =1,...,4
+#' X2 <- V1 + rnorm(N, 0, 1)
+#' X3 <- V1 + rnorm(N, 0, 1)
+#' X4 <- V1 + rnorm(N, 0, 1)
 #'
-#' X5 = V2 + rnorm(N,0,1) #X_j = V_1 + N(0,1) for j =5,...9
-#' X6 = V2 + rnorm(N,0,1)
-#' X7 = V2 + rnorm(N,0,1)
-#' X8 = V2 + rnorm(N,0,1)
+#' X5 <- V2 + rnorm(N, 0, 1) # X_j = V_1 + N(0,1) for j =5,...9
+#' X6 <- V2 + rnorm(N, 0, 1)
+#' X7 <- V2 + rnorm(N, 0, 1)
+#' X8 <- V2 + rnorm(N, 0, 1)
 #'
-#' X = cbind(X1, X2, X3, X4, X5, X6, X7, X8)
+#' X <- cbind(X1, X2, X3, X4, X5, X6, X7, X8)
 #'
 #' ## Conduct SPLA to obtain the blocks (X_1,...,X_4) and (X_5,...,X_8)
 #'
@@ -424,25 +424,25 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' spla(X, para = 1.4)
 #'
 #' ## use method = "spca"
-#' spla(X, method = "spca", para = c(500,60,3,8,5,7,13,4))
+#' spla(X, method = "spca", para = c(500, 60, 3, 8, 5, 7, 13, 4))
 #'
 #' @export
 spla <- function(x,
-                 method=c("pmd", "spca"),
+                 method = c("pmd", "spca"),
                  para,
-                 cor=FALSE,
-                 criterion=c("corrected", "normal"),
+                 cor = FALSE,
+                 criterion = c("corrected", "normal"),
                  threshold = 1e-7,
-                 rho=1e-06,
-                 max.iter=200,
-                 trace=FALSE,
-                 eps.conv=1e-3,
-                 orthogonal=TRUE,
-                 check=c("rnc", "rows"),
+                 rho = 1e-06,
+                 max.iter = 200,
+                 trace = FALSE,
+                 eps.conv = 1e-3,
+                 orthogonal = TRUE,
+                 check = c("rnc", "rows"),
                  ...) {
   chkDots(...)
 
-  feature_names <- get_feature_names(x=x)
+  feature_names <- get_feature_names(x = x)
   eigen <- list()
   x <- scale(x, center = TRUE, scale = cor)
   K <- ncol(x)
@@ -451,17 +451,18 @@ spla <- function(x,
   criterion <- match.arg(criterion)
   check <- match.arg(check)
 
-  switch(
-    method,
-    "pmd"={
+  switch(method,
+    "pmd" = {
       if (length(para) != 1) {
         stop("Enter a single sparseness parameter when method = pmd")
       }
     },
-    "spca"={
+    "spca" = {
       if (length(para) != K) {
-        stop("Enter a penalization parameter for each loading when method =",
-        "spca")
+        stop(
+          "Enter a penalization parameter for each loading when method =",
+          "spca"
+        )
       }
     },
     stop("Method unknown")
@@ -469,14 +470,14 @@ spla <- function(x,
 
   if (method == "pmd") {
     obj <- PMD(
-      x=x,
-      K=K,
-      type="standard",
-      sumabsv=para,
-      sumabsu=sqrt(nrow(x)),
-      niter=max.iter,
-      trace=trace,
-      center=FALSE
+      x = x,
+      K = K,
+      type = "standard",
+      sumabsv = para,
+      sumabsu = sqrt(nrow(x)),
+      niter = max.iter,
+      trace = trace,
+      center = FALSE
     )
 
     eigen$vectors <- obj$v
@@ -496,17 +497,120 @@ spla <- function(x,
   }
 
   result <- spla_helper(
-    x=x,
-    c=c(),
-    eigen=eigen,
-    threshold=threshold,
-    threshold_mode="cutoff",
-    feature_names=feature_names,
-    check=check,
-    expvar="approx",
-    orthogonal=orthogonal,
-    criterion=criterion
+    x = x,
+    c = c(),
+    eigen = eigen,
+    threshold = threshold,
+    threshold_mode = "cutoff",
+    feature_names = feature_names,
+    check = check,
+    expvar = "approx",
+    orthogonal = orthogonal,
+    criterion = criterion
   )
 
   return(result)
+}
+
+
+#' @title Hyperparameter Tuning For Sparse Principal Loading Analysis
+#'
+#' @description With set.seed(1), the seed for random search can be determined.
+#'
+#' @export
+spla.ht <- function(x,
+                    EC.min = 0.6,
+                    iterations = 50,
+                    para.max = 3,
+                    para.min = 1,
+                    type = c("random", "grid"),
+                    timeout = 2,
+                    criterion = c("corrected", "normal"),
+                    cor = FALSE,
+                    max.iter = 200,
+                    ...) {
+  chkDots(...)
+  if (EC.min < 0 || EC.min > 1) {
+    stop("EC.min not between 0 and 1")
+  }
+  if (para.min < 1 || para.max < para.min) {
+    stop("param not feasible")
+  }
+
+  para_grid <- seq(para.min, para.max, 0.1)
+  tau_grid <- seq(0, 0.5, 0.05)
+  search_grid <- expand.grid(para_grid, tau_grid)
+  length_grid <- nrow(search_grid)
+
+  if (type == "random") {
+    if (iterations >= length_grid) {
+      stop("Number of iterations larger than length of grid.")
+    }
+    search_grid <- search_grid[
+      sample(1:length_grid, iterations, replace = FALSE),
+    ]
+  } else {
+    iterations <- length_grid
+  }
+
+  grid <- data.frame(
+    para = search_grid[, 1],
+    tau = search_grid[, 2],
+    EC = numeric(nrow(search_grid)),
+    blocks = numeric(nrow(search_grid))
+  )
+
+  for (i in 1:iterations) {
+    cat("\rIteration", i, "of", iterations, "complete.")
+
+    test_error <- try(
+      withTimeout(
+        {
+          suppressWarnings({
+            spla <- spla(x,
+              para = grid$para[i],
+              cor = cor,
+              criterion = "corrected",
+              threshold = grid$tau[i],
+              max.iter = max.iter,
+              orthogonal = FALSE
+            )
+          })
+        },
+        timeout = timeout,
+        onTimeout = "error"
+      ),
+      silent = TRUE
+    )
+
+    if(inherits(test_error, "try-error")) next
+
+    # Blocks of size 1 indicate that all variables are independent and therefore
+    # no dimension should be discarded.
+    blocks <- length(spla$blocks)
+    if (blocks == 1) next
+
+    EC <- spla$EC
+    grid$EC[i] <- min(EC[which(EC != 0)])
+    grid$blocks[i] <- blocks
+  }
+  cat("\n")
+
+  grid <- grid[grid$EC > EC.min, ]
+  if (all(grid$blocks == 0)) {
+    message("No blocks identified for this grid.")
+  } else {
+    block_sizes <- unique(grid$blocks)
+    output <- data.frame()
+
+    for (i in seq_along(block_sizes)) {
+      size <- block_sizes[i]
+      blocks_size_i <- grid[grid$blocks == size, ]
+      best_block <- which(blocks_size_i$EC == max(blocks_size_i$EC))[1]
+      output <- rbind(output, blocks_size_i[best_block, ])
+    }
+
+    rownames(output) <- seq_len(nrow(output))
+    return(output)
+  }
 }
