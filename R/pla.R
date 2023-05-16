@@ -545,6 +545,16 @@ spla.ht <- function(x,
   if (type == "random") {
     if (iterations >= length_grid) {
       stop("Number of iterations larger than length of grid.")
+      
+      #vielleicht besser:
+      
+      #warning("Number of iterations larger than length of grid.")
+      #warning("change type = grid")
+      #type = "grid"
+      #iterations <- length_grid
+      
+      #damit das tuning trotzdem weiter läuft.
+      
     }
     search_grid <- search_grid[
       sample(1:length_grid, iterations, replace = FALSE),
