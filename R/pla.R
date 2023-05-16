@@ -595,9 +595,10 @@ spla.ht <- function(x,
 
     if(inherits(test_error, "try-error")) next
 
-    # Blocks of size 1 indicate that all variables are independent and therefore
-    # no dimension should be discarded.
+
     blocks <- length(spla$blocks)
+    
+    # Check if only one block is detected i.e. no different blocks are detected
     if (blocks == 1) next
 
     EC <- spla$EC
