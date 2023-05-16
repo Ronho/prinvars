@@ -534,7 +534,7 @@ spla.ht <- function(x,
     stop("EC.min not between 0 and 1")
   }
   if (para.min < 1 || para.max < para.min) {
-    stop("param not feasible")
+    stop("para.min must be at least one, and para.max must be larger than para.min")
   }
 
   para_grid <- seq(para.min, para.max, 0.1)
