@@ -519,49 +519,54 @@ spla <- function(x,
 #'
 #' @export
 spla.ht <- function(x,
-                    EC.min = 0.6,
                     iterations = 50,
                     para.max = 3,
                     para.min = 1,
+                    para.steps = 0.1,
+                    threshold.max = 0.5,
+                    threshold.min = 0,
+                    threshold.steps = 0.05,
                     type = c("random", "grid"),
                     timeout = 2,
+                    EC.min = 0.6,
                     criterion = c("corrected", "normal"),
                     cor = FALSE,
                     max.iter = 200,
                     ...) {
+  
+
   chkDots(...)
   if (EC.min < 0 || EC.min > 1) {
     stop("EC.min not between 0 and 1")
   }
-  if (para.min < 1 || para.max < para.min) {
-    stop("para.min must be at least one, and para.max must be larger than para.min")
+  if (para.min < 1) {
+    stop("para.min must be at least one")
+  }
+  if (para.max < para.min) {
+    stop("para.max must be larger than para.min")
   }
 
-  para_grid <- seq(para.min, para.max, 0.1)
-  tau_grid <- seq(0, 0.5, 0.05)
+  para_grid <- seq(para.min, para.max, para.steps)
+  tau_grid <- seq(threshold.min, threshold.max, threshold.steps)
   search_grid <- expand.grid(para_grid, tau_grid)
   length_grid <- nrow(search_grid)
-
-  if (type == "random") {
-    if (iterations >= length_grid) {
-      stop("Number of iterations larger than length of grid.")
-      
-      #vielleicht besser:
-      
-      #warning("Number of iterations larger than length of grid.")
-      #warning("change type = grid")
-      #type = "grid"
-      #iterations <- length_grid
-      
-      #damit das tuning trotzdem weiter läuft.
-      
+  
+  
+  if(type == "random"){
+    if(iterations >= length.grid){
+      warning("Number of iterations larger than length of grid.")
+      type = "grid"
+    } else {
+      search_grid <- search_grid[
+        sample(1:length_grid, iterations, replace = FALSE),
+      ]
     }
-    search_grid <- search_grid[
-      sample(1:length_grid, iterations, replace = FALSE),
-    ]
+    
   } else {
     iterations <- length_grid
   }
+
+
 
   grid <- data.frame(
     para = search_grid[, 1],
