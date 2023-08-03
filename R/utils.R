@@ -224,35 +224,44 @@ spla_helper <- function(
 
   rownames(eigen$vectors) <- feature_names
 
-  # Compute weighted loadings
-  m <- length(feature_names)
-  W_m <- matrix(1, nrow=m, ncol=m)
-  M <- matrix(1, nrow=m - 1, ncol=m - 1)
-  M[(lower.tri(M))] <- 0
-  diag(M) <- -1:-(m-1)
-  W_m[2:m, 2:m] <- M
+ 
+  
 
-  W <- matrix(0, nrow=m, ncol=m)
-  for (block in blocks) {
-    row_idxs <- match(block@features, feature_names)
-    W[row_idxs, block@ev_influenced] <- W_m[seq_along(row_idxs),
-      seq_along(block@ev_influenced)]
+  #### FITTING CRITERIA:
+  # Calculate either RV, distcor, complete, or average
+  if (criterion == "distcor"){
+    #calculate fitting_criteria <- distcor
   }
-
-  W <- W %*% diag(1/apply(W, 2, function(x) norm(x, type="2")))
-  colnames(W) <- sapply(columns[ev_idxs],
-    function(num) paste("[,", num, "]", sep=""))
-
-  # weighted loadings
-  if (criterion != "corrected") {
-    W <- eigen$vectors
+  if (criterion == "RV"){
+    #calculate fitting_criteria <- RV
   }
+  if (criterion == "complete"){
+    #calculate fitting_criteria <- complete
+  }
+  if (criterion == "average"){
+    #calculate fitting_criteria <- average
+  }
+  #For now:
+  #Replaces by random values to not cause errors
+  fitting_criteria <- rnorm(ncol(eigen$vectors))
 
-  R <- qr.R(qr(x_P1 %*% W))
-  sigma <- cov(x_P1)
-  eigen$var.all = sum(diag(sigma))
-  eigen$values <- (diag(R)^2/(nrow(x) - 1)) / eigen$var.all
-  fitting_criteria <- (diag(R)^2/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
+  
+
+  eigen$values = vector(length = ncol(eigen$vectors))
+  x_1 <- x_P1 %*% eigen$vectors[,1] %*% t(eigen$vectors[,1])
+  eigen$values[1] <- sum(diag( t(x_1) %*% x_1 ))
+  
+  for (k in 2:ncol(eigen$vectors)){
+    x_k <- x_P1 %*% eigen$vectors[,1:k] %*% t(eigen$vectors[,1:k])
+    x_k_1 <- x_P1 %*% eigen$vectors[,1:(k-1)] %*% t(eigen$vectors[,1:(k-1)])
+    eigen$values[k] <- sum(diag( t(x_k) %*% x_k )) - sum(diag( t(x_k_1) %*% x_k_1 ))
+  }
+  
+  eigen$values <- eigen$values / sum(diag(t(x)%*%x))
+  eigen$var.all = sum(diag(cov(x)))
+  
+  
+  
 
   blocks <- calculate_explained_variance(
     blocks=blocks,
@@ -263,6 +272,8 @@ spla_helper <- function(
     is_absolute=TRUE
   )
 
+  
+ 
   # Only first entry of each block should be depicted since the other entries
   # depend on this one
   for (block in blocks) {
@@ -281,8 +292,7 @@ spla_helper <- function(
     loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
-    blocks=blocks,
-    W=W
+    blocks=blocks
   )
   class(result) <- "pla"
 

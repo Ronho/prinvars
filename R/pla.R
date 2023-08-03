@@ -431,7 +431,7 @@ spla <- function(x,
                  method = c("pmd", "spca"),
                  para,
                  cor = FALSE,
-                 criterion = c("corrected", "normal"),
+                 criterion = c("distcor", "RV", "complete", "average"),
                  threshold = 1e-7,
                  rho = 1e-06,
                  max.iter = 200,
@@ -546,10 +546,10 @@ spla.ht <- function(x,
     stop("para.max must be larger than para.min")
   }
 
-  para_grid <- seq(para.min, para.max, para.steps)
-  tau_grid <- seq(threshold.min, threshold.max, threshold.steps)
-  search_grid <- expand.grid(para_grid, tau_grid)
-  length_grid <- nrow(search_grid)
+  para.grid <- seq(para.min, para.max, para.steps)
+  tau.grid <- seq(threshold.min, threshold.max, threshold.steps)
+  search.grid <- expand.grid(para.grid, tau.grid)
+  length.grid <- nrow(search.grid)
   
   
   if(type == "random"){
@@ -557,22 +557,22 @@ spla.ht <- function(x,
       warning("Number of iterations larger than length of grid.")
       type = "grid"
     } else {
-      search_grid <- search_grid[
-        sample(1:length_grid, iterations, replace = FALSE),
+      search.grid <- search.grid[
+        sample(1:length.grid, iterations, replace = FALSE),
       ]
     }
     
   } else {
-    iterations <- length_grid
+    iterations <- length.grid
   }
 
 
 
   grid <- data.frame(
-    para = search_grid[, 1],
-    tau = search_grid[, 2],
-    EC = numeric(nrow(search_grid)),
-    blocks = numeric(nrow(search_grid))
+    para = search.grid[, 1],
+    tau = search.grid[, 2],
+    EC = numeric(nrow(search.grid)),
+    blocks = numeric(nrow(search.grid))
   )
 
   for (i in 1:iterations) {
