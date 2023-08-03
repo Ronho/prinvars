@@ -243,7 +243,7 @@ spla_helper <- function(
   }
   #For now:
   #Replaces by random values to not cause errors
-  fitting_criteria <- rnorm(ncol(eigen$vectors))
+  fitting_criteria <- rep(1,ncol(eigen$vectors))
 
   
 
