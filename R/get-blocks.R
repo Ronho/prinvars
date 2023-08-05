@@ -1,6 +1,9 @@
 #' @title Decide which function to use to get blocks
 #'
-#' @description One can choose between "legacy" and "clustering".
+#' @description One can choose between "legacy" and "clustering". "legacy" is a
+#' way of identifying blocks through a slow algorithm and "clustering" improves
+#' this process by using clustering algorithm to find relevant combinations and
+#' applying some optimizations. "legacy" can be removed at any time.
 #'
 #' @param threshold_matrix A m x m matrix containing 0 and 1 to represent
 #' correlation between features.
@@ -42,6 +45,10 @@ get_blocks <- function(threshold_matrix, feature_names, check, method) {
 #' @title Get all features that correspond to a cluster.
 #'
 #' @description Finds all values feature indices that build a cluster together.
+#' Per definition of the merge argument that is returned by hclust, value below
+#' zero indicate the original variable and values above zero are a reference to
+#' another cluster. Therefore, this function extracts the values building up a
+#' cluster.
 #'
 #' @param cluster_merge A m x 2 matrix as retrieved by hclust that builds a tree
 #' of clusters.
@@ -59,12 +66,6 @@ get_blocks <- function(threshold_matrix, feature_names, check, method) {
 #'
 #' @keywords internal
 get_features_in_cluster <- function(cluster_merge, index) {
-  # TODO: document
-  # Per definition of the merge argument that is returned by hclust, value
-  # below zero indicate the original variable and values above zero are a
-  # reference to another cluster. Therefore, this function extracts the values
-  # building up a cluster.
-
   features <- integer(0)
   associated_rows <- c(index)
   for (value in cluster_merge[index, ]) {
@@ -90,8 +91,23 @@ get_features_in_cluster <- function(cluster_merge, index) {
   )
 }
 
+#' @title Get blocks using clustering.
+#'
+#' @description Finds all valid blocks using clustering algorithm. We apply some
+#' optimization techniques such as searching for blocks of maximum size m/2.
+#'
+#' @param threshold_matrix A m x m matrix containing 0 and 1 to represent
+#' correlation between features.
+#' @param feature_names A vector containing the names of the features in the
+#' order that they are represented in the threshold_matrix.
+#' @param check A string identifying how to prove a correct combination of
+#' features.
+#'
+#' @return
+#' A list of block objects.
+#'
+#' @keywords internal
 get_blocks_clustering <- function(threshold_matrix, feature_names, check) {
-  # TODO: document
   num_features <- nrow(threshold_matrix)
   untaken_features <- 1:num_features
   blocks <- list()
@@ -105,9 +121,8 @@ get_blocks_clustering <- function(threshold_matrix, feature_names, check) {
   # respectively.
   singleton_clusters <- matrix(-1:-num_features, ncol=2, nrow=num_features)
   cluster_merge <- rbind(singleton_clusters, cluster_merge)
-  cluster_merge[cluster_merge > 0] <- cluster_merge[cluster_merge > 0]
-                                      + num_features
-
+  cluster_merge[cluster_merge > 0] <- cluster_merge[cluster_merge > 0] +
+    num_features
 
   for (index in seq_len(nrow(cluster_merge))) {
     # Skip row if already sorted out.
@@ -118,7 +133,12 @@ get_blocks_clustering <- function(threshold_matrix, feature_names, check) {
 
     # Searching for clusters that have a size greater than half of the variables
     # is useless, because all remaining features must form a cluster.
-    if (length(combination) > (num_features / 2)) next
+    if (length(combination$features) > (num_features / 2)) {
+      combination$features <- untaken_features
+      all_indices <- seq_len(nrow(cluster_merge))
+      combination$associated_rows_in_cluster <- all_indices[!all_indices %in%
+                                                              rows_removed]
+    }
 
     valid_combination <- is_valid_combination(
       threshold_matrix=threshold_matrix,
@@ -127,6 +147,7 @@ get_blocks_clustering <- function(threshold_matrix, feature_names, check) {
       check=check,
       taken_features=setdiff(c(1:num_features), untaken_features)
     )
+
     is_valid <- valid_combination$is_valid
 
     if (check_cols(check=check)) {
@@ -149,6 +170,7 @@ get_blocks_clustering <- function(threshold_matrix, feature_names, check) {
     }
   }
 
+  print(blocks[[2]]@ev_influenced)
   return(blocks)
 }
 
@@ -201,7 +223,7 @@ get_blocks_legacy <- function(threshold_matrix, feature_names, check) {
     ones <- ones + 1
   }
 
-  if(length(untaken_features) > 0) {
+  if (length(untaken_features) > 0) {
     blocks[[length(blocks) + 1]] <- create_block(
       feature_names=feature_names,
       selected_features=untaken_features,
@@ -219,7 +241,8 @@ find_combination <- function(
   ones,
   current_combination,
   check,
-  taken_features) {
+  taken_features
+) {
   num_remaining_features <- ones - length(current_combination)
 
   if (num_remaining_features == 0) {
