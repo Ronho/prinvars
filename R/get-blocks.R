@@ -170,7 +170,6 @@ get_blocks_clustering <- function(threshold_matrix, feature_names, check) {
     }
   }
 
-  print(blocks[[2]]@ev_influenced)
   return(blocks)
 }
 

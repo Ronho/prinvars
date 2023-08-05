@@ -75,123 +75,121 @@ test_that("get_features_in_cluster throws error when wrong index provided", {
   expect_error(get_features_in_cluster(matrix(ncol=2), 1))
 })
 
-# test_that("get_blocks throws an error for an invalid method", {
-#   threshold_matrix <- matrix(1, nrow = 5, ncol = 5)
-#   feature_names <- c("a", "b", "c", "d", "e")
-#   check <- TRUE
-#   method <- "invalid"
+test_that("get_blocks throws an error for an invalid method", {
+  threshold_matrix <- matrix(1, nrow = 5, ncol = 5)
+  feature_names <- c("a", "b", "c", "d", "e")
+  check <- TRUE
+  method <- "invalid"
 
-#   # Here we're expecting get_blocks to stop with an error message, so we use expect_error
-#   expect_error(get_blocks(threshold_matrix, feature_names, check, method), 
-#                "Invalid argument: 'get_blocks_method' must be either 'legacy' or 'clustering', not 'invalid'.")
-# })
+  expect_error(get_blocks(threshold_matrix, feature_names, check, method))
+})
 
 
-# test_that("get_blocks_legacy", {
-#   matrix <- matrix(c(
-#     1, 1, 0,
-#     0, 1, 0,
-#     0, 0, 1
-#   ), nrow=3, ncol=3)
+test_that("get_blocks_legacy", {
+  matrix <- matrix(c(
+    1, 1, 0,
+    0, 1, 0,
+    0, 0, 1
+  ), nrow=3, ncol=3)
 
-#   expected_result <- list()
-#   expected_result[[1]] <- new("Block",
-#     features=c(1),
-#     is_valid=TRUE,
-#     ev_influenced=c(1))
-#   expected_result[[2]] <- new("Block",
-#     features=c(3),
-#     is_valid=TRUE,
-#     ev_influenced=c(3))
-#   expected_result[[3]] <- new("Block",
-#     features=c(2),
-#     is_valid=FALSE,
-#     ev_influenced=c(2))
+  expected_result <- list()
+  expected_result[[1]] <- new("Block",
+    features=c(1),
+    is_valid=TRUE,
+    ev_influenced=c(1))
+  expected_result[[2]] <- new("Block",
+    features=c(3),
+    is_valid=TRUE,
+    ev_influenced=c(3))
+  expected_result[[3]] <- new("Block",
+    features=c(2),
+    is_valid=FALSE,
+    ev_influenced=c(2))
 
-#   expect_equal(
-#     get_blocks_legacy(
-#       threshold_matrix=matrix,
-#       feature_names=seq_len(nrow(matrix)),
-#       check="rows"),
-#     expected_result
-#   )
-# })
+  expect_equal(
+    get_blocks_legacy(
+      threshold_matrix=matrix,
+      feature_names=seq_len(nrow(matrix)),
+      check="rows"),
+    expected_result
+  )
+})
 
-# test_that("find_combination", {
-#   matrix <- matrix(c(
-#     1, 1, 0,
-#     0, 1, 0,
-#     0, 0, 1
-#   ), nrow=3, ncol=3)
+test_that("find_combination", {
+  matrix <- matrix(c(
+    1, 1, 0,
+    0, 1, 0,
+    0, 0, 1
+  ), nrow=3, ncol=3)
 
-#   expect_equal(
-#     find_combination(
-#       threshold_matrix=matrix,
-#       eligible_features=c(1:3),
-#       ones=1,
-#       current_combination=c(),
-#       check="rows",
-#       taken_features=c()
-#     ),
-#     list(combination=c(1), is_valid=TRUE, ev_influenced=c(1))
-#   )
-# })
+  expect_equal(
+    find_combination(
+      threshold_matrix=matrix,
+      eligible_features=c(1:3),
+      ones=1,
+      current_combination=c(),
+      check="rows",
+      taken_features=c()
+    ),
+    list(combination=c(1), is_valid=TRUE, ev_influenced=c(1))
+  )
+})
 
-# test_that("get_eligible_features", {
-#   expect_equal(
-#     get_eligible_features(
-#       zero_counts=c(1, 2, 3, 2, 4),
-#       zeros=2,
-#       untaken_features=c(1:3)
-#     ),
-#     c(2, 3)
-#   )
-#   expect_equal(
-#     get_eligible_features(
-#       zero_counts=c(1, 2, 3, 2, 4),
-#       zeros=2,
-#       untaken_features=c()
-#     ),
-#     vector("integer")
-#   )
-# })
+test_that("get_eligible_features", {
+  expect_equal(
+    get_eligible_features(
+      zero_counts=c(1, 2, 3, 2, 4),
+      zeros=2,
+      untaken_features=c(1:3)
+    ),
+    c(2, 3)
+  )
+  expect_equal(
+    get_eligible_features(
+      zero_counts=c(1, 2, 3, 2, 4),
+      zeros=2,
+      untaken_features=c()
+    ),
+    vector("integer")
+  )
+})
 
-# test_that("check_cols", {
-#   expect_equal(check_cols(check="rnc"), TRUE)
-#   expect_equal(check_cols(check="rows"), FALSE)
-#   expect_error(check_cols(check="Test"))
-# })
+test_that("check_cols", {
+  expect_equal(check_cols(check="rnc"), TRUE)
+  expect_equal(check_cols(check="rows"), FALSE)
+  expect_error(check_cols(check="Test"))
+})
 
-# test_that("err_wrong_check", {
-#   expect_error(err_wrong_check(check="Test"))
-# })
+test_that("err_wrong_check", {
+  expect_error(err_wrong_check(check="Test"))
+})
 
-# test_that("is_valid_combination", {
-#   threshold_matrix <- matrix(c(
-#     1, 1, 0, 0,
-#     0, 0, 1, 0,
-#     0, 1, 0, 0,
-#     0, 0, 1, 0
-#   ), nrow=4, ncol=4)
-#   check <- "rnc"
-#   zeros <- 2
+test_that("is_valid_combination", {
+  threshold_matrix <- matrix(c(
+    1, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0
+  ), nrow=4, ncol=4)
+  check <- "rnc"
+  zeros <- 2
 
-#   expect_equal(
-#     is_valid_combination(
-#         threshold_matrix=threshold_matrix,
-#         current_combination=c(1, 2),
-#         check=check,
-#         ones=2
-#     ),
-#     list(is_valid=c(TRUE, TRUE), ev_influenced=c(1, 3))
-#   )
-#   expect_equal(
-#     is_valid_combination(
-#       threshold_matrix=threshold_matrix,
-#       current_combination=c(1),
-#       check=check,
-#       ones=1
-#     ),
-#     list(is_valid=c(TRUE, FALSE), ev_influenced=c(1))
-#   )
-# })
+  expect_equal(
+    is_valid_combination(
+        threshold_matrix=threshold_matrix,
+        current_combination=c(1, 2),
+        check=check,
+        ones=2
+    ),
+    list(is_valid=c(TRUE, TRUE), ev_influenced=c(1, 3))
+  )
+  expect_equal(
+    is_valid_combination(
+      threshold_matrix=threshold_matrix,
+      current_combination=c(1),
+      check=check,
+      ones=1
+    ),
+    list(is_valid=c(TRUE, FALSE), ev_influenced=c(1))
+  )
+})

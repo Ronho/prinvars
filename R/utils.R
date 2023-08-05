@@ -189,6 +189,7 @@ spla_helper <- function(
     mode=threshold_mode
   )
   threshold_matrix <- valid_threshold_matrix_spla(threshold_matrix)
+
   blocks <- get_blocks(
     threshold_matrix=threshold_matrix,
     feature_names=feature_names,
