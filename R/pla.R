@@ -187,7 +187,8 @@ print.pla <- function(x, ...) {
       threshold = x$threshold,
       threshold_mode = x$threshold_mode,
       feature_names = feature_names,
-      C = x$EC
+      C = x$EC[[x$EC$criterion]],
+      criterion = x$EC$criterion
     ),
     quote = FALSE,
     ...
