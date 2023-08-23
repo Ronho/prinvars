@@ -529,7 +529,7 @@ spla.ht <- function(x,
                     threshold.steps = 0.05,
                     type = c("random", "grid"),
                     timeout = 2,
-                    EC.min = 0.6,
+                    EC.min = 0,
                     criterion = c("distcor", "RV", "complete", "average"),
                     cor = FALSE,
                     max.iter = 200,
@@ -607,7 +607,7 @@ spla.ht <- function(x,
     # Check if only one block is detected i.e. no different blocks are detected
     if (blocks == 1) next
 
-    EC <- spla$EC
+    EC <- spla$EC$criterion
     grid$EC[i] <- min(EC[which(EC != 0)])
     grid$blocks[i] <- blocks
   }
