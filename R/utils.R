@@ -227,6 +227,7 @@ spla_helper <- function(
 
   # FITTING CRITERIA:
   sigma <- cov(x)
+  sigma_P1 <- sigma[feature_idxs, feature_idxs]
   fitting_criteria <- list(
     "criterion"=criterion,
     "distcor"=numeric(length(ev_idxs)),
@@ -240,10 +241,11 @@ spla_helper <- function(
     feature_idxs <- match(block@features, feature_names)
     non_feature_idxs <- seq_along(feature_names)[-feature_idxs]
 
-    fitting_criteria$distcor[ev] <- dcor(x[, feature_idxs], x[, non_feature_idxs])
-    fitting_criteria$complete[ev] <- max(abs(sigma[feature_idxs, non_feature_idxs]))
-    fitting_criteria$average[ev] <- mean(as.vector(abs(sigma[feature_idxs, non_feature_idxs])))
-    fitting_criteria$rv[ev] <- sum(diag((sigma[feature_idxs, non_feature_idxs] %*% t(sigma[feature_idxs, non_feature_idxs])))) / sqrt(sum(diag((sigma[feature_idxs, feature_idxs] %*% t(sigma[feature_idxs, feature_idxs])))) * sum(diag((sigma[non_feature_idxs, non_feature_idxs] %*% t(sigma[non_feature_idxs, non_feature_idxs])))))
+    fitting_criteria$distcor[ev] <- 1 - dcor(x_P1[, feature_idxs], x[, non_feature_idxs])
+    fitting_criteria$complete[ev] <- 1 - max(abs(sigma_P1[feature_idxs, non_feature_idxs]))
+    fitting_criteria$average[ev] <- 1 - mean(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])))
+    fitting_criteria$rv[ev] <- 1 - sum(diag((sigma_P1[feature_idxs, non_feature_idxs] %*% t(sigma_P1[feature_idxs, non_feature_idxs])))) /
+      sqrt(sum(diag((sigma_P1[feature_idxs, feature_idxs] %*% t(sigma_P1[feature_idxs, feature_idxs])))) * sum(diag((sigma_P1[non_feature_idxs, non_feature_idxs] %*% t(sigma_P1[non_feature_idxs, non_feature_idxs])))))
   }
 
   eigen$values = vector(length = ncol(eigen$vectors))
