@@ -606,9 +606,9 @@ spla.ht <- function(x,
     
     # Check if only one block is detected i.e. no different blocks are detected
     if (blocks == 1) next
-
-    EC <- spla$EC$criterion
-    grid$EC[i] <- min(EC[which(EC != 0)])
+    
+    EC <- spla[["EC"]][[criterion]]
+    grid$EC[i] <- max(EC[which(EC != 1)])
     grid$blocks[i] <- blocks
   }
   cat("\n")
@@ -627,6 +627,7 @@ spla.ht <- function(x,
       output <- rbind(output, blocks_size_i[best_block, ])
     }
 
+    colnames(output) <- c("para", "threshold", "largest EC", "blocks")
     rownames(output) <- seq_len(nrow(output))
     return(output)
   }
