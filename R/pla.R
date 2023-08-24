@@ -570,10 +570,10 @@ spla.ht <- function(x,
 
 
   grid <- data.frame(
-    para = search.grid[, 1],
-    tau = search.grid[, 2],
     EC = numeric(nrow(search.grid)),
-    blocks = numeric(nrow(search.grid))
+    blocks = numeric(nrow(search.grid)),
+    para = search.grid[, 1],
+    tau = search.grid[, 2]
   )
 
   for (i in 1:iterations) {
@@ -627,7 +627,8 @@ spla.ht <- function(x,
       output <- rbind(output, blocks_size_i[best_block, ])
     }
 
-    colnames(output) <- c("para", "threshold", "largest EC", "blocks")
+    output <- output[order(output$blocks, decreasing = TRUE),]
+    colnames(output) <- c("largest EC", "blocks", "para", "threshold")
     rownames(output) <- seq_len(nrow(output))
     return(output)
   }
