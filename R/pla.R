@@ -609,7 +609,7 @@ spla.ht <- function(x,
     if (blocks == 1) next
     
     EC <- spla[["EC"]][[criterion]]
-    grid$EC[i] <- max(EC[which(EC != 1)])
+    grid$EC[i] <- min(EC[which(EC != 1)])
     grid$blocks[i] <- blocks
   }
   cat("\n")
