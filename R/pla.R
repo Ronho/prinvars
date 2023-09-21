@@ -557,6 +557,7 @@ spla.ht <- function(x,
     if(iterations >= length.grid){
       warning("Number of iterations larger than length of grid.")
       type = "grid"
+      iterations <- length.grid
     } else {
       search.grid <- search.grid[
         sample(1:length.grid, iterations, replace = FALSE),
