@@ -182,12 +182,27 @@ spla_helper <- function(
   orthogonal,
   criterion) {
 
-  threshold_matrix <- select_thresholding(
-    eigen_vectors=eigen$vectors,
-    threshold=threshold,
-    mode=threshold_mode
-  )
-  threshold_matrix <- valid_threshold_matrix_spla(threshold_matrix)
+  #threshold_matrix <- select_thresholding(
+  #  eigen_vectors=eigen$vectors,
+  #  threshold=threshold,
+  #  mode=threshold_mode
+  #)
+  
+  
+
+  
+ 
+  
+  
+  
+  #threshold_matrix <- valid_threshold_matrix_spla(threshold_matrix)
+  
+  ###########
+  threshold_matrix <- eigen$vectors
+  threshold_matrix[which(abs(threshold_matrix) <= threshold)] = 0
+  threshold_matrix[which(abs(threshold_matrix) != 0)] = 1
+  #########
+  
   blocks <- get_blocks(
     threshold_matrix=threshold_matrix,
     feature_names=feature_names,
