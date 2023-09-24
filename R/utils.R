@@ -227,35 +227,42 @@ spla_helper <- function(
 
   rownames(eigen$vectors) <- feature_names
 
-  # Compute weighted loadings
-  m <- length(feature_names)
-  W_m <- matrix(1, nrow=m, ncol=m)
-  M <- matrix(1, nrow=m - 1, ncol=m - 1)
-  M[(lower.tri(M))] <- 0
-  diag(M) <- -1:-(m-1)
-  W_m[2:m, 2:m] <- M
 
-  W <- matrix(0, nrow=m, ncol=m)
+  # FITTING CRITERIA:
+  sigma <- cov(x)
+  sigma_P1 <- sigma[feature_idxs, feature_idxs]
+  fitting_criteria <- list(
+    "criterion"=criterion,
+    "distcor"=numeric(length(ev_idxs)),
+    "complete"=numeric(length(ev_idxs)),
+    "average"=numeric(length(ev_idxs)),
+    "rv"=numeric(length(ev_idxs))
+  )
+
   for (block in blocks) {
-    row_idxs <- match(block@features, feature_names)
-    W[row_idxs, block@ev_influenced] <- W_m[seq_along(row_idxs),
-      seq_along(block@ev_influenced)]
+    ev <- block@ev_influenced[1]
+    feature_idxs <- match(block@features, feature_names)
+    non_feature_idxs <- seq_along(feature_names)[-feature_idxs]
+
+    fitting_criteria$distcor[ev] <- 1 - dcor(x_P1[, feature_idxs], x[, non_feature_idxs])
+    fitting_criteria$complete[ev] <- 1 - max(abs(sigma_P1[feature_idxs, non_feature_idxs]))
+    fitting_criteria$average[ev] <- 1 - mean(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])))
+    fitting_criteria$rv[ev] <- 1 - sum(diag((sigma_P1[feature_idxs, non_feature_idxs] %*% t(sigma_P1[feature_idxs, non_feature_idxs])))) /
+      sqrt(sum(diag((sigma_P1[feature_idxs, feature_idxs] %*% t(sigma_P1[feature_idxs, feature_idxs])))) * sum(diag((sigma_P1[non_feature_idxs, non_feature_idxs] %*% t(sigma_P1[non_feature_idxs, non_feature_idxs])))))
   }
 
-  W <- W %*% diag(1/apply(W, 2, function(x) norm(x, type="2")))
-  colnames(W) <- sapply(columns[ev_idxs],
-    function(num) paste("[,", num, "]", sep=""))
-
-  # weighted loadings
-  if (criterion != "corrected") {
-    W <- eigen$vectors
+  eigen$values = vector(length = ncol(eigen$vectors))
+  x_1 <- x_P1 %*% eigen$vectors[,1] %*% t(eigen$vectors[, 1])
+  eigen$values[1] <- sum(diag(t(x_1) %*% x_1))
+  
+  for (k in 2:ncol(eigen$vectors)){
+    x_k <- x_P1 %*% eigen$vectors[,1:k] %*% t(eigen$vectors[, 1:k])
+    x_k_1 <- x_P1 %*% eigen$vectors[,1:(k-1)] %*% t(eigen$vectors[,1:(k - 1)])
+    eigen$values[k] <- sum(diag( t(x_k) %*% x_k )) - sum(diag( t(x_k_1) %*% x_k_1 ))
   }
 
-  R <- qr.R(qr(x_P1 %*% W))
-  sigma <- cov(x_P1)
-  eigen$var.all = sum(diag(sigma))
-  eigen$values <- (diag(R)^2/(nrow(x) - 1)) / eigen$var.all
-  fitting_criteria <- (diag(R)^2/(nrow(x)-1)) / diag(t(W) %*% sigma %*% W)
+  eigen$values <- eigen$values / sum(diag(t(x) %*% x))
+  eigen$var.all <- sum(diag(cov(x)))
 
   blocks <- calculate_explained_variance(
     blocks=blocks,
@@ -266,26 +273,13 @@ spla_helper <- function(
     is_absolute=TRUE
   )
 
-  # Only first entry of each block should be depicted since the other entries
-  # depend on this one
-  for (block in blocks) {
-    if (length(block@ev_influenced) > 1) {
-      for (i in block@ev_influenced[-1]) {
-        fitting_criteria[i] <- 0
-      }
-    }
-  }
-
-  fitting_criteria[1] <- 0 # First entry will not be used either
-
   result <- list(
     x=x,
     EC=fitting_criteria,
     loadings=eigen$vectors,
     threshold=threshold,
     threshold_mode=threshold_mode,
-    blocks=blocks,
-    W=W
+    blocks=blocks
   )
   class(result) <- "pla"
 
@@ -297,7 +291,8 @@ str_loadings <- function(
   threshold,
   threshold_mode,
   feature_names,
-  C) {
+  C,
+  criterion) {
   loadings <- unclass(loadings)
   threshold_matrix <- select_thresholding(
     eigen_vectors=loadings,
@@ -322,7 +317,7 @@ str_loadings <- function(
   if (!is.null(C)) {
     # Add fitting criteria for SPLA to output
     strrep[loadings == 0] <- strrep(" ", nc)
-    feature_names <- c(feature_names, " ", "C:")
+    feature_names <- c(feature_names, " ", paste0(criterion, ":"))
   } else {
     strrep[threshold_matrix == 0] <- strrep(" ", nc)
   }
