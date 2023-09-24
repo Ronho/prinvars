@@ -1,5 +1,91 @@
+# Tests for get_blocks.
+test_get_blocks_helper <- function(method) {
+  with_mocked_bindings(
+    get_blocks_legacy = function(threshold_matrix, feature_names, check) {
+      "legacy result"
+    },
+    get_blocks_clustering = function(threshold_matrix, feature_names, check) {
+      "clustering result"
+    },
+    {
+      threshold_matrix <- matrix(1, nrow = 5, ncol = 5)
+      feature_names <- c("a", "b", "c", "d", "e")
+      check <- TRUE
 
-test_that("get_blocks", {
+      result <- get_blocks(threshold_matrix, feature_names, check, method)
+
+      return(result)
+    }
+  )
+}
+
+test_that("get_blocks uses the legacy method correctly", {
+  result <- test_get_blocks_helper("legacy")
+  expect_equal(result, "legacy result")
+})
+
+test_that("get_blocks uses the clustering method correctly", {
+  result <- test_get_blocks_helper("clustering")
+  expect_equal(result, "clustering result")
+})
+
+test_that("get_blocks throws an error for an invalid method", {
+  expect_error(test_get_blocks_helper("invalid"))
+})
+
+# Tests for get_features_in_cluster.
+test_that("get_features_in_cluster correctly extracts single row", {
+  cluster_merge <- matrix(c(-1, -2, 3, -4, 5, -6, 7, -8, 9, -10),
+                          nrow = 5,
+                          ncol = 2,
+                          byrow = TRUE)
+  result <- get_features_in_cluster(cluster_merge, 1)
+  expect_equal(result$features, c(1, 2))
+  expect_equal(result$associated_rows_in_cluster, c(1))
+})
+
+test_that("get_features_in_cluster correctly iterates over multiple rows", {
+  cluster_merge <- matrix(c(-1, -2, -3, -4, 1, -5, 2, -6, -7, -8,
+                            3, 4, 5, -9, -10, 6, 7, 8, 9, -11),
+                          ncol = 2,
+                          byrow = TRUE)
+  result <- get_features_in_cluster(cluster_merge, 4)
+  expect_equal(result$features, c(3, 4, 6))
+  expect_equal(result$associated_rows_in_cluster, c(4, 2))
+})
+
+test_that("get_features_in_cluster correctly iterates over all rows", {
+  cluster_merge <- matrix(c(-1, -2, -3, -4, 1, -5, 2, -6, -7, -8,
+                            3, 4, 5, -9, -10, 6, 7, 8, 9, -11),
+                          ncol = 2,
+                          byrow = TRUE)
+  result <- get_features_in_cluster(cluster_merge, 10)
+  expect_equal(result$features, c(7, 8, 9, 10, 1, 2, 5, 3, 4, 6, 11))
+  expect_equal(result$associated_rows_in_cluster, c(10, 9, 7, 5, 8,
+                                                    6, 3, 1, 4, 2))
+})
+
+test_that("get_features_in_cluster handles empty cluster_merge", {
+  result <- get_features_in_cluster(matrix(ncol=2), 0)
+  expect_equal(result$features, integer(0))
+  expect_equal(result$associated_rows_in_cluster, c(0))
+})
+
+test_that("get_features_in_cluster throws error when wrong index provided", {
+  expect_error(get_features_in_cluster(matrix(ncol=2), 1))
+})
+
+test_that("get_blocks throws an error for an invalid method", {
+  threshold_matrix <- matrix(1, nrow = 5, ncol = 5)
+  feature_names <- c("a", "b", "c", "d", "e")
+  check <- TRUE
+  method <- "invalid"
+
+  expect_error(get_blocks(threshold_matrix, feature_names, check, method))
+})
+
+
+test_that("get_blocks_legacy", {
   matrix <- matrix(c(
     1, 1, 0,
     0, 1, 0,
@@ -21,7 +107,7 @@ test_that("get_blocks", {
     ev_influenced=c(2))
 
   expect_equal(
-    get_blocks(
+    get_blocks_legacy(
       threshold_matrix=matrix,
       feature_names=seq_len(nrow(matrix)),
       check="rows"),
