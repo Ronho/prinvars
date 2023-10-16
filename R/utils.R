@@ -386,7 +386,7 @@ run.spla <- function(tau = tau, x = x, method = method, para = para, cor = cor,
     {
       invisible(capture.output(suppressWarnings({
         spla <- spla(x,
-                     method <- method,
+                     method = method,
                      para = para,
                      cor = cor,
                      criterion = criterion,
