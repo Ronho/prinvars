@@ -378,14 +378,13 @@ err_wrong_sparse_type <- function(type, orthogonal) {
 
 
 
-run.spla <- function(tau = tau, x = x, method = method, para = para, cor = cor,
-                     criterion = criterion,
-                     Sigma = Sigma, K = K, EC.min = EC.min){
+run.spla <- function(tau = tau, x = x, EC.min = EC.min, method,
+                     para = para, cor, criterion, Sigma, K){
   
   test_error <- try(
     {
       invisible(capture.output(suppressWarnings({
-        spla <- spla(x,
+        spla <- spla(x = x,
                      method = method,
                      para = para,
                      cor = cor,
