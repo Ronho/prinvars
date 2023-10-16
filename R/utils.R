@@ -20,18 +20,7 @@ create_block <- function(
     ev_influenced=ev_influenced))
 }
 
-# get number of zeros for each eigenvector
-get_zero_count <- function(eigen_vectors) {
-  zero_length <- apply(
-    eigen_vectors,
-    MARGIN=1,
-    FUN=function(x) {
-      length(which(x == 0))
-    }
-  )
 
-  return(zero_length)
-}
 
 get_indices <- function(object, block_indices) {
   check_indices(indices=block_indices, max_length=length(object$blocks))
@@ -98,22 +87,7 @@ select_threshold <- function(
   check,
   expvar,
   helper) {
-  if (length(thresholds) > 1) {
-    result <- list()
-
-    for (threshold in thresholds) {
-      result[[length(result) + 1]] <- helper(
-        x=x,
-        c=c,
-        eigen=eigen,
-        threshold=threshold,
-        threshold_mode=threshold_mode,
-        feature_names=feature_names,
-        check=check,
-        expvar=expvar
-      )
-    }
-  } else {
+  
     result <- helper(
       x=x,
       c=c,
@@ -124,10 +98,21 @@ select_threshold <- function(
       check=check,
       expvar=expvar
     )
-  }
 
   return(result)
 }
+
+get_threshold_matrix <- function(
+    loadings,
+    threshold){
+  
+  loadings[which(abs(loadings) <= threshold)] = 0
+  loadings[which(abs(loadings) != 0)] = 1
+  
+  return(loadings)
+}
+
+
 
 pla_helper <- function(
   x,
@@ -138,16 +123,15 @@ pla_helper <- function(
   feature_names,
   check,
   expvar) {
-  threshold_matrix <- select_thresholding(
-    eigen_vectors=eigen$vectors,
-    threshold=threshold,
-    mode=threshold_mode
+  
+  threshold_matrix <- get_threshold_matrix(
+    loadings=eigen$vectors,
+    threshold=threshold
   )
-  valid_threshold_matrix(threshold_matrix)
+
   blocks <- get_blocks(
     threshold_matrix=threshold_matrix,
-    feature_names=feature_names,
-    check=check
+    feature_names=feature_names
   )
   blocks <- calculate_explained_variance(
     blocks=blocks,
@@ -177,37 +161,30 @@ spla_helper <- function(
   threshold,
   threshold_mode,
   feature_names,
-  check,
+  Sigma,
   expvar,
   orthogonal,
   criterion) {
-
-  #threshold_matrix <- select_thresholding(
-  #  eigen_vectors=eigen$vectors,
-  #  threshold=threshold,
-  #  mode=threshold_mode
-  #)
-  
-  
-
-  
  
-  
-  
-  
-  #threshold_matrix <- valid_threshold_matrix_spla(threshold_matrix)
-  
-  ###########
-  threshold_matrix <- eigen$vectors
-  threshold_matrix[which(abs(threshold_matrix) <= threshold)] = 0
-  threshold_matrix[which(abs(threshold_matrix) != 0)] = 1
-  #########
+
+  threshold_matrix <- get_threshold_matrix(
+    loadings=eigen$vectors,
+    threshold=threshold
+  )
+
   
   blocks <- get_blocks(
     threshold_matrix=threshold_matrix,
-    feature_names=feature_names,
-    check=check
+    feature_names=feature_names
   )
+  
+  if(length(blocks) == 1){
+    opt <- options(show.error.messages = FALSE)
+    on.exit(options(opt))
+    cat("No different blocks identified with these parameters.")
+    stop()
+  }
+
 
   # Change order of rows to follow the block diagonal form.
   feature_idxs <- c()
@@ -219,17 +196,15 @@ spla_helper <- function(
     blocks[[i]]@ev_influenced <- which(ev_idxs %in% blocks[[i]]@ev_influenced,
       arr.ind=TRUE, useNames=FALSE)
   }
-
-  columns <- seq_len(ncol(eigen$vectors))
-  I <- diag(1, nrow(eigen$vectors), ncol(eigen$vectors))
-  P1 <- I[feature_idxs, ]
-  P2 <- I[, ev_idxs]
+  
   x_P1 <- x[, feature_idxs]
-  eigen$vectors <- P1 %*% eigen$vectors %*% P2
-  threshold_matrix <- P1 %*% threshold_matrix %*% P2
+  eigen$vectors <- eigen$vectors[feature_idxs, ev_idxs]
+  threshold_matrix <- threshold_matrix[feature_idxs, ev_idxs] 
+  
   feature_names <- feature_names[feature_idxs]
-  colnames(eigen$vectors) <- sapply(columns[ev_idxs],
-    function(num) paste("[,", num, "]", sep=""))
+  colnames(eigen$vectors) <- as.character(ev_idxs)
+  #colnames(eigen$vectors) <- sapply( (seq_len(ncol(eigen$vectors)))[ev_idxs],
+  #  function(num) paste("[,", num, "]", sep=""))
 
   if (orthogonal) {
     eigen$vectors[threshold_matrix == 0] <- 0
@@ -240,9 +215,19 @@ spla_helper <- function(
   rownames(eigen$vectors) <- feature_names
 
 
-  # FITTING CRITERIA:
-  sigma <- cov(x)
+  if(missing(Sigma)){
+    if(nrow(x) > ncol(x)){  
+      sigma <- cov(x)
+    } else{  
+      sigma <- scadEst(x, 0.2)  #or 0.1 ??
+      #sigma <- poetEst(dat = x, k = 2, lambda = 0.1)
+    }
+  } else{
+    sigma <- Sigma
+  }
   sigma_P1 <- sigma[feature_idxs, feature_idxs]
+
+  
   fitting_criteria <- list(
     "criterion"=criterion,
     "distcor"=numeric(length(ev_idxs)),
@@ -250,18 +235,31 @@ spla_helper <- function(
     "average"=numeric(length(ev_idxs)),
     "rv"=numeric(length(ev_idxs))
   )
-
+  
+  
   for (block in blocks) {
     ev <- block@ev_influenced[1]
     feature_idxs <- match(block@features, feature_names)
     non_feature_idxs <- seq_along(feature_names)[-feature_idxs]
+    
 
-    fitting_criteria$distcor[ev] <- 1 - dcor(x_P1[, feature_idxs], x[, non_feature_idxs])
+    
+    fitting_criteria$distcor[ev] <- 1 - dcor(x_P1[, feature_idxs], x_P1[, non_feature_idxs])
     fitting_criteria$complete[ev] <- 1 - max(abs(sigma_P1[feature_idxs, non_feature_idxs]))
-    fitting_criteria$average[ev] <- 1 - mean(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])))
+    #fitting_criteria$average[ev] <- 1 - mean(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])))
     fitting_criteria$rv[ev] <- 1 - sum(diag((sigma_P1[feature_idxs, non_feature_idxs] %*% t(sigma_P1[feature_idxs, non_feature_idxs])))) /
       sqrt(sum(diag((sigma_P1[feature_idxs, feature_idxs] %*% t(sigma_P1[feature_idxs, feature_idxs])))) * sum(diag((sigma_P1[non_feature_idxs, non_feature_idxs] %*% t(sigma_P1[non_feature_idxs, non_feature_idxs])))))
-  }
+    
+    sorted.E <- sort(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])), decreasing = TRUE)
+    n.mean <- min(length(feature_idxs), 5) #WHY 5? TUNING PARAEMTER - CHECK USING SIMULATIONS (PERHAPS 10?)
+    fitting_criteria$average[ev] <- 1 - mean(sorted.E[1:n.mean])
+    #1*length if considering only E upper right or lower left
+    #2*length if considering both E
+    
+    
+  } 
+  
+  
 
   eigen$values = vector(length = ncol(eigen$vectors))
   x_1 <- x_P1 %*% eigen$vectors[,1] %*% t(eigen$vectors[, 1])
@@ -306,11 +304,11 @@ str_loadings <- function(
   C,
   criterion) {
   loadings <- unclass(loadings)
-  threshold_matrix <- select_thresholding(
-    eigen_vectors=loadings,
-    threshold=threshold,
-    mode=threshold_mode
+  threshold_matrix <- get_threshold_matrix(
+    loadings=loadings,
+    threshold=threshold
   )
+    
 
   # This should be TRUE for SPLA!
   if (!is.null(C)) {
@@ -375,3 +373,46 @@ err_wrong_sparse_type <- function(type, orthogonal) {
     )
   )
 }
+
+
+
+
+
+run.spla <- function(tau = tau, x = x, method = method, para = para, cor = cor,
+                     criterion = criterion,
+                     Sigma = Sigma, K = K, EC.min = EC.min){
+  
+  test_error <- try(
+    {
+      invisible(capture.output(suppressWarnings({
+        spla <- spla(x,
+                     method <- method,
+                     para = para,
+                     cor = cor,
+                     criterion = criterion,
+                     threshold = tau,
+                     orthogonal = FALSE,
+                     Sigma = Sigma,
+                     K = K
+        )
+      })))
+    },
+    silent = TRUE
+  )
+
+  if(inherits(test_error, "try-error")) return(NA)
+  
+  n.blocks <- length(spla$blocks)
+  if (n.blocks == 1) return(NA)
+  
+  EC <- spla[["EC"]][[criterion]]
+  EC <- EC[EC != 0]
+  if (max(EC) < EC.min) return(NA)
+  
+  return(c(max(EC), length(which(EC >= EC.min)), n.blocks, para, tau, K))
+}
+
+
+
+
+

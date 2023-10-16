@@ -317,36 +317,26 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #' the \code{PMA} package or using \code{spca} from the \code{elasticnet}
 #' package. The respective methods are given by Zou et al. (2006) and Witten et
 #' al. (2009) respectively.
-#'
 #' @param x a numeric matrix or data frame which provides the data for the
 #' sparse principal loading analysis.
 #' @param method chooses the methods to calculate the sparse loadings.
-#' \code{pmd} uses the method from Witten et al. (2009) and \code{spca} uses the
-#' method from Zou et al. (2006).
-#' @param para when \code{method="pmd"}: an integer giving the bound for the
-#' L1 regularization. When \code{method="spca"}: a vector containing the
-#' regularization parameter for each variable.
+#' \code{PMD} uses the method introduced by Witten et al. (2009) provided in the \code{PMA} package,
+#' \code{rSVD} uses the method introduced by Shen and Huang (2006) provided in the \code{irlba}
+#' package, and \code{PP} uses the method introduced by Croux et al. (2013) provided in the \code{rrcovHD}
+#' package.
+#' @param para an intiger indicating the sparseness. When \code{method="PMD"}: \code{para}
+#' gives the bound for the L1 regularization. When \code{method="rSVD"}: \code{para}
+#' specifies the number of nonzero components in each loading.
 #' @param cor a logical value indicating whether the calculation should use the
 #' correlation or the covariance matrix.
-#' @param criterion a character string indicating if the weight-corrected
-#' evaluation criterion (CEC) or the evaluation criterion (EC) is used.
-#' \code{corrected} changes the loadings to weight all variables equally while
-#' \code{normal} does not change the loadings.
+#' @param criterion Which of the evaluation criteria (EC) should be used?
 #' @param threshold a numeric value used to determine zero elements in the
-#' loading. This serves mostly to correct approximation errors.
-#' @param rho penalty parameter. When \code{method="SPCA"}, we need further
-#' regularizations for the case when the number of variables is larger than the
-#' number of observations. We refer to Zou et al. (2006) and Bauer (2022) for
-#' more details.
+#' loadings.
 #' @param max.iter maximum number of iterations.
-#' @param trace a logical value indicating if the progress is printed.
-#' @param eps.conv a numerical value as convergence criterion.
 #' @param orthogonal a logical value indicating if the sparse loadings are
 #' orthogonalized.
-#' @param check a character string indicating if only rows or rows as well as
-#' columns are used to detect the underlying block structure. \code{rows} checks
-#' if the rows fulfill the required structure. \code{rnc} checks if rows and
-#' columns fulfill the required structure.
+#' @param K The number of sparse loadings to be computed. Default is min(N,P)
+#' for the methods \code{PMD} and \code{PP}, and min(N,P)-1 for the method \code{rSVD}.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -355,9 +345,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'   a numeric matrix or data frame which equals the input of \code{x}.
 #' }
 #' \item{EC}{
-#'   a numeric vector that contains the weight-corrected evaluation criterion
-#'   (CEC) if \code{criterion="corrected"} and the evaluation criterion (EC) if
-#'   \code{criterion="normal"}.
+#'   a numeric vector that contains the evaluation criteria.
 #' }
 #' \item{loadings}{
 #'   a matrix of variable loadings (i.e. a matrix containing the sparse
@@ -380,24 +368,7 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' @examples
 #' #############
-#' ## First example: we apply SPLA to a classic example from PCA
-#' #############
-#'
-#' spla(USArrests, method = "spca", para = c(0.5, 0.5, 0.5, 0.5), cor = TRUE)
-#'
-#' ## we obtain two blocks:
-#' ## 1x1 (Urbanpop) and 3x3 (Murder, Aussault, Rape).
-#' ## The large CEC of 0.922 indicates that the given structure is reasonable.
-#'
-#' spla(USArrests, method = "spca", para = c(0.5, 0.5, 0.7, 0.5), cor = TRUE)
-#'
-#' ## we obtain three blocks:
-#' ## 1x1 (Urbanpop), 1x1 (Rape) and 2x2 (Murder, Aussault).
-#' ## The mid-ish CEC of 0.571 for (Murder, Aussault) indicates that the found
-#' ## structure might not be adequate.
-#'
-#' #############
-#' ## Second example: we replicate a synthetic example similar to Bauer (2022)
+#' ## We replicate a synthetic example similar to Bauer (2022)
 #' #############
 #'
 #' set.seed(1)
@@ -421,81 +392,96 @@ pla.drop_blocks <- function(object, blocks, ...) {
 #'
 #' ## Conduct SPLA to obtain the blocks (X_1,...,X_4) and (X_5,...,X_8)
 #'
-#' ## use method = "pmd" (default)
-#' spla(X, para = 1.4)
-#'
-#' ## use method = "spca"
-#' spla(X, method = "spca", para = c(500, 60, 3, 8, 5, 7, 13, 4))
+#' spla(X, para = 1.4, method = "PMD)
 #'
 #' @export
 spla <- function(x,
-                 method = c("pmd", "spca"),
+                 method = c("PMD", "rSVD", "PP"),
                  para,
                  cor = FALSE,
                  criterion = c("distcor", "RV", "complete", "average"),
-                 threshold = 1e-7,
-                 rho = 1e-06,
-                 max.iter = 200,
-                 trace = FALSE,
-                 eps.conv = 1e-3,
+                 threshold = 0.05,
+                 max.iter,
                  orthogonal = TRUE,
-                 check = c("rnc", "rows"),
+                 K,
+                 Sigma,
                  ...) {
   chkDots(...)
 
   feature_names <- get_feature_names(x = x)
   eigen <- list()
   x <- scale(x, center = TRUE, scale = cor)
-  K <- ncol(x)
+  P <- ncol(x)
+  N <- nrow(x)
+  
+  if(length(para) != 1) {
+    stop("Enter a single sparseness parameter.")
+  }
+  
+  if(missing(K)){
+    K <- min(N,P)
+    if(method == "rSVD"){K <- min(N,P)-1}
+    
+  } else{
+    if(K > min(N,P)){
+      if("PMD" == method){
+        warning("K must be less than or equal to min(nrow(x), ncol(x)).\nMethod continues with K <- min(nrow(x), ncol(x))")
+        K <- min(nrow(x), ncol(x))
+      }
+      
+      if(K >= min(N,P) || any(c("rSVD", "PP") == method)){
+        warning("K must be strictly less than min(nrow(x), ncol(x)) when method = rSVD or method = PP.\nMethod continues with K <- min(nrow(x), ncol(x)) - 1")
+        K <- min(nrow(x), ncol(x)) - 1
+      }
+    }
+  }
+  
+  
+  if(missing(max.iter)){
+    if(method == "PMD"){ max.iter <- 20}
+    if(method == "rSVD"){ max.iter <- 10000}
+  } 
 
   method <- match.arg(method)
   criterion <- match.arg(criterion)
-  check <- match.arg(check)
 
   switch(method,
-    "pmd" = {
-      if (length(para) != 1) {
-        stop("Enter a single sparseness parameter when method = pmd")
-      }
+    "PMD" = {
+      obj <- PMD(
+        x = x,
+        K = K,
+        type = "standard",
+        sumabsv = para,
+        sumabsu = sqrt(nrow(x)),
+        niter = max.iter,
+        trace = FALSE,
+        center = FALSE)
+      
+      eigen$vectors <- obj$v
     },
-    "spca" = {
-      if (length(para) != K) {
-        stop(
-          "Enter a penalization parameter for each loading when method =",
-          "spca"
-        )
-      }
+    "rSVD" = { 
+      obj <- ssvd(
+        x = x,
+        k = K,
+        n = para,
+        maxit = max.iter)
+      
+      eigen$vectors <- obj$v
     },
-    stop("Method unknown")
+    "PP" = {
+      obj <- SPcaGrid(
+        x = x,
+        k = K,
+        kmax = K,
+        lambda = para)
+      
+      eigen$vectors <- obj$loadings
+    },
+    stop("Method unknown. Select one of PMD, rSVD, or PP")
   )
+  
+  
 
-  if (method == "pmd") {
-    obj <- PMD(
-      x = x,
-      K = K,
-      type = "standard",
-      sumabsv = para,
-      sumabsu = sqrt(nrow(x)),
-      niter = max.iter,
-      trace = trace,
-      center = FALSE
-    )
-
-    eigen$vectors <- obj$v
-  } else if (method == "spca") {
-    obj <- spca(
-      x = x,
-      K = K,
-      type = "predictor",
-      para = para,
-      lambda = rho,
-      max.iter = max.iter,
-      trace = trace,
-      eps.conv = eps.conv
-    )
-
-    eigen$vectors <- obj$loadings
-  }
 
   result <- spla_helper(
     x = x,
@@ -504,7 +490,7 @@ spla <- function(x,
     threshold = threshold,
     threshold_mode = "cutoff",
     feature_names = feature_names,
-    check = check,
+    Sigma = Sigma,
     expvar = "approx",
     orthogonal = orthogonal,
     criterion = criterion
@@ -514,123 +500,146 @@ spla <- function(x,
 }
 
 
+
+
+#' @title Block Detection
+#'
+#' @description This function returns the blocks for a given loading matrix.
+#' @param V a numeric matrix which contains the loadings.
+#' @param threshold a numeric value used to determine zero elements in the
+#' loadings.
+#' @param ... further arguments passed to or from other methods.
+#'
+#' @return
+#' \item{blocks}{
+#'   a list of blocks which are identified by sparse principal loading analysis.
+#' }
+#'
+#' @references
+#' \insertRef{Bauer.2022}{prinvars}
+#'
+#' @examples
+#' #############
+#'
+#' @export
+blocks <- function(V,
+                 threshold = 0,
+                 ...) {
+  chkDots(...)
+  
+  
+  if(missing(V)){
+    stop("V is required.")
+  }
+  
+  if(length(colnames(V)) == 0){ colnames(V) == as.character(1:ncol(V))}
+
+  threshold_matrx <- get_threshold_matrix(V, threshold)
+  
+  
+  result <- get_blocks(threshold_matrx, colnames(V))
+  
+  return(result)
+}
+
+
+
+
 #' @title Hyperparameter Tuning For Sparse Principal Loading Analysis
 #'
 #' @description With set.seed(1), the seed for random search can be determined.
 #'
 #' @export
-spla.ht <- function(x,
-                    iterations = 50,
-                    para.max = 3,
-                    para.min = 1,
-                    para.steps = 0.1,
-                    threshold.max = 0.5,
-                    threshold.min = 0,
-                    threshold.steps = 0.05,
-                    type = c("random", "grid"),
-                    timeout = 2,
-                    EC.min = 0,
-                    criterion = c("distcor", "RV", "complete", "average"),
-                    cor = FALSE,
-                    max.iter = 200,
-                    ...) {
-  
 
+spla.ht <- function(x,
+                    method = c("PMD", "rSVD", "PP"),
+                    criterion = c("distcor", "RV", "complete", "average"),
+                    EC.min = 0.8,
+                    para.lim = c(1, 3),
+                    para.steps = 0.1,
+                    threshold.lim = c(0, 0.5),
+                    threshold.steps = 0.05,
+                    K,
+                    Sigma,
+                    splits = c("multiple", "single"),
+                    cor = FALSE,
+                    max.iter,
+                    greedy = TRUE,
+                    ...) {
   chkDots(...)
+  N <- nrow(x)
+  P <- ncol(x)
+  
+  
   if (EC.min < 0 || EC.min > 1) {
     stop("EC.min not between 0 and 1")
   }
-  if (para.min < 1) {
-    stop("para.min must be at least one")
-  }
-  if (para.max < para.min) {
-    stop("para.max must be larger than para.min")
-  }
-
-  para.grid <- seq(para.min, para.max, para.steps)
-  tau.grid <- seq(threshold.min, threshold.max, threshold.steps)
-  search.grid <- expand.grid(para.grid, tau.grid)
-  length.grid <- nrow(search.grid)
   
-  
-  if(type == "random"){
-    if(iterations >= length.grid){
-      warning("Number of iterations larger than length of grid.")
-      type = "grid"
-      iterations <- length.grid
-    } else {
-      search.grid <- search.grid[
-        sample(1:length.grid, iterations, replace = FALSE),
-      ]
+  if(missing(K)){
+    K <- min(N,P)
+    if(any(c("rSVD", "PP") == method)){K<- min(N,P)-1}
+  } else{
+    if(K > min(N,P)){
+      if(method == "PMD"){
+        warning("K must be less than or equal to min(nrow(x), ncol(x)).\nMethod continues with K <- min(nrow(x), ncol(x))")
+        K <- min(nrow(x), ncol(x))
+      }
+      
+      if(K >= min(N,P) || any(c("rSVD", "PP") == method)){
+        warning("K must be strictly less than min(nrow(x), ncol(x)) when method = rSVD or method = PP.\nMethod continues with K <- min(nrow(x), ncol(x)) - 1")
+        K <- min(nrow(x), ncol(x)) - 1
+      }
     }
+  }
+  
+  para.grid <- seq(para.lim[2], para.lim[1], -para.steps)
+  tau.grid <- seq(threshold.lim[1], threshold.lim[2], threshold.steps)
+  
+  
+  
+  
+  output <- data.frame()
+
+  for(para in para.grid){
+    cat("\rpara", para, "till", para.lim[1], "remain.")
+
+    output_list <- mclapply(tau.grid, function(tau) run.spla(tau=tau,x = x, method = method, para = para, cor = cor,
+                                                             criterion = criterion,Sigma = Sigma, K = K, EC.min = EC.min),
+                            mc.cores = length(tau.grid))
     
-  } else {
-    iterations <- length.grid
+    result <- na.omit(as.data.frame(do.call(rbind, output_list)))
+    if(!nrow(result) == 0){
+      colnames(result) <- c("largest EC", "n.splits", "n.blocks", "para", "threshold", "K")
+      output <- rbind(output, result)
+      output <- output[order(-output$n.splits, -output$`largest EC`),]
+      
+      if(greedy){
+        #cat("\n")
+        return(output[1,])
+      }
+    }
   }
 
-
-
-  grid <- data.frame(
-    EC = numeric(nrow(search.grid)),
-    blocks = numeric(nrow(search.grid)),
-    para = search.grid[, 1],
-    tau = search.grid[, 2]
-  )
-
-  for (i in 1:iterations) {
-    cat("\rIteration", i, "of", iterations, "complete.")
-
-    test_error <- try(
-      withTimeout(
-        {
-          suppressWarnings({
-            spla <- spla(x,
-              para = grid$para[i],
-              cor = cor,
-              criterion = criterion,
-              threshold = grid$tau[i],
-              max.iter = max.iter,
-              orthogonal = FALSE
-            )
-          })
-        },
-        timeout = timeout,
-        onTimeout = "error"
-      ),
-      silent = TRUE
+  #cat("\n")
+  
+  if (length(output)==0) {
+    #message("No blocks identified for this grid.")
+  } else {
+    
+    splits <- match.arg(splits)
+    switch(splits,
+           "multiple" = {
+             output <- output[order(-output$n.splits, -output$EC),]
+           },
+           "single" = { 
+             output <- output[order(-output$EC, output$n.blocks),]
+           }
     )
-
-    if(inherits(test_error, "try-error")) next
-
-
-    blocks <- length(spla$blocks)
     
-    # Check if only one block is detected i.e. no different blocks are detected
-    if (blocks == 1) next
-    
-    EC <- spla[["EC"]][[criterion]]
-    grid$EC[i] <- max(EC[which(EC != 1)])
-    grid$blocks[i] <- blocks
-  }
-  cat("\n")
-
-  grid <- grid[grid$EC > EC.min, ]
-  if (all(grid$blocks == 0)) {
-    message("No blocks identified for this grid.")
-  } else {
-    block_sizes <- unique(grid$blocks)
-    output <- data.frame()
-
-    for (i in seq_along(block_sizes)) {
-      size <- block_sizes[i]
-      blocks_size_i <- grid[grid$blocks == size, ]
-      best_block <- which(blocks_size_i$EC == max(blocks_size_i$EC))[1]
-      output <- rbind(output, blocks_size_i[best_block, ])
-    }
-
-    output <- output[order(output$blocks, decreasing = TRUE),]
-    colnames(output) <- c("largest EC", "blocks", "para", "threshold")
     rownames(output) <- seq_len(nrow(output))
     return(output)
+    
   }
 }
+
+
