@@ -214,18 +214,7 @@ spla_helper <- function(
 
   rownames(eigen$vectors) <- feature_names
 
-
-  if(missing(Sigma)){
-    if(nrow(x) > ncol(x)){  
-      sigma <- cov(x)
-    } else{  
-      sigma <- scadEst(x, 0.2)  #or 0.1 ??
-      #sigma <- poetEst(dat = x, k = 2, lambda = 0.1)
-    }
-  } else{
-    sigma <- Sigma
-  }
-  sigma_P1 <- sigma[feature_idxs, feature_idxs]
+  Sigma_P1 <- Sigma[feature_idxs, feature_idxs]
 
   
   fitting_criteria <- list(
@@ -245,12 +234,12 @@ spla_helper <- function(
 
     
     fitting_criteria$distcor[ev] <- 1 - dcor(x_P1[, feature_idxs], x_P1[, non_feature_idxs])
-    fitting_criteria$complete[ev] <- 1 - max(abs(sigma_P1[feature_idxs, non_feature_idxs]))
-    #fitting_criteria$average[ev] <- 1 - mean(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])))
-    fitting_criteria$rv[ev] <- 1 - sum(diag((sigma_P1[feature_idxs, non_feature_idxs] %*% t(sigma_P1[feature_idxs, non_feature_idxs])))) /
-      sqrt(sum(diag((sigma_P1[feature_idxs, feature_idxs] %*% t(sigma_P1[feature_idxs, feature_idxs])))) * sum(diag((sigma_P1[non_feature_idxs, non_feature_idxs] %*% t(sigma_P1[non_feature_idxs, non_feature_idxs])))))
+    fitting_criteria$complete[ev] <- 1 - max(abs(Sigma_P1[feature_idxs, non_feature_idxs]))
+    #fitting_criteria$average[ev] <- 1 - mean(as.vector(abs(Sigma_P1[feature_idxs, non_feature_idxs])))
+    fitting_criteria$rv[ev] <- 1 - sum(diag((Sigma_P1[feature_idxs, non_feature_idxs] %*% t(Sigma_P1[feature_idxs, non_feature_idxs])))) /
+      sqrt(sum(diag((Sigma_P1[feature_idxs, feature_idxs] %*% t(Sigma_P1[feature_idxs, feature_idxs])))) * sum(diag((Sigma_P1[non_feature_idxs, non_feature_idxs] %*% t(Sigma_P1[non_feature_idxs, non_feature_idxs])))))
     
-    sorted.E <- sort(as.vector(abs(sigma_P1[feature_idxs, non_feature_idxs])), decreasing = TRUE)
+    sorted.E <- sort(as.vector(abs(Sigma_P1[feature_idxs, non_feature_idxs])), decreasing = TRUE)
     n.mean <- min(length(feature_idxs), 5) #WHY 5? TUNING PARAEMTER - CHECK USING SIMULATIONS (PERHAPS 10?)
     fitting_criteria$average[ev] <- 1 - mean(sorted.E[1:n.mean])
     #1*length if considering only E upper right or lower left
@@ -376,10 +365,7 @@ err_wrong_sparse_type <- function(type, orthogonal) {
 
 
 
-
-
-run.spla <- function(tau = tau, x = x, EC.min = EC.min, method,
-                     para = para, cor, criterion, Sigma, K){
+run.spla <- function(tau, x, method, para, criterion, Sigma, cor, K, EC.min){
   
   test_error <- try(
     {
@@ -392,8 +378,7 @@ run.spla <- function(tau = tau, x = x, EC.min = EC.min, method,
                      threshold = tau,
                      orthogonal = FALSE,
                      Sigma = Sigma,
-                     K = K
-        )
+                     K = K)
       })))
     },
     silent = TRUE
@@ -408,10 +393,75 @@ run.spla <- function(tau = tau, x = x, EC.min = EC.min, method,
   EC <- EC[EC != 0]
   if (max(EC) < EC.min) return(NA)
   
+  if(missing(K)){K = ncol(spla$loadings)}
+  
   return(c(max(EC), length(which(EC >= EC.min)), n.blocks, para, tau, K))
 }
 
 
 
+
+
+
+split <- function(x, EC.min, method, criterion, Sigma,
+                  para.lim, para.steps, threshold.lim, threshold.steps, splits, greedy, K, n.cores){
+  
+  if(length(ncol(x)) == 0) return(list(x))
+  
+  para.lim[2] = min(para.lim[2], sqrt(ncol(x)), sqrt(nrow(x)))
+  
+  if(para.lim[2] < para.lim[1]){para.lim[1] <- para.lim[2]}
+  
+  ht <- spla.ht(x = x, method = method, criterion = criterion,
+                EC.min = EC.min, para.lim = c(para.lim[1], para.lim[2]), para.steps = para.steps,
+                threshold.lim = c(threshold.lim[1], threshold.lim[2]), threshold.steps = threshold.steps,
+                splits = splits, Sigma = Sigma, greedy = greedy, K = K, n.cores = n.cores)
+  
+  
+  if(length(ht)  == 0) return(list(colnames(x)))
+  
+  spla.obj <- spla(x = x, method = method, criterion = criterion,
+                   para = ht$para[1], threshold = ht$threshold[1],
+                   Sigma = Sigma, K = K)
+  
+  EC <- spla.obj[["EC"]][[criterion]]
+  EC <- EC[EC!=0]
+  
+  if(splits == "multiple"){
+    split.blocks <- which(EC >= EC.min)
+    all.split.block.labels <- c()
+    result.split <- list()
+    
+    cat("\n===== SPLITTING", length(split.blocks), "BLOCK(S) ===== with para =", ht$para[1], "and tau =", ht$threshold[1], "\n")
+    
+    counter <- 1
+    for(split.block in split.blocks){
+      split.block.labels <- spla.obj[["blocks"]][[split.block]]@features
+      all.split.block.labels <- c(all.split.block.labels, split.block.labels)
+      result.split[[counter]] <- colnames(x)[(colnames(x) %in% split.block.labels)]
+      counter <- counter + 1
+    }
+    
+    if(!all(colnames(x) %in% all.split.block.labels)){
+      result.split[[counter]] <- colnames(x)[!(colnames(x) %in% all.split.block.labels)]
+    }
+    
+    return(result.split)
+  }
+  
+  if(splits == "single"){
+    split.block  <- which(EC == max(EC))[1]
+    split.labels <- spla.obj[["blocks"]][[split.block]]@features
+    result.split <- list()
+    
+    cat("\n===== SPLITTING ===== with para =", ht$para[1], "and tau =", ht$threshold[1], "\n")
+    
+    result.split[[1]] <- colnames(x)[(colnames(x) %in% split.block.labels)]
+    result.split[[2]] <- colnames(x)[!(colnames(x) %in% split.block.labels)]
+    
+    return(result.split)
+  }
+  
+}
 
 

@@ -2,6 +2,7 @@
 
 S3method(print,pla)
 export(blocks)
+export(complete.split)
 export(pla)
 export(pla.drop_blocks)
 export(pla.keep_blocks)

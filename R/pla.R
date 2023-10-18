@@ -398,52 +398,66 @@ pla.drop_blocks <- function(object, blocks, ...) {
 spla <- function(x,
                  method = c("PMD", "rSVD", "PP"),
                  para,
-                 cor = FALSE,
-                 criterion = c("distcor", "RV", "complete", "average"),
+                 cor,
+                 criterion = c("average", "distcor", "RV", "complete"),
                  threshold = 0.05,
                  max.iter,
-                 orthogonal = TRUE,
+                 orthogonal,
                  K,
                  Sigma,
                  ...) {
   chkDots(...)
+  
+  method <- match.arg(method)
+  criterion <- match.arg(criterion)
 
-  feature_names <- get_feature_names(x = x)
-  eigen <- list()
-  x <- scale(x, center = TRUE, scale = cor)
+  
   P <- ncol(x)
   N <- nrow(x)
+
+  if(missing(para)){stop("Enter a sparseness parameter")}
   
-  if(length(para) != 1) {
-    stop("Enter a single sparseness parameter.")
-  }
+  if(length(para) != 1) {stop("Enter a single sparseness parameter.")}
   
-  if(missing(K)){
-    K <- min(N,P)
-    if(method == "rSVD"){K <- min(N,P)-1}
-    
-  } else{
-    if(K > min(N,P)){
-      if("PMD" == method){
-        warning("K must be less than or equal to min(nrow(x), ncol(x)).\nMethod continues with K <- min(nrow(x), ncol(x))")
-        K <- min(nrow(x), ncol(x))
-      }
-      
-      if(K >= min(N,P) || any(c("rSVD", "PP") == method)){
-        warning("K must be strictly less than min(nrow(x), ncol(x)) when method = rSVD or method = PP.\nMethod continues with K <- min(nrow(x), ncol(x)) - 1")
-        K <- min(nrow(x), ncol(x)) - 1
-      }
-    }
-  }
-  
+  if(missing(cor)){cor <- FALSE}
   
   if(missing(max.iter)){
     if(method == "PMD"){ max.iter <- 20}
     if(method == "rSVD"){ max.iter <- 10000}
   } 
+  
+  if(missing(orthogonal)){orthogonal <- FALSE}
+  
+  if(missing(K)){
+    K <- min(N,P)
+    if(method == "rSVD"){K <- min(N,P)-1}
+  }else{
+    if(K > min(N,P)){
+      if("PMD" == method){
+        warning("K must be less than or equal to min(nrow(x), ncol(x)).\nMethod continues with K <- min(nrow(x), ncol(x))")
+        K <- min(N,P)
+      }
+      
+      if(K >= min(N,P) & any(c("rSVD", "PP") == method)){
+        warning("K must be strictly less than min(nrow(x), ncol(x)) when method = rSVD or method = PP.\nMethod continues with K <- min(nrow(x), ncol(x)) - 1")
+        K <- min(N,P) - 1
+      }
+    }
+  }
+  
+  if(missing(Sigma)){
+    if(N > P){  
+      Sigma <- cov(x)
+    } else{  
+      Sigma <- scadEst(x, 0.2)  #or 0.1 ??
+      #Sigma <- poetEst(dat = x, k = 2, lambda = 0.1)
+    }
+  } 
+  
+  x <- scale(x, center = TRUE, scale = cor)
+  feature_names <- get_feature_names(x = x)
+  eigen <- list()
 
-  method <- match.arg(method)
-  criterion <- match.arg(criterion)
 
   switch(method,
     "PMD" = {
@@ -452,11 +466,11 @@ spla <- function(x,
         K = K,
         type = "standard",
         sumabsv = para,
-        sumabsu = sqrt(nrow(x)),
+        sumabsu = sqrt(N),
         niter = max.iter,
         trace = FALSE,
         center = FALSE)
-      
+   
       eigen$vectors <- obj$v
     },
     "rSVD" = { 
@@ -480,8 +494,6 @@ spla <- function(x,
     stop("Method unknown. Select one of PMD, rSVD, or PP")
   )
   
-  
-
 
   result <- spla_helper(
     x = x,
@@ -562,11 +574,13 @@ spla.ht <- function(x,
                     K,
                     Sigma,
                     splits = c("multiple", "single"),
-                    cor = FALSE,
+                    cor,
                     max.iter,
                     greedy = TRUE,
+                    n.cores,
                     ...) {
   chkDots(...)
+  
   N <- nrow(x)
   P <- ncol(x)
   
@@ -575,17 +589,19 @@ spla.ht <- function(x,
     stop("EC.min not between 0 and 1")
   }
   
+  if(missing(cor)){cor = FALSE}
+  
   if(missing(K)){
     K <- min(N,P)
-    if(any(c("rSVD", "PP") == method)){K<- min(N,P)-1}
-  } else{
+    if(method == "rSVD"){K <- min(N,P)-1}
+  }else{
     if(K > min(N,P)){
-      if(method == "PMD"){
+      if("PMD" == method){
         warning("K must be less than or equal to min(nrow(x), ncol(x)).\nMethod continues with K <- min(nrow(x), ncol(x))")
         K <- min(nrow(x), ncol(x))
       }
       
-      if(K >= min(N,P) || any(c("rSVD", "PP") == method)){
+      if(K >= min(N,P) & any(c("rSVD", "PP") == method)){
         warning("K must be strictly less than min(nrow(x), ncol(x)) when method = rSVD or method = PP.\nMethod continues with K <- min(nrow(x), ncol(x)) - 1")
         K <- min(nrow(x), ncol(x)) - 1
       }
@@ -595,8 +611,7 @@ spla.ht <- function(x,
   para.grid <- seq(para.lim[2], para.lim[1], -para.steps)
   tau.grid <- seq(threshold.lim[1], threshold.lim[2], threshold.steps)
   
-  
-  
+  if(missing(n.cores)){n.cores <- length(tau.grid)}
   
   output <- data.frame()
 
@@ -605,7 +620,7 @@ spla.ht <- function(x,
 
     output_list <- mclapply(tau.grid, function(tau) run.spla(tau=tau,x = x, method = method, para = para, cor = cor,
                                                              criterion = criterion,Sigma = Sigma, K = K, EC.min = EC.min),
-                            mc.cores = length(tau.grid))
+                            mc.cores = n.cores)
     
     result <- na.omit(as.data.frame(do.call(rbind, output_list)))
     if(!nrow(result) == 0){
@@ -614,7 +629,7 @@ spla.ht <- function(x,
       output <- output[order(-output$n.splits, -output$`largest EC`),]
       
       if(greedy){
-        #cat("\n")
+        cat("\rSplit with para =", output[1,]$para, "and threshold =", output[1,]$threshold, ".\n")
         return(output[1,])
       }
     }
@@ -623,7 +638,7 @@ spla.ht <- function(x,
   #cat("\n")
   
   if (length(output)==0) {
-    #message("No blocks identified for this grid.")
+    cat(" No (further) blocks identified on this grid.\n")
   } else {
     
     splits <- match.arg(splits)
@@ -640,6 +655,128 @@ spla.ht <- function(x,
     return(output)
     
   }
+  
 }
 
+
+
+
+
+
+
+
+
+
+  
+
+#' @title Complete Split
+#'
+#' @description With set.seed(1), the seed for random search can be determined.
+#'
+#' @export
+
+complete.split <- function(x,
+                           EC.min = 0.8,
+                           method = c("PMD", "rSVD", "PP"),
+                           criterion = c("average", "distcor", "RV", "complete"),
+                           para.lim = c(1, 2),
+                           para.steps = 0.1,
+                           threshold.lim = c(0, 0.5),
+                           threshold.steps = 0.05,
+                           K,
+                           Sigma,
+                           cor,
+                           splits = c("multiple", "single"),
+                           greedy = TRUE,
+                           n.cores,
+                           ...) {
+  chkDots(...)
+
+  method <- match.arg(method)
+  criterion <- match.arg(criterion)
+  splits <- match.arg(splits)
+  
+  N <- nrow(x)
+  P <- ncol(x)
+  
+  if(length(colnames(x)) == 0){colnames(x) <- as.character(1:P)}
+  colnames(Sigma) <- colnames(x)
+
+  if(missing(cor)){cor = FALSE}
+  
+  if(missing(K)){
+    K <- min(N,P)
+    if(method == "rSVD"){K <- min(N,P)-1}
+  }else{
+    if(K > min(N,P)){
+      if("PMD" == method){
+        warning("K must be less than or equal to min(nrow(x), ncol(x)).\nMethod continues with K <- min(nrow(x), ncol(x))")
+        K <- min(N,P)
+      }
+      
+      if(K >= min(N,P) || any(c("rSVD", "PP") == method)){
+        warning("K must be strictly less than min(nrow(x), ncol(x)) when method = rSVD or method = PP.\nMethod continues with K <- min(nrow(x), ncol(x)) - 1")
+        K <- min(N,P) - 1
+      }
+    }
+  }
+  
+  if(missing(Sigma)){
+    if(N > P){  
+      Sigma <- cov(x)
+    } else{  
+      Sigma <- scadEst(x, 0.2)  #or 0.1 ??
+      #Sigma <- poetEst(dat = x, k = 2, lambda = 0.1)
+    }
+  } 
+  
+  if(missing(n.cores)){n.cores <- length(seq(threshold.lim[1], threshold.lim[2], threshold.steps))}
+  
+  sub_matrices <- list(colnames(x))
+  results <- list()
+  
+  while (TRUE) {
+    for (i in 1:length(sub_matrices)) {
+      
+      if (length(sub_matrices) == 0) {
+        break  # Stop if no more splitting can be done
+      }
+      
+      if(length(sub_matrices[[1]]) == 1){
+        results <- c(results, sub_matrices[[1]])
+        sub_matrices <- sub_matrices[-1]
+        next
+      }
+            
+      sub_results <- split(x = x[, colnames(x) %in% sub_matrices[[1]] ], EC.min = EC.min,
+                           method = method, criterion = criterion,
+                           para.lim = para.lim, para.steps = para.steps,
+                           threshold.lim = threshold.lim, threshold.steps = threshold.steps,
+                           Sigma = Sigma[colnames(Sigma) %in% sub_matrices[[1]],
+                                         colnames(Sigma) %in% sub_matrices[[1]] ],
+                           splits = splits, greedy = greedy, K = K, n.cores = n.cores) 
+      
+      
+      if(length(sub_matrices) == 1){
+        sub_matrices <- list()
+      } else{
+        sub_matrices <- sub_matrices[-1]
+      }
+      
+      if(length(sub_results) == 1){
+        results <- c(results, sub_results)
+      }else{
+        sub_matrices <- c(sub_matrices, sub_results)
+      }
+      
+    }
+    if (length(sub_matrices) == 0) {
+      break  # Stop if no more splitting can be done
+    }
+    
+  }
+  
+  
+  return(results)
+}
 
